@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { useTheme } from '../context/ThemeContext';
-import { formatTime12Hour } from '../utils/timeUtils';
-import CountdownTimer from './CountdownTimer';
+import { useTheme } from "../context/ThemeContext";
+import { formatTime12Hour } from "../utils/timeUtils";
+import CountdownTimer from "./CountdownTimer";
 
 const Header = () => {
   const { isDarkMode, toggleTheme } = useTheme();
@@ -25,10 +25,10 @@ const Header = () => {
     if (!imagePath) return "Images/user.jpeg";
 
     // Remove any backslashes and replace with forward slashes
-    const cleanPath = imagePath.replace(/\\/g, '/');
+    const cleanPath = imagePath.replace(/\\/g, "/");
 
     // Remove 'uploads/' from the path if it exists
-    const pathWithoutUploads = cleanPath.replace('uploads/', '');
+    const pathWithoutUploads = cleanPath.replace("uploads/", "");
 
     // Combine with the backend URL
     const imageUrl = `${import.meta.env.VITE_BASE_URL}${pathWithoutUploads}`;
@@ -39,23 +39,30 @@ const Header = () => {
   // Function to fetch meetings for today and tomorrow
   const fetchMeetingsForNotification = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/meetings`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/meetings`
+      );
       const today = new Date();
       const tomorrow = new Date();
       tomorrow.setDate(today.getDate() + 1);
 
-      const upcomingMeetings = response.data.meetings.filter(meeting => {
+      const upcomingMeetings = response.data.meetings.filter((meeting) => {
         const meetingDate = new Date(meeting.date);
-        const isUpcoming = meetingDate.toDateString() === today.toDateString() ||
+        const isUpcoming =
+          meetingDate.toDateString() === today.toDateString() ||
           meetingDate.toDateString() === tomorrow.toDateString();
-        const isNotCompletedOrPostponedOrCancelled = !['completed', 'postponed', 'cancelled'].includes(meeting.status.toLowerCase());
+        const isNotCompletedOrPostponedOrCancelled = ![
+          "completed",
+          "postponed",
+          "cancelled",
+        ].includes(meeting.status.toLowerCase());
 
         return isUpcoming && isNotCompletedOrPostponedOrCancelled;
       });
 
       setNotifications(upcomingMeetings);
     } catch (error) {
-      console.error('Error fetching meetings for notifications:', error);
+      console.error("Error fetching meetings for notifications:", error);
     }
   };
 
@@ -95,12 +102,12 @@ const Header = () => {
         {
           email,
           oldPassword,
-          newPassword
+          newPassword,
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       // Clear the form inputs
@@ -121,8 +128,6 @@ const Header = () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       navigation("/");
-
-
     } catch (error) {
       alert("Incorrect Old Password");
     }
@@ -134,15 +139,15 @@ const Header = () => {
     const isRightAligned = window.innerWidth - rect.right < rect.left;
 
     setDropdownPosition({
-      position: 'fixed',
+      position: "fixed",
       top: `${rect.bottom}px`,
-      [isRightAligned ? 'right' : 'left']: isRightAligned
+      [isRightAligned ? "right" : "left"]: isRightAligned
         ? `${window.innerWidth - rect.right}px`
         : `${rect.left}px`,
     });
 
     if (dropdownRef.current) {
-      dropdownRef.current.classList.toggle('show');
+      dropdownRef.current.classList.toggle("show");
     }
   };
 
@@ -151,9 +156,9 @@ const Header = () => {
 
     try {
       const formData = new FormData();
-      formData.append('username', username);
+      formData.append("username", username);
       if (selectedImage) {
-        formData.append('profileImage', selectedImage);
+        formData.append("profileImage", selectedImage);
       }
 
       // console.log("Before API call - FormData contents:");
@@ -167,15 +172,18 @@ const Header = () => {
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            'Content-Type': 'multipart/form-data',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
       // console.log("API Response:", response.data);
 
       // Update local storage with new user data
-      const updatedUser = { ...JSON.parse(localStorage.getItem("user")), ...response.data.user };
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem("user")),
+        ...response.data.user,
+      };
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       // Close the modal programmatically
@@ -195,7 +203,6 @@ const Header = () => {
       setTimeout(() => {
         window.location.reload();
       }, 5000);
-
     } catch (error) {
       toast.error("Failed to update profile");
     }
@@ -204,14 +211,16 @@ const Header = () => {
   return (
     <>
       <div className="header">
-
         <nav className="navbar py-4">
           <div className="container-xxl">
-
             {/* header rightbar icon */}
             <div className="h-right d-flex gap-3 align-items-center mr-5 mr-lg-0 order-1">
               <button onClick={toggleTheme} className="border-0 bg-transparent">
-                {isDarkMode ? <i className="bi bi-brightness-high text-light fs-5" /> : <i className="bi bi-moon-fill fs-5" />}
+                {isDarkMode ? (
+                  <i className="bi bi-brightness-high text-light fs-5" />
+                ) : (
+                  <i className="bi bi-moon-fill fs-5" />
+                )}
               </button>
               <div className="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center zindex-popover">
                 <div className="u-info me-2">
@@ -296,47 +305,60 @@ const Header = () => {
                 <div className="notification">
                   <p>
                     {(() => {
-                      const todayMeetings = notifications.filter(meeting => {
+                      const todayMeetings = notifications.filter((meeting) => {
                         const meetingDate = new Date(meeting.date);
-                        return meetingDate.toDateString() === new Date().toDateString();
+                        return (
+                          meetingDate.toDateString() ===
+                          new Date().toDateString()
+                        );
                       });
-                      
+
                       return todayMeetings.length > 0 ? (
                         <>
-                          <strong style={{color: "#0a9400"}}>Today :</strong> {" "}
+                          <strong style={{ color: "#0a9400" }}>Today :</strong>{" "}
                           {todayMeetings.map((meeting, index) => (
                             <span key={meeting._id}>
-                              <strong>{meeting.title}</strong> at <strong>{formatTime12Hour(meeting.startTime)}</strong>
-                              <CountdownTimer 
-                                meetingDate={meeting.date} 
+                              <strong>{meeting.title}</strong> at{" "}
+                              <strong>
+                                {formatTime12Hour(meeting.startTime)}
+                              </strong>
+                              <CountdownTimer
+                                meetingDate={meeting.date}
                                 meetingTime={meeting.startTime}
                               />
-                              {index < todayMeetings.length - 1 ? ' , ' : ''}
+                              {index < todayMeetings.length - 1 ? " , " : ""}
                             </span>
-                          ))}
-                          {" "}
+                          ))}{" "}
                         </>
                       ) : null;
                     })()}
                     {(() => {
-                      const tomorrowMeetings = notifications.filter(meeting => {
-                        const meetingDate = new Date(meeting.date);
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        return meetingDate.toDateString() === tomorrow.toDateString();
-                      });
-                      
+                      const tomorrowMeetings = notifications.filter(
+                        (meeting) => {
+                          const meetingDate = new Date(meeting.date);
+                          const tomorrow = new Date();
+                          tomorrow.setDate(tomorrow.getDate() + 1);
+                          return (
+                            meetingDate.toDateString() ===
+                            tomorrow.toDateString()
+                          );
+                        }
+                      );
+
                       return tomorrowMeetings.length > 0 ? (
                         <div className="mt-2">
-                          <strong className="text-danger">Tomorrow :</strong> {" "}
+                          <strong className="text-danger">Tomorrow :</strong>{" "}
                           {tomorrowMeetings.map((meeting, index) => (
                             <span key={meeting._id}>
-                              <strong>{meeting.title}</strong> at <strong>{formatTime12Hour(meeting.startTime)}</strong>
-                              <CountdownTimer 
-                                meetingDate={meeting.date} 
+                              <strong>{meeting.title}</strong> at{" "}
+                              <strong>
+                                {formatTime12Hour(meeting.startTime)}
+                              </strong>
+                              <CountdownTimer
+                                meetingDate={meeting.date}
                                 meetingTime={meeting.startTime}
                               />
-                              {index < tomorrowMeetings.length - 1 ? ' , ' : ''}
+                              {index < tomorrowMeetings.length - 1 ? " , " : ""}
                             </span>
                           ))}
                         </div>
@@ -351,10 +373,7 @@ const Header = () => {
               )}
             </div>
           </div>
-
         </nav>
-
-
 
         {/* Password Change Modal */}
         <div
@@ -372,7 +391,10 @@ const Header = () => {
                     <div className="container">
                       <div className="row">
                         <div className="col-12">
-                          <label htmlFor="currentStatus" className="fw-bold fs-5">
+                          <label
+                            htmlFor="currentStatus"
+                            className="fw-bold fs-5"
+                          >
                             Change Password
                           </label>
                           <div className="mb-3 mt-3">
@@ -386,7 +408,9 @@ const Header = () => {
                             />
                           </div>
                           <div className="mb-3 mt-3">
-                            <label className="form-label fw-bold">Old Password</label>
+                            <label className="form-label fw-bold">
+                              Old Password
+                            </label>
                             <input
                               type="password"
                               className="form-control"
@@ -396,7 +420,9 @@ const Header = () => {
                             />
                           </div>
                           <div className="mb-3">
-                            <label className="form-label fw-bold">New Password</label>
+                            <label className="form-label fw-bold">
+                              New Password
+                            </label>
                             <input
                               type="password"
                               className="form-control"
@@ -440,19 +466,27 @@ const Header = () => {
                         <label className="fw-bold fs-5">Edit Profile</label>
                         <div className="mb-3 mt-3 text-center">
                           <img
-                            src={selectedImage
-                              ? URL.createObjectURL(selectedImage)
-                              : getImageUrl(user?.profileImage)}
+                            src={
+                              selectedImage
+                                ? URL.createObjectURL(selectedImage)
+                                : getImageUrl(user?.profileImage)
+                            }
                             alt="Profile"
                             className="rounded-circle"
-                            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                            style={{
+                              width: "150px",
+                              height: "150px",
+                              objectFit: "cover",
+                            }}
                           />
                           <input
                             type="file"
                             ref={fileInputRef}
                             className="d-none"
                             accept="image/*"
-                            onChange={(e) => setSelectedImage(e.target.files[0])}
+                            onChange={(e) =>
+                              setSelectedImage(e.target.files[0])
+                            }
                           />
                           <button
                             type="button"
@@ -520,7 +554,7 @@ const Header = () => {
           .notification p {
             font-size: 0.9em;
           }
-          
+
           .notification .badge {
             font-size: 0.8em;
           }
