@@ -156,21 +156,7 @@ const Signin = () => {
                       </div>
                       <span className="dividers text-muted mt-4">OR</span>
                     </div>
-                    <div className="col-12">
-                      <div className="mb-2">
-                        <label className="form-label">Role</label>
-                        <select
-                          className="form-control form-control-lg"
-                          name="role"
-                          value={form.role}
-                          onChange={handleChange}
-                        >
-                          <option value="">Select Role</option>
-                          <option value="superadmin"> Admin</option>
-                          {/* <option value="admin"></option> */}
-                        </select>
-                      </div>
-                    </div>
+                    
                     <div className="col-12">
                       <div className="mb-2">
                         <label className="form-label">Email address</label>
