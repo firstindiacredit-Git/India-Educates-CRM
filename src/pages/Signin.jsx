@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -26,7 +26,9 @@ const Signin = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/crm-access`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}api/crm-access`
+        );
         console.log(response.data);
         setRoles(response.data);
       } catch (error) {
@@ -78,13 +80,16 @@ const Signin = () => {
 
   return (
     <div id="mytask-layout">
-      <div className="main p-2 py-3 p-xl-5" style={{
-        backgroundImage: `url('../Images/Indiaeducates.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundColor: '#ffffff63',
-        backgroundBlendMode: 'overlay'
-      }}>
+      <div
+        className="main p-2 py-3 p-xl-5"
+        style={{
+          backgroundImage: `url('../Images/Indiaeducates.jpg')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: "#ffffff63",
+          backgroundBlendMode: "overlay",
+        }}
+      >
         <div className="body d-flex p-0 p-xl-5">
           <div className="container-xxl">
             <div className="row g-0">
@@ -93,7 +98,10 @@ const Signin = () => {
                   <img
                     src="../Images/IndiaEducatesLogo.png"
                     className="mb-4"
-                    style={{ width: "-webkit-fill-available", filter: "drop-shadow(0 0 40px white)" }}
+                    style={{
+                      width: "-webkit-fill-available",
+                      filter: "drop-shadow(0 0 40px white)",
+                    }}
                   />
                 </div>
               </div>
@@ -112,17 +120,18 @@ const Signin = () => {
                         <Link
                           className="btn"
                           style={{
-                            border: '1px solid #005bab',
-                            color: '#005bab',
-                            transition: 'all 0.3s ease'
+                            border: "1px solid #005bab",
+                            color: "#005bab",
+                            transition: "all 0.3s ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#005bab';
-                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.backgroundColor = "#005bab";
+                            e.currentTarget.style.color = "white";
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                            e.currentTarget.style.color = '#005bab';
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
+                            e.currentTarget.style.color = "#005bab";
                           }}
                           to="/employeesignin"
                         >
@@ -134,17 +143,18 @@ const Signin = () => {
                         <Link
                           className="btn"
                           style={{
-                            border: '1px solid #005bab',
-                            color: '#005bab',
-                            transition: 'all 0.3s ease'
+                            border: "1px solid #005bab",
+                            color: "#005bab",
+                            transition: "all 0.3s ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = '#005bab';
-                            e.currentTarget.style.color = 'white';
+                            e.currentTarget.style.backgroundColor = "#005bab";
+                            e.currentTarget.style.color = "white";
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                            e.currentTarget.style.color = '#005bab';
+                            e.currentTarget.style.backgroundColor =
+                              "transparent";
+                            e.currentTarget.style.color = "#005bab";
                           }}
                           to="/clientsignin"
                         >
@@ -156,7 +166,21 @@ const Signin = () => {
                       </div>
                       <span className="dividers text-muted mt-4">OR</span>
                     </div>
-                    
+                    <div className="col-12">
+                      <div className="mb-2">
+                        <label className="form-label">Role</label>
+                        <select
+                          className="form-control form-control-lg"
+                          name="role"
+                          value={form.role}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Role</option>
+                          <option value="superadmin"> Admin</option>
+                          {/* <option value="admin"></option> */}
+                        </select>
+                      </div>
+                    </div>
                     <div className="col-12">
                       <div className="mb-2">
                         <label className="form-label">Email address</label>
@@ -198,7 +222,9 @@ const Signin = () => {
                           onClick={toggleShowPassword}
                         >
                           <i
-                            className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                            className={`bi ${
+                              showPassword ? "bi-eye-slash" : "bi-eye"
+                            }`}
                           ></i>
                         </div>
                       </div>
@@ -207,7 +233,8 @@ const Signin = () => {
                       <button
                         type="submit"
                         className="btn btn-lg text-uppercase"
-                        style={{ backgroundColor: '#0A9400', color: 'white' }} disabled={loading}
+                        style={{ backgroundColor: "#0A9400", color: "white" }}
+                        disabled={loading}
                       >
                         {loading ? "Signing In..." : "SIGN IN"}
                       </button>

@@ -1,20 +1,20 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';  // Import axios
-import './Sidebar.css';
-import CustomColorPicker, { isLightColor } from '../pages/colorpicker/CustomColorPicker';
-import Header from './Header';
-import { useTheme } from '../context/ThemeContext';
+import React, { useEffect, useState, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios"; // Import axios
+import "./Sidebar.css";
+import CustomColorPicker, {
+  isLightColor,
+} from "../pages/colorpicker/CustomColorPicker";
+import Header from "./Header";
+import { useTheme } from "../context/ThemeContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
 const Sidebar = () => {
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState("");
   const [isHolidayTomorrow, setIsHolidayTomorrow] = useState(false); // State to check if tomorrow is a holiday
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [sidebarColor, setSidebarColor] = useState('#0a9400');
+  const [sidebarColor, setSidebarColor] = useState("#0a9400");
   const { isDarkMode, toggleTheme } = useTheme();
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ const Sidebar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       setRole(user.role);
     }
@@ -37,13 +37,17 @@ const Sidebar = () => {
     const checkHolidayTomorrow = async () => {
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1); // Set to tomorrow's date
-      const isoTomorrow = tomorrow.toISOString().split('T')[0]; // Format YYYY-MM-DD
+      const isoTomorrow = tomorrow.toISOString().split("T")[0]; // Format YYYY-MM-DD
 
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/holidays`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}api/holidays`
+        );
 
         const holidays = response.data.response.holidays;
-        const holidayTomorrow = holidays.find(h => h.date.iso === isoTomorrow);
+        const holidayTomorrow = holidays.find(
+          (h) => h.date.iso === isoTomorrow
+        );
         setIsHolidayTomorrow(!!holidayTomorrow); // Set to true if tomorrow is a holiday
       } catch (error) {
         console.error("Error fetching holidays:", error);
@@ -66,11 +70,13 @@ const Sidebar = () => {
 
   const handleColorChange = (color) => {
     setSidebarColor(color);
-    localStorage.setItem('sidebarColor', color);
+    localStorage.setItem("sidebarColor", color);
   };
 
   // Determine text color based on sidebar background color
-  const textColorClass = isLightColor(sidebarColor) ? 'text-dark' : 'text-light';
+  const textColorClass = isLightColor(sidebarColor)
+    ? "text-dark"
+    : "text-light";
   // const textColorClass = 'text-light';
 
   const handleDropdownToggle = (e) => {
@@ -79,23 +85,23 @@ const Sidebar = () => {
     const isRightAligned = window.innerWidth - rect.right < rect.left;
 
     setDropdownPosition({
-      position: 'fixed',
+      position: "fixed",
       bottom: `${window.innerHeight - rect.top}px`,
-      [isRightAligned ? 'right' : 'left']: isRightAligned
+      [isRightAligned ? "right" : "left"]: isRightAligned
         ? `${window.innerWidth - rect.right}px`
         : `${rect.left}px`,
     });
 
     if (dropdownRef.current) {
-      dropdownRef.current.classList.toggle('show');
+      dropdownRef.current.classList.toggle("show");
     }
   };
 
   // Add the getImageUrl function from Header
   const getImageUrl = (imagePath) => {
     if (!imagePath) return "Images/superadminimg.jpg";
-    const cleanPath = imagePath.replace(/\\/g, '/');
-    const pathWithoutUploads = cleanPath.replace('uploads/', '');
+    const cleanPath = imagePath.replace(/\\/g, "/");
+    const pathWithoutUploads = cleanPath.replace("uploads/", "");
     return `${import.meta.env.VITE_BASE_URL}${pathWithoutUploads}`;
   };
 
@@ -114,12 +120,12 @@ const Sidebar = () => {
         {
           email,
           oldPassword,
-          newPassword
+          newPassword,
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
       setOldPassword("");
@@ -147,9 +153,9 @@ const Sidebar = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append('username', username);
+      formData.append("username", username);
       if (selectedImage) {
-        formData.append('profileImage', selectedImage);
+        formData.append("profileImage", selectedImage);
       }
 
       const response = await axios.put(
@@ -158,12 +164,15 @@ const Sidebar = () => {
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            'Content-Type': 'multipart/form-data',
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
-      const updatedUser = { ...JSON.parse(localStorage.getItem("user")), ...response.data.user };
+      const updatedUser = {
+        ...JSON.parse(localStorage.getItem("user")),
+        ...response.data.user,
+      };
       localStorage.setItem("user", JSON.stringify(updatedUser));
 
       const modalElement = document.getElementById("profileModal");
@@ -181,7 +190,6 @@ const Sidebar = () => {
       setTimeout(() => {
         window.location.reload();
       }, 5000);
-
     } catch (error) {
       toast.error("Failed to update profile");
     }
@@ -189,14 +197,17 @@ const Sidebar = () => {
 
   // Function to check if we're on a chat route
   const isChatRoute = () => {
-    return ['/admin-chat', '/employee-chat', '/client-chat', '/chat'].includes(location.pathname);
+    return ["/admin-chat", "/employee-chat", "/client-chat", "/chat"].includes(
+      location.pathname
+    );
   };
 
   return (
-    <div className={`sidebar px-3 py-3 me-0 ${textColorClass}`} style={{ background: sidebarColor }}>
+    <div
+      className={`sidebar px-3 py-3 me-0 ${textColorClass}`}
+      style={{ background: sidebarColor }}
+    >
       <div className="d-flex flex-column h-100 ">
-
-
         <div className="mb-0 brand-icon mt-3">
           {/* <span className="logo-icon">
             <img src='../Images/picon.png' style={{ height: "4rem" }} alt="Pizeonfly Logo" />
@@ -205,7 +216,11 @@ const Sidebar = () => {
             <span className="logo-text fs-3" style={{ color: "#4989fd" }}>pizeon</span>
             <span className="logo-text fs-3" style={{ marginLeft: "-0.9rem", color: "#0c117b" }}>fly</span>
           </div> */}
-          <img src='../Images/IndiaEducatesLogo1.png' style={{ height: "4.5rem", marginLeft:"-1.2rem" }} alt="Pizeonfly Logo" />
+          <img
+            src="../Images/IndiaEducatesLogo1.png"
+            style={{ height: "4.5rem", marginLeft: "-1.2rem" }}
+            alt="Pizeonfly Logo"
+          />
         </div>
 
         {/* Menu: main ul */}
@@ -213,8 +228,12 @@ const Sidebar = () => {
           )} */}
         <ul className="menu-list flex-grow-1 mt-3">
           <li>
-            <Link className={`ms-link ${textColorClass}`} to="/project-dashboard">
-              <i className={`icofont-home fs-5 ${textColorClass}`} /> <span className={`fs-6 ${textColorClass}`}>Admin Dashboard</span>
+            <Link
+              className={`ms-link ${textColorClass}`}
+              to="/project-dashboard"
+            >
+              <i className={`icofont-home fs-5 ${textColorClass}`} />{" "}
+              <span className={`fs-6 ${textColorClass}`}>Admin Dashboard</span>
             </Link>
           </li>
           <li className="collapsed">
@@ -226,7 +245,9 @@ const Sidebar = () => {
             >
               <i className={`icofont-briefcase ${textColorClass}`} />
               <span>Projects</span>{" "}
-              <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+              <span
+                className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+              />
             </a>
             {/* Menu: Sub menu ul */}
             <ul className="sub-menu collapse" id="project-Components">
@@ -251,8 +272,11 @@ const Sidebar = () => {
                 data-bs-target="#client-Components"
                 href="#"
               >
-                <i className={`icofont-user-male ${textColorClass}`} /> <span>Our Associates</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-user-male ${textColorClass}`} />{" "}
+                <span>Our Associates</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="client-Components">
                 <li>
@@ -269,8 +293,11 @@ const Sidebar = () => {
                 data-bs-target="#emp-Components"
                 href="#"
               >
-                <i className={`icofont-users-alt-5 ${textColorClass}`} /> <span>Our Agents</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-users-alt-5 ${textColorClass}`} />{" "}
+                <span>Our Agents</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="emp-Components">
                 <li>
@@ -278,9 +305,7 @@ const Sidebar = () => {
                     <span>Members</span>
                   </Link>
                 </li>
-                <li>
-
-                </li>
+                <li></li>
               </ul>
             </li>
 
@@ -291,8 +316,11 @@ const Sidebar = () => {
                 data-bs-target="#student-Components"
                 href="#"
               >
-                <i className={`icofont-graduate-alt ${textColorClass}`} /> <span>Our Students</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-graduate-alt ${textColorClass}`} />{" "}
+                <span>Our Students</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="student-Components">
                 <li>
@@ -300,9 +328,7 @@ const Sidebar = () => {
                     <span>Students</span>
                   </Link>
                 </li>
-                <li>
-
-                </li>
+                <li></li>
               </ul>
             </li>
 
@@ -313,12 +339,16 @@ const Sidebar = () => {
                 data-bs-target="#tools-Components"
                 href="#"
               >
-                <i className={`icofont-tools-alt-2 ${textColorClass}`} /> <span>Tools</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-tools-alt-2 ${textColorClass}`} />{" "}
+                <span>Tools</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="tools-Components">
                 <li>
-                  <Link className="ms-link"
+                  <Link
+                    className="ms-link"
                     // to="https://pizeonflyurl.vercel.app/"
                     to="/urlShortner"
                   >
@@ -370,8 +400,11 @@ const Sidebar = () => {
                 data-bs-target="#accounts-Components"
                 href="#"
               >
-                <i className={`icofont-document-folder ${textColorClass}`} /> <span>Accounts & Billing</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-document-folder ${textColorClass}`} />{" "}
+                <span>Accounts & Billing</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="accounts-Components">
                 <li>
@@ -394,8 +427,11 @@ const Sidebar = () => {
                 data-bs-target="#meetings-Components"
                 href="#"
               >
-                <i className={`icofont-meeting-add ${textColorClass}`} /> <span>Meetings Scheduler</span>{" "}
-                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+                <i className={`icofont-meeting-add ${textColorClass}`} />{" "}
+                <span>Meetings Scheduler</span>{" "}
+                <span
+                  className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`}
+                />
               </a>
               <ul className="sub-menu collapse" id="meetings-Components">
                 <li>
@@ -456,11 +492,10 @@ const Sidebar = () => {
           </span>
         </button> */}
         {/* Profile section - Only show on chat routes */}
-        <div className='d-flex justify-content-between'>
+        <div className="d-flex justify-content-between">
           {isChatRoute() ? null : <div></div>}
           {isChatRoute() && (
             <div className="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center zindex-popover mt-auto mb-3">
-
               <a
                 className="nav-link dropdown-toggle pulse p-0 me-2"
                 href="#"
@@ -475,7 +510,9 @@ const Sidebar = () => {
               </a>
               <div className="u-info">
                 <p className="mb-0 text-end line-height-sm">
-                  <span className={`font-weight-bold ${textColorClass}`}>{username}</span>
+                  <span className={`font-weight-bold ${textColorClass}`}>
+                    {username}
+                  </span>
                 </p>
                 <small className={textColorClass}>Admin Profile</small>
               </div>
@@ -493,11 +530,15 @@ const Sidebar = () => {
                         alt="profile"
                       />
                       <div className="flex-fill ms-3">
-                        <p className="mb-0"><span className="font-weight-bold">{username}</span></p>
+                        <p className="mb-0">
+                          <span className="font-weight-bold">{username}</span>
+                        </p>
                         <small className="">{email}</small>
                       </div>
                     </div>
-                    <div><hr className="dropdown-divider border-dark" /></div>
+                    <div>
+                      <hr className="dropdown-divider border-dark" />
+                    </div>
                   </div>
                   <div className="list-group m-2 ">
                     <button
@@ -523,25 +564,29 @@ const Sidebar = () => {
                       <i className="icofont-logout fs-6 me-3" />
                       Signout
                     </button>
-                    <div><hr className="dropdown-divider border-dark" /></div>
+                    <div>
+                      <hr className="dropdown-divider border-dark" />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
           )}
           {/* Color picker button */}
           <div className="d-flex justify-content-end mb-2">
             <button
               // className={`btn btn-sm btn-outline-${isLightColor(sidebarColor) ? 'dark' : 'light'}`}
-              className='border-0 bg-transparent'
+              className="border-0 bg-transparent"
               onClick={() => setShowColorPicker(!showColorPicker)}
               title="Customize Sidebar Color"
             >
               <i className={`bi bi-palette-fill ${textColorClass}`}></i>
             </button>
             {showColorPicker && (
-              <div className='position-absolute' style={{ top: '25rem', right: '67rem' }}>
+              <div
+                className="position-absolute"
+                style={{ top: "25rem", right: "67rem" }}
+              >
                 <CustomColorPicker
                   color={sidebarColor}
                   onChange={handleColorChange}
@@ -551,7 +596,6 @@ const Sidebar = () => {
             )}
           </div>
         </div>
-
       </div>
 
       {/* Password Change Modal */}
@@ -584,7 +628,9 @@ const Sidebar = () => {
                           />
                         </div>
                         <div className="mb-3 mt-3">
-                          <label className="form-label fw-bold">Old Password</label>
+                          <label className="form-label fw-bold">
+                            Old Password
+                          </label>
                           <input
                             type="password"
                             className="form-control"
@@ -594,7 +640,9 @@ const Sidebar = () => {
                           />
                         </div>
                         <div className="mb-3">
-                          <label className="form-label fw-bold">New Password</label>
+                          <label className="form-label fw-bold">
+                            New Password
+                          </label>
                           <input
                             type="password"
                             className="form-control"
@@ -620,7 +668,6 @@ const Sidebar = () => {
         </div>
       </div>
 
-
       {/* Profile Edit Modal */}
       <div
         className="modal fade"
@@ -639,12 +686,18 @@ const Sidebar = () => {
                       <label className="fw-bold fs-5">Edit Profile</label>
                       <div className="mb-3 mt-3 text-center">
                         <img
-                          src={selectedImage
-                            ? URL.createObjectURL(selectedImage)
-                            : getImageUrl(user?.profileImage)}
+                          src={
+                            selectedImage
+                              ? URL.createObjectURL(selectedImage)
+                              : getImageUrl(user?.profileImage)
+                          }
                           alt="Profile"
                           className="rounded-circle"
-                          style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                          style={{
+                            width: "150px",
+                            height: "150px",
+                            objectFit: "cover",
+                          }}
                         />
                         <input
                           type="file"
