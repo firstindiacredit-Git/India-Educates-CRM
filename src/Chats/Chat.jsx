@@ -1,0 +1,602 @@
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import io from 'socket.io-client';
+import { toast } from 'react-toastify';
+import ChatLayout from './ChatLayout';
+import Sidebar from "../components/Sidebar";
+// import Header from "../components/Header";
+import FilePreview from './FilePreview';
+
+const Chat = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [employees, setEmployees] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [activeTab, setActiveTab] = useState('employees');
+  const messagesEndRef = useRef(null);
+  const socket = useRef(null);
+  const currentUser = JSON.parse(localStorage.getItem('user'));
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showFilePreview, setShowFilePreview] = useState(false);
+  const [groups, setGroups] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  const fetchUsers = async () => {
+    try {
+      const [employeeResponse, clientResponse] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`),
+        axios.get(`${import.meta.env.VITE_BASE_URL}api/clients`)
+      ]);
+      setEmployees(employeeResponse.data);
+      setClients(clientResponse.data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Error loading users');
+    }
+  };
+
+  const fetchGroups = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/groups`);
+      const userGroups = response.data.filter(group => 
+        group.members.some(member => 
+          member.userId === currentUser._id && 
+          !member.isRemoved
+        )
+      );
+      setGroups(userGroups);
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+      toast.error('Error loading groups');
+    }
+  };
+
+  const fetchMessages = async (receiverId) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/getChats/${currentUser._id}/${receiverId}`
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages:', error);
+      toast.error('Error loading messages');
+    }
+  };
+
+  const fetchGroupMessages = async (groupId) => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/getGroupMessages/${groupId}`
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching group messages:', error);
+      toast.error('Error loading group messages');
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/notifications/${currentUser._id}`
+      );
+      setNotifications(response.data);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  useEffect(() => {
+    socket.current = io(import.meta.env.VITE_BASE_URL);
+
+    const currentUser = JSON.parse(localStorage.getItem('user')) ||
+      JSON.parse(localStorage.getItem('emp_user')) ||
+      JSON.parse(localStorage.getItem('client_user'));
+
+    if (socket.current) {
+      socket.current.emit('user_connected', {
+        userId: currentUser._id,
+        userType: currentUser.role === 'admin' ? 'AdminUser' :
+          currentUser.role === 'employee' ? 'Employee' : 'Client'
+      });
+
+      socket.current.emit('join_chat', currentUser._id);
+      socket.current.emit('join_notifications', currentUser._id);
+
+      socket.current.on('receive_message', (message) => {
+        console.log('Received message:', message);
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            if (selectedUser?.userType === 'Group' && message.receiverId === selectedUser._id) {
+              return [...prev, message];
+            }
+            else if (selectedUser && (
+              (message.senderId === selectedUser._id && message.receiverId === currentUser._id) ||
+              (message.senderId === currentUser._id && message.receiverId === selectedUser._id)
+            )) {
+              return [...prev, message];
+            }
+          }
+          return prev;
+        });
+      });
+
+      socket.current.on('message_sent', (message) => {
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            return [...prev, message];
+          }
+          return prev;
+        });
+      });
+
+      socket.current.on('message_updated', (updatedMessage) => {
+        setMessages(prev => prev.map(msg =>
+          msg._id === updatedMessage._id ? updatedMessage : msg
+        ));
+      });
+
+      socket.current.on('message_deleted', (deletedMessage) => {
+        setMessages(prev => prev.map(msg =>
+          msg._id === deletedMessage._id ? deletedMessage : msg
+        ));
+      });
+
+      socket.current.on('receive_group_message', (message) => {
+        console.log('Received group message:', message);
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            if (selectedUser?.userType === 'Group' && message.receiverId === selectedUser._id) {
+              console.log('Adding new group message to state');
+              return [...prev, message];
+            }
+          }
+          return prev;
+        });
+      });
+
+      socket.current.on('group_message_sent', (message) => {
+        console.log('Group message sent confirmation:', message);
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            return [...prev, message];
+          }
+          return prev;
+        });
+      });
+
+      socket.current.on('group_updated', (updatedGroup) => {
+        setGroups(prevGroups => 
+            prevGroups.map(group => 
+                group._id === updatedGroup._id ? updatedGroup : group
+            )
+        );
+      });
+
+      socket.current.on('member_removed_from_group', (data) => {
+        if (currentUser._id === data.memberId) {
+          setGroups(prevGroups => prevGroups.filter(group => group._id !== data.groupId));
+          
+          if (selectedUser && selectedUser._id === data.groupId) {
+            setSelectedUser(null);
+            setMessages([]);
+          }
+        } else {
+          setGroups(prevGroups => 
+              prevGroups.map(group => {
+                  if (group._id === data.groupId) {
+                      return {
+                          ...group,
+                          members: group.members.map(member => {
+                              if (member.userId === data.memberId) {
+                                  return { ...member, isRemoved: true };
+                              }
+                              return member;
+                          })
+                      };
+                  }
+                  return group;
+              })
+          );
+        }
+      });
+
+      socket.current.on('new_notification', (notification) => {
+        setNotifications(prev => [...prev, notification]);
+        new Audio('/notification-sound.mp3').play().catch(e => console.log(e));
+      });
+
+      fetchUsers();
+      fetchGroups();
+      fetchNotifications();
+    }
+
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const handleUserSelect = (user, userType) => {
+    setSelectedUser({ ...user, userType });
+    markNotificationsAsRead(user._id);
+    if (userType === 'Group') {
+      fetchGroupMessages(user._id);
+    } else {
+      fetchMessages(user._id);
+      fetchChatSettings(user._id);
+    }
+  };
+
+  const mapRoleToType = (role) => {
+    switch (role.toLowerCase()) {
+      case 'employee':
+        return 'Employee';
+      case 'client':
+        return 'Client';
+      default:
+        return 'Employee';
+    }
+  };
+
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedUser) return;
+
+    try {
+      const messageData = {
+        senderId: currentUser._id,
+        senderType: 'AdminUser',
+        senderName: currentUser.username,
+        senderImage: currentUser.profileImage,
+        receiverId: selectedUser._id,
+        receiverType: selectedUser.userType,
+        message: newMessage
+      };
+
+      console.log('Admin sending message:', messageData);
+
+      setNewMessage('');
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/createChat`,
+        messageData
+      );
+
+      if (selectedUser.userType === 'Group') {
+        const groupMessageData = {
+          ...response.data,
+          groupId: selectedUser._id,
+          members: selectedUser.members,
+          senderDetails: {
+            name: currentUser.username,
+            email: currentUser.email,
+            image: currentUser.profileImage,
+            type: 'AdminUser'
+          }
+        };
+        
+        console.log('Emitting group message:', groupMessageData);
+        socket.current.emit('group_message', groupMessageData);
+      } else {
+        socket.current.emit('private_message', {
+          receiverId: selectedUser._id,
+          message: response.data
+        });
+      }
+
+      // setMessages(prev => [...prev, response.data]);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Error sending message');
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const renderUserItem = (user, selectedUser, onUserSelect) => {
+    const isEmployee = activeTab === 'employees';
+    const userNotifications = notifications.filter(n => n.senderId === user._id).length;
+
+    return (
+      <li
+        key={user._id}
+        className={`list-group-item  ${selectedUser?._id === user._id ? 'active' : ''}`}
+        style={{ backgroundColor: selectedUser?._id === user._id ? '#80808069' : '' }}
+        onClick={() => onUserSelect(user, isEmployee ? 'Employee' : 'Client')}
+      >
+        <div className="d-flex align-items-center">
+          <div className="position-relative">
+            <img
+               src={`${import.meta.env.VITE_BASE_URL}${(isEmployee ? user.employeeImage : user.clientImage).replace('uploads/', '')}`}
+               className="avatar rounded-circle"
+               style={{ objectFit: 'contain' }}
+               alt={isEmployee ? user.employeeName : user.clientName}
+            />
+            {userNotifications > 0 && (
+              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {userNotifications}
+              </span>
+            )}
+          </div>
+          <div className="flex-fill ms-3">
+            <h6 className="mb-0 fw-semibold" style={{ fontSize: '14px' }}>{isEmployee ? user.employeeName : user.clientName}</h6>
+            <small className="">{isEmployee ? user.phone ? user.phone : user.emailid : user.clientPhone ? user.clientPhone : user.clientEmail}</small>
+          </div>
+        </div>
+      </li>
+    );
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const fileType = file.type.split('/')[0];
+    if (!['image', 'video', 'audio'].includes(fileType)) {
+      toast.error('Unsupported file type');
+      return;
+    }
+
+    const maxSize = 15 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error('File size should be less than 10MB');
+      return;
+    }
+
+    setSelectedFile(file);
+    setShowFilePreview(true);
+  };
+
+  const handleFileSend = async (file) => {
+    const formData = new FormData();
+
+    formData.append('senderId', currentUser._id);
+    formData.append('senderType', mapRoleToType(currentUser.role));
+    formData.append('receiverId', selectedUser._id);
+    formData.append('receiverType', selectedUser.userType);
+    formData.append('message', '');
+
+    const fileType = file.type.split('/')[0];
+    if (fileType === 'image') {
+      formData.append('images', file);
+    } else if (fileType === 'video') {
+      formData.append('video', file);
+    } else if (fileType === 'audio') {
+      formData.append('audio', file);
+    }
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/createChat`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      setMessages(prev => [...prev, response.data]);
+      socket.current.emit('private_message', {
+        receiverId: selectedUser._id,
+        message: response.data
+      });
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      toast.error('Error uploading file');
+    }
+  };
+
+  const handleVoiceRecordingComplete = async (blob) => {
+    const formData = new FormData();
+
+    formData.append('senderId', currentUser._id);
+    formData.append('senderType', mapRoleToType(currentUser.role));
+    formData.append('receiverId', selectedUser._id);
+    formData.append('receiverType', selectedUser.userType);
+    formData.append('message', '');
+
+    formData.append('recording', blob, 'recording.webm');
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/createChat`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      setMessages(prev => [...prev, response.data]);
+      socket.current.emit('private_message', {
+        receiverId: selectedUser._id,
+        message: response.data
+      });
+    } catch (error) {
+      console.error('Error uploading recording:', error);
+      toast.error('Error uploading recording');
+    }
+  };
+
+  const handleMessageEdit = async (messageId, newMessage) => {
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}api/updateChat/${messageId}`,
+        { message: newMessage }
+      );
+    } catch (error) {
+      console.error('Error updating message:', error);
+      toast.error('Error updating message');
+    }
+  };
+
+  const handleMessageDelete = async (messageId) => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}api/deleteChat/${messageId}`
+      );
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast.error('Error deleting message');
+    }
+  };
+
+  const allUsers = [...employees, ...clients].filter(Boolean);
+
+  useEffect(() => {
+    if (selectedUser?.userType === 'Group') {
+      const interval = setInterval(() => {
+        fetchGroupMessages(selectedUser._id);
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [selectedUser]);
+
+  useEffect(() => {
+    if (socket.current) {
+      socket.current.on('receive_group_message', (message) => {
+        console.log('Received group message:', message);
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            if (selectedUser?.userType === 'Group' && message.receiverId === selectedUser._id) {
+              console.log('Adding new group message to state');
+              return [...prev, message];
+            }
+          }
+          return prev;
+        });
+      });
+
+      socket.current.on('group_message_sent', (message) => {
+        console.log('Group message sent confirmation:', message);
+        setMessages(prev => {
+          if (!prev.some(m => m._id === message._id)) {
+            return [...prev, message];
+          }
+          return prev;
+        });
+      });
+
+      return () => {
+        socket.current.off('receive_group_message');
+        socket.current.off('group_message_sent');
+        socket.current.off('member_removed_from_group');
+      };
+    }
+  }, [selectedUser]);
+
+  useEffect(() => {
+    if (selectedUser && (selectedUser.userType === 'Employee' || selectedUser.userType === 'Client')) {
+      const interval = setInterval(() => {
+        fetchMessages(selectedUser._id);
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }
+  }, [selectedUser]);
+
+  const fetchChatSettings = async (otherUserId) => {
+    try {
+      // Only fetch if we have valid IDs
+      if (!currentUser?._id || !otherUserId) {
+        console.log('Missing user IDs for chat settings');
+        return;
+      }
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/getChatSettings/${currentUser._id}/${otherUserId}`
+      );
+      // Handle the settings...
+    } catch (error) {
+      console.error('Error fetching chat settings:', error);
+    }
+  };
+
+  const markNotificationsAsRead = async (senderId) => {
+    try {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}api/markNotificationsRead`, {
+        userId: currentUser._id,
+        senderId
+      });
+      setNotifications(prev => 
+        prev.filter(n => n.senderId !== senderId)
+      );
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  };
+
+  return (
+    <>
+      <div id="mytask-layout">
+        <Sidebar />
+        <div className="main px-lg-4 px-md-4">
+          {/* <Header /> */}
+          <div className="body d-flex py-lg-3 py-md-2">
+            <ChatLayout
+              users={activeTab === 'groups' ? allUsers :
+                activeTab === 'admins' ? admins :
+                  activeTab === 'employees' ? employees :
+                    clients}
+              groups={groups}
+              socket={socket}
+              selectedUser={selectedUser}
+              messages={messages.map(msg => ({
+                ...msg,
+                isCurrentUser: msg.senderId === currentUser._id
+              }))}
+              newMessage={newMessage}
+              activeTab={activeTab}
+              tabs={[
+                { id: 'employees', label: 'Agents' },
+                { id: 'clients', label: 'Associates' },
+                { id: 'groups', label: 'Groups' }
+              ]}
+              onTabChange={setActiveTab}
+              onUserSelect={handleUserSelect}
+              onMessageChange={(e) => setNewMessage(e.target.value)}
+              onMessageSubmit={sendMessage}
+              messagesEndRef={messagesEndRef}
+              renderUserItem={renderUserItem}
+              onFileUpload={handleFileUpload}
+              onVoiceRecordingComplete={handleVoiceRecordingComplete}
+              onMessageEdit={handleMessageEdit}
+              onMessageDelete={handleMessageDelete}
+              fetchMessages={fetchMessages}
+              setSelectedUser={setSelectedUser}
+              fetchChatSettings={fetchChatSettings}
+            />
+            <FilePreview
+              show={showFilePreview}
+              onHide={() => {
+                setShowFilePreview(false);
+                setSelectedFile(null);
+              }}
+              file={selectedFile}
+              onSend={handleFileSend}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Chat;
