@@ -58,20 +58,30 @@ const Signin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}api/login`,
-        form
-      );
+      const baseUrl = import.meta.env.VITE_BASE_URL;
+      if (!baseUrl) {
+        throw new Error("Base URL not configured");
+      }
+
+      const response = await axios.post(`${baseUrl}api/login`, form, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
       const { token, user } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/project-dashboard");
     } catch (error) {
+      console.error("Login error:", error);
       if (error.response && error.response.status === 401) {
         setError("Invalid email or password");
+      } else if (error.message === "Base URL not configured") {
+        setError("System configuration error. Please contact support.");
       } else {
         setError("An error occurred. Please try again later.");
-        console.error(error);
       }
     } finally {
       setLoading(false);
