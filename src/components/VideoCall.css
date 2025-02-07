@@ -12,25 +12,41 @@
 /*  */
 
 .video-grid {
-  flex: 1;
   position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
 }
 
 .remote-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background: #1a1a1a;
 }
 
 .local-video {
   position: absolute;
-  width: 120px;
-  height: 180px;
   top: 20px;
   right: 20px;
-  border-radius: 12px;
+  width: 120px;
+  height: 180px;
   object-fit: cover;
+  border-radius: 8px;
   border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #1a1a1a;
+}
+
+.remote-status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 .controls {
@@ -291,4 +307,21 @@
   background: rgba(0, 0, 0, 0.5);
   padding: 4px 8px;
   border-radius: 4px;
+}
+
+.remote-video-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.local-video-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.2);
 }

@@ -924,25 +924,17 @@ const ChatLayout = ({
   };
 
   // Function to initiate a call
-  const handleVideoCallClick = () => {
+  const initiateCall = () => {
     if (!selectedUser) {
       toast.error("No user selected for call");
       return;
     }
 
-    setIsVideoCallActive(true);
-    // The call-user event will be emitted from the VideoCall component
-    // after getting the local stream and creating the offer
-
-    toast.info("Initiating call...", {
-      position: "top-right",
-      autoClose: false,
-      hideProgressBar: true,
-      closeOnClick: false,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
+    socket.emit("call-request", {
+      receiverId: selectedUser._id,
+      callerName: user.employeeName || user.clientName || user.username,
     });
+    setIsVideoCallActive(true);
   };
 
   return (
@@ -1157,7 +1149,7 @@ const ChatLayout = ({
                     {selectedUser && !selectedUser.isGroup && (
                       <button
                         className="btn btn-sm rounded-circle"
-                        onClick={handleVideoCallClick}
+                        onClick={initiateCall}
                         title="Start Video Call"
                         style={{
                           backgroundColor: "rgba(255, 255, 255, 0.1)",
