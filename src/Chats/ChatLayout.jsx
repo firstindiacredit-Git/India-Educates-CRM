@@ -7,10 +7,9 @@ import { toast } from "react-toastify";
 import CustomColorPicker from "../pages/colorpicker/CustomColorPicker";
 import { MultiSelect } from "react-multi-select-component";
 import VideoCall from "../components/VideoCall";
-import socket, { initializeSocket } from "../socket";
-import "./ChatLayout.css";
 
 const ChatLayout = ({
+  socket,
   users,
   selectedUser,
   messages,
@@ -60,6 +59,10 @@ const ChatLayout = ({
   // Add new state for dropdown
   const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
 
+  // Add this state at the top of your component
+  const [isVideoCallActive, setIsVideoCallActive] = useState(false);
+  const [incomingCall, setIncomingCall] = useState(null);
+
   // Modified userOptions mapping with debug logs
   const userOptions = Array.isArray(users)
     ? users
@@ -87,78 +90,6 @@ const ChatLayout = ({
         })
         .filter((option) => option.label !== "Unknown User")
     : [];
-
-  // In your chat component where you want to initiate a call
-  const [isVideoCallActive, setIsVideoCallActive] = useState(false);
-  const [incomingCall, setIncomingCall] = useState(null);
-
-  const [user] = useState(
-    JSON.parse(localStorage.getItem("user")) ||
-      JSON.parse(localStorage.getItem("emp_user")) ||
-      JSON.parse(localStorage.getItem("client_user"))
-  );
-
-  useEffect(() => {
-    const user =
-      JSON.parse(localStorage.getItem("user")) ||
-      JSON.parse(localStorage.getItem("emp_user")) ||
-      JSON.parse(localStorage.getItem("client_user"));
-
-    if (user) {
-      // Join user's personal socket room for receiving calls
-      socket.emit("join_chat", user._id);
-      initializeSocket(user._id, user.role);
-    }
-
-    // Video call event listeners
-    socket.on("incoming-call", (data) => {
-      console.log("Incoming call received:", data);
-      setIncomingCall({
-        ...data,
-        callerName: data.callerName || "Unknown Caller",
-        offer: data.offer,
-      });
-      setIsVideoCallActive(true);
-    });
-
-    socket.on("call-accepted", (data) => {
-      console.log("Call accepted, answer received:", data);
-    });
-
-    socket.on("ice-candidate", (data) => {
-      console.log("ICE candidate received:", data);
-    });
-
-    socket.on("call-ended", () => {
-      console.log("Call ended");
-      setIsVideoCallActive(false);
-      setIncomingCall(null);
-    });
-
-    socket.on("call-rejected", () => {
-      setIsVideoCallActive(false);
-      setIncomingCall(null);
-      toast.info("Call was rejected", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    });
-
-    return () => {
-      if (user) {
-        socket.emit("leave_chat", user._id);
-      }
-      socket.off("incoming-call");
-      socket.off("call-accepted");
-      socket.off("ice-candidate");
-      socket.off("call-ended");
-      socket.off("call-rejected");
-    };
-  }, []);
 
   // Handle group creation
   const handleCreateGroup = async () => {
@@ -716,6 +647,45 @@ const ChatLayout = ({
     }
   }, [selectedUser]);
 
+  // Add this useEffect for handling incoming calls
+  useEffect(() => {
+    if (!socket) {
+      console.error("Socket not initialized");
+      return;
+    }
+
+    if (!socket?.connected) {
+      console.log("Socket not connected, attempting to connect...");
+      socket?.connect();
+    }
+
+    socket?.on("incoming-call", (data) => {
+      console.log("Incoming call received:", data);
+      setIncomingCall({
+        ...data,
+        callerName: data.callerName || "Unknown Caller",
+      });
+      setIsVideoCallActive(true);
+    });
+
+    socket?.on("call-ended", () => {
+      setIsVideoCallActive(false);
+      setIncomingCall(null);
+    });
+
+    return () => {
+      socket?.off("incoming-call");
+      socket?.off("call-ended");
+    };
+  }, [socket]);
+
+  // Helper function to get correct image path (can be used by both message and user rendering)
+  const getImagePath = (imagePath) => {
+    if (!imagePath) return "/default-avatar.webp";
+    const cleanPath = imagePath.replace("uploads/", "");
+    return `${import.meta.env.VITE_BASE_URL}${cleanPath}`;
+  };
+
   const renderMessage = (message) => {
     if (message.isSystemMessage) {
       return (
@@ -736,6 +706,7 @@ const ChatLayout = ({
 
     return (
       <div
+        key={message._id}
         className={`chat-message d-flex ${
           message.isCurrentUser
             ? "justify-content-end"
@@ -745,13 +716,13 @@ const ChatLayout = ({
         {!message.isCurrentUser && selectedUser?.userType === "Group" && (
           <div className="sender-info me-2">
             <img
-              src={`${
-                import.meta.env.VITE_BASE_URL
-              }${message.senderDetails?.image?.replace("uploads/", "")}`}
+              src={getImagePath(message.senderImage)}
               className="avatar rounded-circle"
-              style={{ width: "30px", height: "30px", objectFit: "cover" }}
-              // alt="{msg.senderDetails?.name}"
-              alt="photo"
+              alt={message.senderName || "User"}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/default-avatar.webp";
+              }}
             />
           </div>
         )}
@@ -777,7 +748,7 @@ const ChatLayout = ({
                 marginBottom: "2px",
               }}
             >
-              {message.senderDetails?.name}
+              {message.senderName}
             </div>
           )}
           <div className="d-flex justify-content-between align-items-start">
@@ -839,18 +810,12 @@ const ChatLayout = ({
                 message.imageUrls.map((url, i) => (
                   <img
                     key={i}
-                    src={`${import.meta.env.VITE_BASE_URL}${
-                      url?.replace("uploads/", "") || ""
-                    }`}
+                    src={getImagePath(url)}
                     alt="Shared image"
                     className="img-fluid rounded mb-1 py-2"
                     style={{ maxHeight: "200px", cursor: "pointer" }}
                     onClick={() => {
-                      setSelectedImage(
-                        `${import.meta.env.VITE_BASE_URL}${
-                          url?.replace("uploads/", "") || ""
-                        }`
-                      );
+                      setSelectedImage(getImagePath(url));
                     }}
                   />
                 ))}
@@ -863,9 +828,7 @@ const ChatLayout = ({
                   style={{ maxHeight: "200px" }}
                 >
                   <source
-                    src={`${import.meta.env.VITE_BASE_URL}${
-                      message.videoUrl?.replace("uploads/", "") || ""
-                    }`}
+                    src={getImagePath(message.videoUrl)}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
@@ -876,9 +839,7 @@ const ChatLayout = ({
               {message.audioUrl && (
                 <audio controls className="w-100 mb-1">
                   <source
-                    src={`${import.meta.env.VITE_BASE_URL}${
-                      message.audioUrl?.replace("uploads/", "") || ""
-                    }`}
+                    src={getImagePath(message.audioUrl)}
                     type="audio/mpeg"
                   />
                   Your browser does not support the audio element.
@@ -889,9 +850,7 @@ const ChatLayout = ({
               {message.recordingUrl && (
                 <audio controls className="mb-1 py-2">
                   <source
-                    src={`${import.meta.env.VITE_BASE_URL}${
-                      message.recordingUrl?.replace("uploads/", "") || ""
-                    }`}
+                    src={getImagePath(message.recordingUrl)}
                     type="audio/webm"
                     style={{ backgroundColor: "black" }}
                   />
@@ -921,20 +880,6 @@ const ChatLayout = ({
         </div>
       </div>
     );
-  };
-
-  // Function to initiate a call
-  const initiateCall = () => {
-    if (!selectedUser) {
-      toast.error("No user selected for call");
-      return;
-    }
-
-    socket.emit("call-request", {
-      receiverId: selectedUser._id,
-      callerName: user.employeeName || user.clientName || user.username,
-    });
-    setIsVideoCallActive(true);
   };
 
   return (
@@ -1020,9 +965,7 @@ const ChatLayout = ({
                                     >
                                       {imagePath ? (
                                         <img
-                                          src={`${
-                                            import.meta.env.VITE_BASE_URL
-                                          }${imagePath}`}
+                                          src={getImagePath(imagePath)}
                                           alt=""
                                           style={{
                                             width: "100%",
@@ -1054,12 +997,7 @@ const ChatLayout = ({
                         ) : selectedUser.userType === "AdminUser" ? (
                           // Admin Avatar
                           <img
-                            src={`${
-                              import.meta.env.VITE_BASE_URL
-                            }${selectedUser.profileImage?.replace(
-                              "uploads/",
-                              ""
-                            )}`}
+                            src={getImagePath(selectedUser.profileImage)}
                             className="avatar rounded-circle"
                             alt={selectedUser.username}
                             style={{
@@ -1071,12 +1009,7 @@ const ChatLayout = ({
                         ) : selectedUser.userType === "Employee" ? (
                           // Employee Avatar
                           <img
-                            src={`${
-                              import.meta.env.VITE_BASE_URL
-                            }${selectedUser.employeeImage?.replace(
-                              "uploads/",
-                              ""
-                            )}`}
+                            src={getImagePath(selectedUser.employeeImage)}
                             className="avatar rounded-circle"
                             alt={selectedUser.employeeName}
                             style={{
@@ -1088,12 +1021,7 @@ const ChatLayout = ({
                         ) : (
                           // Client Avatar
                           <img
-                            src={`${
-                              import.meta.env.VITE_BASE_URL
-                            }${selectedUser.clientImage?.replace(
-                              "uploads/",
-                              ""
-                            )}`}
+                            src={getImagePath(selectedUser.clientImage)}
                             className="avatar rounded-circle"
                             alt={selectedUser.clientName}
                             style={{
@@ -1144,67 +1072,50 @@ const ChatLayout = ({
                     </div>
                   </div>
 
-                  <div className="d-flex align-items-center gap-2">
-                    {/* Video Call Button - Only show for individual chats */}
-                    {selectedUser && !selectedUser.isGroup && (
-                      <button
-                        className="btn btn-sm rounded-circle"
-                        onClick={initiateCall}
-                        title="Start Video Call"
-                        style={{
-                          backgroundColor: "rgba(255, 255, 255, 0.1)",
-                          border: "none",
-                          width: "35px",
-                          height: "35px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <i
-                          className="bi bi-camera-video-fill"
-                          style={{ color: "white" }}
-                        ></i>
-                      </button>
-                    )}
+                  {/* Add this video call button */}
+                  {selectedUser && !selectedUser.isGroup && (
+                    <button
+                      className="btn btn-light btn-sm rounded-circle me-2"
+                      onClick={() => setIsVideoCallActive(true)}
+                      title="Start Video Call"
+                    >
+                      <i className="bi bi-camera-video-fill"></i>
+                    </button>
+                  )}
 
-                    <Dropdown>
-                      <Dropdown.Toggle
-                        variant="link"
-                        id="dropdown-basic"
-                        className="text-white"
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      variant="transparent"
+                      style={{ border: "none", color: "white" }}
+                    >
+                      <i className="bi bi-three-dots-vertical"></i>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {selectedUser?.userType === "Group" && (
+                        <>
+                          <Dropdown.Item
+                            onClick={() => setShowAddMembersModal(true)}
+                          >
+                            <i className="bi bi-person-plus me-2"></i>Add
+                            Members
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={() => setShowUserModal(true)}>
+                            <i className="bi bi-people me-2"></i>Group Info
+                          </Dropdown.Item>
+                        </>
+                      )}
+                      <Dropdown.Item
+                        onClick={() => setShowClearChatModal(true)}
                       >
-                        <i className="bi bi-three-dots-vertical"></i>
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        {selectedUser?.userType === "Group" && (
-                          <>
-                            <Dropdown.Item
-                              onClick={() => setShowAddMembersModal(true)}
-                            >
-                              <i className="bi bi-person-plus me-2"></i>Add
-                              Members
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                              onClick={() => setShowUserModal(true)}
-                            >
-                              <i className="bi bi-people me-2"></i>Group Info
-                            </Dropdown.Item>
-                          </>
-                        )}
-                        <Dropdown.Item
-                          onClick={() => setShowClearChatModal(true)}
-                        >
-                          <i className="bi bi-trash me-2"></i>Clear Chat
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => setShowBackgroundSettings(true)}
-                        >
-                          <i className="bi bi-palette me-2"></i>Chat Background
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
+                        <i className="bi bi-trash me-2"></i>Clear Chat
+                      </Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => setShowBackgroundSettings(true)}
+                      >
+                        <i className="bi bi-palette me-2"></i>Chat Background
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                 </div>
               </div>
 
@@ -1236,7 +1147,7 @@ const ChatLayout = ({
                   "&::-webkit-scrollbar": { display: "none" },
                 }}
               >
-                {messages.map((msg, index) => renderMessage(msg))}
+                {messages.map((msg) => renderMessage(msg))}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -1598,9 +1509,7 @@ const ChatLayout = ({
                                           >
                                             {imagePath ? (
                                               <img
-                                                src={`${
-                                                  import.meta.env.VITE_BASE_URL
-                                                }${imagePath}`}
+                                                src={getImagePath(imagePath)}
                                                 alt=""
                                                 style={{
                                                   width: "100%",
@@ -1669,9 +1578,7 @@ const ChatLayout = ({
                         </ul>
                       </div>
                     ) : (
-                      users.map((user) =>
-                        renderUserItem(user, selectedUser, onUserSelect)
-                      )
+                      users.map((user) => renderUserItem(user))
                     )}
                   </ul>
                 </div>
@@ -1708,6 +1615,7 @@ const ChatLayout = ({
                   height: "100px",
                   position: "relative",
                   overflow: "hidden",
+                  cursor: "pointer",
                 }}
               >
                 <div
@@ -1741,7 +1649,7 @@ const ChatLayout = ({
                       >
                         {imagePath ? (
                           <img
-                            src={`${import.meta.env.VITE_BASE_URL}${imagePath}`}
+                            src={getImagePath(imagePath)}
                             alt=""
                             style={{
                               width: "100%",
@@ -1772,13 +1680,13 @@ const ChatLayout = ({
               </div>
             ) : (
               <img
-                src={`${import.meta.env.VITE_BASE_URL}${
+                src={getImagePath(
                   selectedUser?.userType === "Employee"
                     ? selectedUser?.employeeImage?.replace("uploads/", "")
                     : selectedUser?.userType === "AdminUser"
                     ? selectedUser?.profileImage?.replace("uploads/", "")
                     : selectedUser?.clientImage?.replace("uploads/", "")
-                }`}
+                )}
                 className="rounded-circle"
                 alt="Profile"
                 style={{
@@ -1789,13 +1697,13 @@ const ChatLayout = ({
                 }}
                 onClick={() =>
                   handleProfileImageClick(
-                    `${import.meta.env.VITE_BASE_URL}${
+                    getImagePath(
                       selectedUser?.userType === "Employee"
                         ? selectedUser?.employeeImage?.replace("uploads/", "")
                         : selectedUser?.userType === "AdminUser"
                         ? selectedUser?.profileImage?.replace("uploads/", "")
                         : selectedUser?.clientImage?.replace("uploads/", "")
-                    }`
+                    )
                   )
                 }
               />
@@ -1891,9 +1799,7 @@ const ChatLayout = ({
                               />
                             )}
                             <img
-                              src={`${
-                                import.meta.env.VITE_BASE_URL
-                              }${imagePath}`}
+                              src={getImagePath(imagePath)}
                               className="avatar rounded-circle me-2"
                               alt={member.name}
                               style={{
@@ -2316,25 +2222,17 @@ const ChatLayout = ({
         </Modal.Footer>
       </Modal>
 
-      {/* Video Call Modal */}
-      {(isVideoCallActive || incomingCall) && (
+      {/* VideoCall component */}
+      {isVideoCallActive && (
         <VideoCall
           isOpen={true}
           onClose={() => {
             setIsVideoCallActive(false);
             setIncomingCall(null);
           }}
-          callerId={user?._id}
-          receiverId={selectedUser?._id}
-          isIncoming={!!incomingCall}
-          callerName={
-            !!incomingCall
-              ? incomingCall?.callerName || "Unknown Caller"
-              : selectedUser?.employeeName ||
-                selectedUser?.clientName ||
-                selectedUser?.username
-          }
-          incomingCall={incomingCall}
+          callerId={currentUser._id}
+          receiverId={selectedUser._id}
+          callerName={selectedUser?.employeeName || selectedUser?.clientName}
         />
       )}
     </div>

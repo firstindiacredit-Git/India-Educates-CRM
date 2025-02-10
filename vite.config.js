@@ -1,5 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import fs from "fs";
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,6 +9,18 @@ export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
     include: ["fabric"],
+  },
+  server: {
+    https: {
+      key: fs.readFileSync(
+        path.resolve(__dirname, "../BACKEND/certificates/key.pem")
+      ),
+      cert: fs.readFileSync(
+        path.resolve(__dirname, "../BACKEND/certificates/cert.pem")
+      ),
+    },
+    host: true, // Needed for mobile testing
+    port: 5173,
   },
 });
 
