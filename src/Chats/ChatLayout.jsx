@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import CustomColorPicker from '../pages/colorpicker/CustomColorPicker';
 import { MultiSelect } from "react-multi-select-component";
+import 'webrtc-adapter';
 
 const ChatLayout = ({
     users,
@@ -29,7 +30,8 @@ const ChatLayout = ({
     socket,
     groups,
     setSelectedUser,
-    fetchChatSettings
+    fetchChatSettings,
+    currentUser
 }) => {
     const [showUserModal, setShowUserModal] = useState(false);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -57,6 +59,20 @@ const ChatLayout = ({
 
     // Add new state for dropdown
     const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
+
+    // Add new state variables after other useState declarations
+    const [showCallModal, setShowCallModal] = useState(false);
+    const [callType, setCallType] = useState(null); // 'audio' or 'video'
+    const [callStatus, setCallStatus] = useState(null); // 'incoming', 'outgoing', or 'ongoing'
+    const [callData, setCallData] = useState(null);
+    const [localStream, setLocalStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null);
+    const [peerConnection, setPeerConnection] = useState(null);
+    const [isCallActive, setIsCallActive] = useState(false);
+    const [callDuration, setCallDuration] = useState(0);
+    const [isCallConnected, setIsCallConnected] = useState(false);
+    const timerInterval = useRef(null);
+    const audioElement = useRef(new Audio());
 
     // Modified userOptions mapping with debug logs
     const userOptions = Array.isArray(users) ? users.map(user => {
@@ -742,6 +758,217 @@ const ChatLayout = ({
         );
     };
 
+    // Format time for display (MM:SS)
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    // Start timer when call is connected
+    const startTimer = () => {
+        setCallDuration(0);
+        timerInterval.current = setInterval(() => {
+            setCallDuration(prev => prev + 1);
+        }, 1000);
+    };
+
+    // Stop timer
+    const stopTimer = () => {
+        if (timerInterval.current) {
+            clearInterval(timerInterval.current);
+            timerInterval.current = null;
+        }
+    };
+
+    // Initialize WebRTC call
+    const initializeCall = async () => {
+        try {
+            console.log('Initializing call...');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('Got media stream:', stream);
+            setLocalStream(stream);
+
+            audioElement.current.srcObject = stream;
+            audioElement.current.play().catch(e => console.log('Audio play error:', e));
+
+            const pc = new RTCPeerConnection({
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            });
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    socket.current.emit('ice-candidate', {
+                        candidate: event.candidate,
+                        to: selectedUser._id
+                    });
+                }
+            };
+
+            pc.oniceconnectionstatechange = () => {
+                console.log('ICE Connection State:', pc.iceConnectionState);
+                if (pc.iceConnectionState === 'connected') {
+                    setIsCallConnected(true);
+                    startTimer();
+                }
+            };
+
+            stream.getTracks().forEach(track => {
+                pc.addTrack(track, stream);
+            });
+
+            pc.ontrack = (event) => {
+                const [remoteStream] = event.streams;
+                setRemoteStream(remoteStream);
+                audioElement.current.srcObject = remoteStream;
+                audioElement.current.play().catch(e => console.log('Remote audio play error:', e));
+            };
+
+            setPeerConnection(pc);
+            return pc;
+        } catch (error) {
+            console.error('Error in initializeCall:', error);
+            toast.error('Failed to initialize call');
+        }
+    };
+
+    // Handle call end
+    const endCall = () => {
+        if (localStream) {
+            localStream.getTracks().forEach(track => track.stop());
+        }
+        if (peerConnection) {
+            peerConnection.close();
+        }
+        if (audioElement.current) {
+            audioElement.current.srcObject = null;
+        }
+        stopTimer();
+        setLocalStream(null);
+        setRemoteStream(null);
+        setPeerConnection(null);
+        setIsCallActive(false);
+        setShowCallModal(false);
+        setCallStatus(null);
+        setIsCallConnected(false);
+        setCallDuration(0);
+        
+        if (selectedUser) {
+            socket.current.emit('end-call', {
+                callerId: currentUser._id,
+                receiverId: selectedUser._id
+            });
+        }
+    };
+
+    // Add socket event listeners
+    useEffect(() => {
+        if (socket?.current) {
+            socket.current.on('ice-candidate', ({ candidate }) => {
+                if (peerConnection) {
+                    peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
+                        .catch(e => console.error('Error adding ICE candidate:', e));
+                }
+            });
+
+            return () => {
+                socket.current.off('ice-candidate');
+            };
+        }
+    }, [socket?.current, peerConnection]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            stopTimer();
+            endCall();
+        };
+    }, []);
+
+    // Handle outgoing call
+    const startCall = async () => {
+        if (!selectedUser) {
+            toast.error('Please select a user to call');
+            return;
+        }
+
+        try {
+            const pc = await initializeCall();
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            socket.current.emit('call-user', {
+                callerId: currentUser._id,
+                receiverId: selectedUser._id,
+                callerName: currentUser.username || currentUser.employeeName || currentUser.clientName,
+                type: 'audio',
+                signal: offer
+            });
+
+            setCallStatus('outgoing');
+            setShowCallModal(true);
+        } catch (error) {
+            console.error('Error starting call:', error);
+            toast.error('Failed to start call');
+        }
+    };
+
+    // Handle incoming call
+    const handleIncomingCall = async (data) => {
+        try {
+            const pc = await initializeCall();
+
+            await pc.setRemoteDescription(new RTCSessionDescription(data.signal));
+
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+
+            socket.current.emit('call-accepted', {
+                callerId: data.callerId,
+                receiverId: currentUser._id,
+                signal: answer
+            });
+
+            setIsCallActive(true);
+        } catch (error) {
+            console.error('Error handling incoming call:', error);
+            toast.error('Failed to accept call');
+        }
+    };
+
+    // Handle call rejection
+    const rejectCall = () => {
+        if (callData) {
+            socket.current.emit('call-rejected', {
+                callerId: callData.callerId,
+                receiverId: currentUser._id
+            });
+        }
+        setShowCallModal(false);
+        setCallStatus(null);
+        setCallData(null);
+    };
+
+    // Update the audio call button click handler
+    const handleAudioCallClick = () => {
+        startCall();
+    };
+
+    // Add this useEffect to ensure socket connection
+    useEffect(() => {
+        if (socket?.current && currentUser?._id) {
+            // Connect user to their room
+            socket.current.emit('user_connected', {
+                userId: currentUser._id,
+                userType: currentUser.role === 'admin' ? 'AdminUser' :
+                         currentUser.role === 'employee' ? 'Employee' : 'Client'
+            });
+        }
+    }, [socket?.current, currentUser]);
+
     return (
         <div className="container-fluid mt-2" style={{}}>
             <div className="row g-0 rounded-2" style={{ height: '94vh', border: '1px solid #00000061' }}>
@@ -873,30 +1100,65 @@ const ChatLayout = ({
                                         </div>
                                     </div>
 
-                                    <Dropdown>
-                                        <Dropdown.Toggle variant="transparent" style={{ border: 'none', color: 'white' }}>
-                                            <i className="bi bi-three-dots-vertical"></i>
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            {selectedUser?.userType === 'Group' && (
-                                                <>
-                                                    <Dropdown.Item onClick={() => setShowAddMembersModal(true)}>
-                                                        <i className="bi bi-person-plus me-2"></i>Add Members
-                                                    </Dropdown.Item>
-                                                    <Dropdown.Item onClick={() => setShowUserModal(true)}>
-                                                        <i className="bi bi-people me-2"></i>Group Info
-                                                    </Dropdown.Item>
-                                                </>
-                                            )}
-                                            <Dropdown.Item onClick={() => setShowClearChatModal(true)}>
-                                                <i className="bi bi-trash me-2"></i>Clear Chat
-                                            </Dropdown.Item>
-                                            <Dropdown.Item onClick={() => setShowBackgroundSettings(true)}>
-                                                <i className="bi bi-palette me-2"></i>Chat Background
-                                            </Dropdown.Item>
-                                        </Dropdown.Menu>
-                                    </Dropdown>
+
+                                    <div className="d-flex align-items-center">
+                                        {/* Add this in the chat header section, right before the three dots menu */}
+                                        {selectedUser && selectedUser.userType !== 'Group' && (
+                                            <>
+
+                                                <button
+                                                    className="btn btn-link text-white me-2"
+                                                    onClick={() => {
+                                                        setCallType('video');
+                                                        setCallStatus('outgoing');
+                                                        setShowCallModal(true);
+                                                    }}
+                                                >
+                                                    <i className="bi bi-camera-video-fill"></i>
+                                                </button>
+                                                <button
+                                                    className="btn btn-link text-white me-2"
+                                                    onClick={handleAudioCallClick}
+                                                >
+                                                    <i className="bi bi-telephone-fill"></i>
+                                                </button>
+                                            </>
+                                        )}
+                                        <Dropdown>
+                                            <div
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    const dropdownToggle = e.currentTarget.nextElementSibling;
+                                                    if (dropdownToggle) {
+                                                        dropdownToggle.classList.toggle('show');
+                                                    }
+                                                }}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <i className="bi bi-three-dots-vertical"></i>
+                                            </div>
+                                            <Dropdown.Menu>
+                                                {selectedUser?.userType === 'Group' && (
+                                                    <>
+                                                        <Dropdown.Item onClick={() => setShowAddMembersModal(true)}>
+                                                            <i className="bi bi-person-plus me-2"></i>Add Members
+                                                        </Dropdown.Item>
+                                                        <Dropdown.Item onClick={() => setShowUserModal(true)}>
+                                                            <i className="bi bi-people me-2"></i>Group Info
+                                                        </Dropdown.Item>
+                                                    </>
+                                                )}
+                                                <Dropdown.Item onClick={() => setShowClearChatModal(true)}>
+                                                    <i className="bi bi-trash me-2"></i>Clear Chat
+                                                </Dropdown.Item>
+                                                <Dropdown.Item onClick={() => setShowBackgroundSettings(true)}>
+                                                    <i className="bi bi-palette me-2"></i>Chat Background
+                                                </Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </div>
                                 </div>
+
                             </div>
 
                             {/* Messages Area - WhatsApp style */}
@@ -1069,26 +1331,26 @@ const ChatLayout = ({
                                     ))}
                                     <li className="nav-item ms-auto">
                                         <Dropdown show={showGroupsDropdown} onToggle={(isOpen) => setShowGroupsDropdown(isOpen)}>
-                                            <button 
+                                            <button
                                                 className="btn btn-link"
                                                 onClick={() => setShowGroupsDropdown(!showGroupsDropdown)}
                                                 style={{ color: 'white', border: 'none', textDecoration: 'none' }}
                                             >
                                                 <i className="bi bi-three-dots-vertical"></i>
                                             </button>
-                                            <Dropdown.Menu 
-                                                style={{ 
+                                            <Dropdown.Menu
+                                                style={{
                                                     right: 'auto',
                                                     left: '-100px'  // This will shift the dropdown menu to the left
                                                 }}
                                             >
-                                                <Dropdown.Item 
+                                                <Dropdown.Item
                                                     onClick={() => {
                                                         onTabChange('groups');
                                                         setShowGroupsDropdown(false);
                                                     }}
                                                     active={activeTab === 'groups'}
-                                                    style={{ 
+                                                    style={{
                                                         backgroundColor: activeTab === 'groups' ? '#128C7E' : 'transparent',
                                                         color: activeTab === 'groups' ? 'white' : 'black'
                                                     }}
@@ -1731,6 +1993,57 @@ const ChatLayout = ({
                         Delete Members
                     </Button>
                 </Modal.Footer>
+            </Modal>
+
+            {/* Call Modal */}
+            <Modal show={showCallModal} onHide={endCall} centered backdrop="static">
+                <Modal.Body className="text-center p-4">
+                    <div className="mb-4">
+                        {selectedUser && (
+                            <>
+                                <img
+                                    src={`${import.meta.env.VITE_BASE_URL}${
+                                        selectedUser.userType === 'Employee'
+                                            ? selectedUser.employeeImage?.replace('uploads/', '')
+                                            : selectedUser.userType === 'AdminUser'
+                                                ? selectedUser.profileImage?.replace('uploads/', '')
+                                                : selectedUser.clientImage?.replace('uploads/', '')
+                                    }`}
+                                    className="rounded-circle mb-3"
+                                    alt="Profile"
+                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                />
+                                <h5 className="mb-1">
+                                    {selectedUser.employeeName || selectedUser.clientName || selectedUser.username}
+                                </h5>
+                            </>
+                        )}
+                        <p className="text-muted">
+                            {isCallConnected 
+                                ? formatTime(callDuration)
+                                : callStatus === 'incoming' 
+                                    ? 'Incoming call...' 
+                                    : 'Calling...'}
+                        </p>
+                    </div>
+
+                    <div className="call-controls d-flex justify-content-center gap-4">
+                        {callStatus === 'incoming' ? (
+                            <>
+                                <Button variant="success rounded-circle p-3" onClick={() => handleIncomingCall(callData)}>
+                                    <i className="bi bi-telephone-fill fs-4"></i>
+                                </Button>
+                                <Button variant="danger rounded-circle p-3" onClick={rejectCall}>
+                                    <i className="bi bi-telephone-x-fill fs-4"></i>
+                                </Button>
+                            </>
+                        ) : (
+                            <Button variant="danger rounded-circle p-3" onClick={endCall}>
+                                <i className="bi bi-telephone-x-fill fs-4"></i>
+                            </Button>
+                        )}
+                    </div>
+                </Modal.Body>
             </Modal>
         </div>
     );

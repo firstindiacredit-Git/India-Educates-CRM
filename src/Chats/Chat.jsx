@@ -558,6 +558,7 @@ const Chat = () => {
               groups={groups}
               socket={socket}
               selectedUser={selectedUser}
+              currentUser={currentUser}
               messages={messages.map(msg => ({
                 ...msg,
                 isCurrentUser: msg.senderId === currentUser._id

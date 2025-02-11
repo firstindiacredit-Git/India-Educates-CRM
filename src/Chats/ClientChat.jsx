@@ -529,6 +529,7 @@ const ClientChat = () => {
                         groups={groups}
                         socket={socket}
                         selectedUser={selectedUser}
+                        currentUser={currentClient}
                         setSelectedUser={setSelectedUser}
                         messages={messages.map(msg => ({
                             ...msg,

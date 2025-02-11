@@ -533,6 +533,7 @@ const EmployeeChat = () => {
             groups={groups}
             socket={socket}
             selectedUser={selectedUser}
+            currentUser={currentEmployee}
             setSelectedUser={setSelectedUser}
             messages={messages.map(msg => ({
               ...msg,
