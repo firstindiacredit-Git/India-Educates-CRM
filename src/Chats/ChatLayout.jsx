@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import CustomColorPicker from '../pages/colorpicker/CustomColorPicker';
 import { MultiSelect } from "react-multi-select-component";
 import 'webrtc-adapter';
+import CallModal from './CallModal';
 
 const ChatLayout = ({
     users,
@@ -1996,55 +1997,18 @@ const ChatLayout = ({
             </Modal>
 
             {/* Call Modal */}
-            <Modal show={showCallModal} onHide={endCall} centered backdrop="static">
-                <Modal.Body className="text-center p-4">
-                    <div className="mb-4">
-                        {selectedUser && (
-                            <>
-                                <img
-                                    src={`${import.meta.env.VITE_BASE_URL}${
-                                        selectedUser.userType === 'Employee'
-                                            ? selectedUser.employeeImage?.replace('uploads/', '')
-                                            : selectedUser.userType === 'AdminUser'
-                                                ? selectedUser.profileImage?.replace('uploads/', '')
-                                                : selectedUser.clientImage?.replace('uploads/', '')
-                                    }`}
-                                    className="rounded-circle mb-3"
-                                    alt="Profile"
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
-                                <h5 className="mb-1">
-                                    {selectedUser.employeeName || selectedUser.clientName || selectedUser.username}
-                                </h5>
-                            </>
-                        )}
-                        <p className="text-muted">
-                            {isCallConnected 
-                                ? formatTime(callDuration)
-                                : callStatus === 'incoming' 
-                                    ? 'Incoming call...' 
-                                    : 'Calling...'}
-                        </p>
-                    </div>
-
-                    <div className="call-controls d-flex justify-content-center gap-4">
-                        {callStatus === 'incoming' ? (
-                            <>
-                                <Button variant="success rounded-circle p-3" onClick={() => handleIncomingCall(callData)}>
-                                    <i className="bi bi-telephone-fill fs-4"></i>
-                                </Button>
-                                <Button variant="danger rounded-circle p-3" onClick={rejectCall}>
-                                    <i className="bi bi-telephone-x-fill fs-4"></i>
-                                </Button>
-                            </>
-                        ) : (
-                            <Button variant="danger rounded-circle p-3" onClick={endCall}>
-                                <i className="bi bi-telephone-x-fill fs-4"></i>
-                            </Button>
-                        )}
-                    </div>
-                </Modal.Body>
-            </Modal>
+            <CallModal
+                show={showCallModal}
+                onHide={() => !isCallActive && setShowCallModal(false)}
+                callStatus={callStatus}
+                callData={callData}
+                onAccept={handleIncomingCall}
+                onReject={rejectCall}
+                onEnd={endCall}
+                isCallConnected={isCallConnected}
+                callDuration={callDuration}
+                formatTime={formatTime}
+            />
         </div>
     );
 };
