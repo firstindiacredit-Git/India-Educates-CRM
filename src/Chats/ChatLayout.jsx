@@ -785,13 +785,9 @@ const ChatLayout = ({
     // Initialize WebRTC call
     const initializeCall = async () => {
         try {
-            console.log('Initializing call...');
+            console.log('Initializing call...'); // Debug log
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            console.log('Got media stream:', stream);
             setLocalStream(stream);
-
-            audioElement.current.srcObject = stream;
-            audioElement.current.play().catch(e => console.log('Audio play error:', e));
 
             const pc = new RTCPeerConnection({
                 iceServers: [
@@ -800,7 +796,8 @@ const ChatLayout = ({
             });
 
             pc.onicecandidate = (event) => {
-                if (event.candidate) {
+                if (event.candidate && selectedUser?._id) {
+                    console.log('ICE candidate:', event.candidate); // Debug log
                     socket.current.emit('ice-candidate', {
                         candidate: event.candidate,
                         to: selectedUser._id
@@ -809,7 +806,7 @@ const ChatLayout = ({
             };
 
             pc.oniceconnectionstatechange = () => {
-                console.log('ICE Connection State:', pc.iceConnectionState);
+                console.log('ICE connection state:', pc.iceConnectionState); // Debug log
                 if (pc.iceConnectionState === 'connected') {
                     setIsCallConnected(true);
                     startTimer();
@@ -821,10 +818,13 @@ const ChatLayout = ({
             });
 
             pc.ontrack = (event) => {
+                console.log('Received remote track'); // Debug log
                 const [remoteStream] = event.streams;
                 setRemoteStream(remoteStream);
-                audioElement.current.srcObject = remoteStream;
-                audioElement.current.play().catch(e => console.log('Remote audio play error:', e));
+                if (audioElement.current) {
+                    audioElement.current.srcObject = remoteStream;
+                    audioElement.current.play().catch(e => console.log('Remote audio play error:', e));
+                }
             };
 
             setPeerConnection(pc);
@@ -832,57 +832,81 @@ const ChatLayout = ({
         } catch (error) {
             console.error('Error in initializeCall:', error);
             toast.error('Failed to initialize call');
+            throw error;
         }
     };
 
     // Handle call end
     const endCall = () => {
-        if (localStream) {
-            localStream.getTracks().forEach(track => track.stop());
-        }
-        if (peerConnection) {
-            peerConnection.close();
-        }
-        if (audioElement.current) {
-            audioElement.current.srcObject = null;
-        }
-        stopTimer();
-        setLocalStream(null);
-        setRemoteStream(null);
-        setPeerConnection(null);
-        setIsCallActive(false);
-        setShowCallModal(false);
-        setCallStatus(null);
-        setIsCallConnected(false);
-        setCallDuration(0);
-        
-        if (selectedUser) {
-            socket.current.emit('end-call', {
-                callerId: currentUser._id,
-                receiverId: selectedUser._id
-            });
+        try {
+            if (localStream) {
+                localStream.getTracks().forEach(track => {
+                    track.stop();
+                    localStream.removeTrack(track);
+                });
+            }
+            
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            
+            if (audioElement.current) {
+                audioElement.current.srcObject = null;
+            }
+
+            stopTimer();
+            setLocalStream(null);
+            setRemoteStream(null);
+            setPeerConnection(null);
+            setIsCallActive(false);
+            setShowCallModal(false);
+            setCallStatus(null);
+            setIsCallConnected(false);
+            setCallDuration(0);
+            setCallData(null);
+
+            // Notify other peer if call is active
+            if (selectedUser?._id) {
+                socket.current.emit('end-call', {
+                    callerId: currentUser._id,
+                    receiverId: selectedUser._id
+                });
+            }
+        } catch (error) {
+            console.error('Error in endCall:', error);
         }
     };
 
     // Add socket event listeners
     useEffect(() => {
         if (socket?.current) {
-            // Handle incoming call
-            socket.current.on('incoming-call', (data) => {
-                console.log('Incoming call received:', data);
+            socket.current.on('incoming-call', async (data) => {
+                console.log('Incoming call data:', data); // Debug log
                 setCallData(data);
                 setCallStatus('incoming');
                 setShowCallModal(true);
             });
 
-            // Handle call accepted
-            socket.current.on('call-accepted', (data) => {
-                console.log('Call accepted:', data);
-                setCallStatus('connected');
-                // Handle peer connection setup here
+            socket.current.on('call-accepted', async (data) => {
+                try {
+                    console.log('Call accepted data:', data); // Debug log
+                    if (!peerConnection) {
+                        throw new Error('No peer connection established');
+                    }
+                    
+                    await peerConnection.setRemoteDescription(
+                        new RTCSessionDescription(data.signal)
+                    );
+                    setCallStatus('connected');
+                    setIsCallConnected(true);
+                    startTimer();
+                } catch (error) {
+                    console.error('Error in call-accepted handler:', error);
+                    toast.error('Failed to establish connection');
+                    endCall();
+                }
             });
 
-            // Handle call rejected
             socket.current.on('call-rejected', () => {
                 console.log('Call rejected');
                 setCallStatus(null);
@@ -890,7 +914,6 @@ const ChatLayout = ({
                 endCall();
             });
 
-            // Handle call ended
             socket.current.on('call-ended', () => {
                 console.log('Call ended');
                 endCall();
@@ -903,7 +926,7 @@ const ChatLayout = ({
                 socket.current.off('call-ended');
             };
         }
-    }, [socket?.current]);
+    }, [socket?.current, peerConnection]); // Add peerConnection to dependencies
 
     // Cleanup on unmount
     useEffect(() => {
@@ -942,39 +965,47 @@ const ChatLayout = ({
     };
 
     // Handle incoming call
-    const handleIncomingCall = async (data) => {
+    const handleIncomingCall = async () => {
         try {
             const pc = await initializeCall();
+            setIsCallActive(true);
+            
+            // Make sure we have valid signal data
+            if (!callData?.signal) {
+                throw new Error('Invalid signal data');
+            }
 
-            await pc.setRemoteDescription(new RTCSessionDescription(data.signal));
-
+            // Set remote description from incoming call signal
+            await pc.setRemoteDescription(new RTCSessionDescription(callData.signal));
+            
+            // Create and set local answer
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
 
+            // Send answer to caller
             socket.current.emit('call-accepted', {
-                callerId: data.callerId,
-                receiverId: currentUser._id,
-                signal: answer
+                signal: answer,
+                callerId: callData.callerId,
+                receiverId: currentUser._id
             });
 
-            setIsCallActive(true);
+            setCallStatus('connected');
         } catch (error) {
             console.error('Error handling incoming call:', error);
             toast.error('Failed to accept call');
+            endCall(); // Clean up on error
         }
     };
 
     // Handle call rejection
     const rejectCall = () => {
-        if (callData) {
+        if (callData?.callerId) {
             socket.current.emit('call-rejected', {
                 callerId: callData.callerId,
                 receiverId: currentUser._id
             });
         }
-        setShowCallModal(false);
-        setCallStatus(null);
-        setCallData(null);
+        endCall();
     };
 
     // Update the audio call button click handler
@@ -1584,7 +1615,7 @@ const ChatLayout = ({
                                                         alignItems: 'center',
                                                         justifyContent: 'center',
                                                         color: 'white',
-                                                        fontSize: '20px'
+                                                        fontSize: '10px'
                                                     }}>
                                                         {member.name?.[0]?.toUpperCase()}
                                                     </div>
