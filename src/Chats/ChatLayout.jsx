@@ -867,18 +867,43 @@ const ChatLayout = ({
     // Add socket event listeners
     useEffect(() => {
         if (socket?.current) {
-            socket.current.on('ice-candidate', ({ candidate }) => {
-                if (peerConnection) {
-                    peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-                        .catch(e => console.error('Error adding ICE candidate:', e));
-                }
+            // Handle incoming call
+            socket.current.on('incoming-call', (data) => {
+                console.log('Incoming call received:', data);
+                setCallData(data);
+                setCallStatus('incoming');
+                setShowCallModal(true);
+            });
+
+            // Handle call accepted
+            socket.current.on('call-accepted', (data) => {
+                console.log('Call accepted:', data);
+                setCallStatus('connected');
+                // Handle peer connection setup here
+            });
+
+            // Handle call rejected
+            socket.current.on('call-rejected', () => {
+                console.log('Call rejected');
+                setCallStatus(null);
+                setShowCallModal(false);
+                endCall();
+            });
+
+            // Handle call ended
+            socket.current.on('call-ended', () => {
+                console.log('Call ended');
+                endCall();
             });
 
             return () => {
-                socket.current.off('ice-candidate');
+                socket.current.off('incoming-call');
+                socket.current.off('call-accepted');
+                socket.current.off('call-rejected');
+                socket.current.off('call-ended');
             };
         }
-    }, [socket?.current, peerConnection]);
+    }, [socket?.current]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -897,7 +922,6 @@ const ChatLayout = ({
 
         try {
             const pc = await initializeCall();
-
             const offer = await pc.createOffer();
             await pc.setLocalDescription(offer);
 
