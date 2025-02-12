@@ -372,11 +372,11 @@ const Header = () => {
                     <div className="container">
                       <div className="row">
                         <div className="col-12">
-                          <label htmlFor="currentStatus" className="fw-bold fs-5">
+                          <label htmlFor="currentStatus" className="fw-bold fs-5" style={{color: "#FE6730"}}>
                             Change Password
                           </label>
                           <div className="mb-3 mt-3">
-                            <label className="form-label fw-bold">Email</label>
+                            <label className="form-label fw-bold text-dark">Email</label>
                             <input
                               type="email"
                               className="form-control"

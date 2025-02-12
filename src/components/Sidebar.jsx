@@ -570,11 +570,11 @@ const Sidebar = () => {
                   <div className="container">
                     <div className="row">
                       <div className="col-12">
-                        <label htmlFor="currentStatus" className="fw-bold fs-5">
+                        <label htmlFor="currentStatus" className="fw-bold fs-5" style={{color: "#FE6730"}}>
                           Change Password
                         </label>
                         <div className="mb-3 mt-3">
-                          <label className="form-label fw-bold">Email</label>
+                          <label className="form-label fw-bold" style={{color: "black"}}>Email</label>
                           <input
                             type="email"
                             className="form-control"
@@ -584,7 +584,7 @@ const Sidebar = () => {
                           />
                         </div>
                         <div className="mb-3 mt-3">
-                          <label className="form-label fw-bold">Old Password</label>
+                          <label className="form-label fw-bold" style={{color: "black"}}>Old Password</label>
                           <input
                             type="password"
                             className="form-control"
@@ -594,7 +594,7 @@ const Sidebar = () => {
                           />
                         </div>
                         <div className="mb-3">
-                          <label className="form-label fw-bold">New Password</label>
+                          <label className="form-label fw-bold" style={{color: "black"}}>New Password</label>
                           <input
                             type="password"
                             className="form-control"
