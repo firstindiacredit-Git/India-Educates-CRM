@@ -782,22 +782,50 @@ const ChatLayout = ({
         }
     };
 
-    // Initialize WebRTC call
+    // Update initializeCall function
     const initializeCall = async () => {
         try {
-            console.log('Initializing call...'); // Debug log
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            console.log('Initializing call...');
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                audio: true,
+                echoCancellation: true,
+                noiseSuppression: true
+            });
             setLocalStream(stream);
 
             const pc = new RTCPeerConnection({
                 iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' }
-                ]
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' }
+                ],
+                iceCandidatePoolSize: 10
             });
 
+            // Add local stream tracks to peer connection
+            stream.getTracks().forEach(track => {
+                console.log('Adding local track:', track.kind);
+                pc.addTrack(track, stream);
+            });
+
+            // Handle remote stream
+            pc.ontrack = (event) => {
+                console.log('Received remote track:', event.track.kind);
+                const [stream] = event.streams;
+                setRemoteStream(stream);
+
+                // Create new audio element for remote stream
+                const audio = new Audio();
+                audio.srcObject = stream;
+                audio.autoplay = true;
+                audio.play().catch(e => console.error('Audio play error:', e));
+                audioElement.current = audio;
+            };
+
+            // ICE candidate handling
             pc.onicecandidate = (event) => {
                 if (event.candidate && selectedUser?._id) {
-                    console.log('ICE candidate:', event.candidate); // Debug log
+                    console.log('Sending ICE candidate:', event.candidate);
                     socket.current.emit('ice-candidate', {
                         candidate: event.candidate,
                         to: selectedUser._id
@@ -805,26 +833,22 @@ const ChatLayout = ({
                 }
             };
 
+            // Connection state monitoring
             pc.oniceconnectionstatechange = () => {
-                console.log('ICE connection state:', pc.iceConnectionState); // Debug log
+                console.log('ICE Connection State:', pc.iceConnectionState);
                 if (pc.iceConnectionState === 'connected') {
+                    console.log('Peer Connection Established!');
                     setIsCallConnected(true);
                     startTimer();
+                } else if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+                    console.log('Peer Connection Failed/Disconnected');
+                    toast.error('Call connection failed');
+                    endCall();
                 }
             };
 
-            stream.getTracks().forEach(track => {
-                pc.addTrack(track, stream);
-            });
-
-            pc.ontrack = (event) => {
-                console.log('Received remote track'); // Debug log
-                const [remoteStream] = event.streams;
-                setRemoteStream(remoteStream);
-                if (audioElement.current) {
-                    audioElement.current.srcObject = remoteStream;
-                    audioElement.current.play().catch(e => console.log('Remote audio play error:', e));
-                }
+            pc.onconnectionstatechange = () => {
+                console.log('Connection State:', pc.connectionState);
             };
 
             setPeerConnection(pc);
@@ -836,13 +860,82 @@ const ChatLayout = ({
         }
     };
 
-    // Handle call end
+    // Update handleIncomingCall function
+    const handleIncomingCall = async () => {
+        try {
+            console.log('Handling incoming call...');
+            const pc = await initializeCall();
+            setIsCallActive(true);
+            
+            if (!callData?.signal) {
+                throw new Error('Invalid signal data');
+            }
+
+            console.log('Setting remote description for incoming call');
+            await pc.setRemoteDescription(new RTCSessionDescription(callData.signal));
+            
+            console.log('Creating answer');
+            const answer = await pc.createAnswer();
+            console.log('Setting local description');
+            await pc.setLocalDescription(answer);
+
+            console.log('Sending call accepted signal');
+            socket.current.emit('call-accepted', {
+                signal: answer,
+                callerId: callData.callerId,
+                receiverId: currentUser._id
+            });
+
+            setCallStatus('connected');
+        } catch (error) {
+            console.error('Error handling incoming call:', error);
+            toast.error('Failed to accept call');
+            endCall();
+        }
+    };
+
+    // Update startCall function
+    const startCall = async () => {
+        try {
+            console.log('Starting outgoing call...');
+            const pc = await initializeCall();
+            
+            console.log('Creating offer');
+            const offer = await pc.createOffer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: false
+            });
+            
+            console.log('Setting local description');
+            await pc.setLocalDescription(offer);
+
+            console.log('Sending call signal');
+            socket.current.emit('call-user', {
+                callerId: currentUser._id,
+                receiverId: selectedUser._id,
+                callerName: currentUser.username || currentUser.employeeName || currentUser.clientName,
+                type: 'audio',
+                signal: offer
+            });
+
+            setCallStatus('outgoing');
+            setShowCallModal(true);
+            setIsCallActive(true);
+        } catch (error) {
+            console.error('Error starting call:', error);
+            toast.error('Failed to start call');
+            endCall();
+        }
+    };
+
+    // Update endCall function
     const endCall = () => {
         try {
+            console.log('Ending call...');
+            
             if (localStream) {
                 localStream.getTracks().forEach(track => {
                     track.stop();
-                    localStream.removeTrack(track);
                 });
             }
             
@@ -852,6 +945,7 @@ const ChatLayout = ({
             
             if (audioElement.current) {
                 audioElement.current.srcObject = null;
+                audioElement.current.pause();
             }
 
             stopTimer();
@@ -865,7 +959,6 @@ const ChatLayout = ({
             setCallDuration(0);
             setCallData(null);
 
-            // Notify other peer if call is active
             if (selectedUser?._id) {
                 socket.current.emit('end-call', {
                     callerId: currentUser._id,
@@ -877,9 +970,22 @@ const ChatLayout = ({
         }
     };
 
-    // Add socket event listeners
+    // Update socket event listeners
     useEffect(() => {
         if (socket?.current) {
+            socket.current.on('ice-candidate', async (data) => {
+                try {
+                    if (peerConnection && data.candidate) {
+                        console.log('Received ICE candidate:', data.candidate);
+                        await peerConnection.addIceCandidate(
+                            new RTCIceCandidate(data.candidate)
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error adding ICE candidate:', error);
+                }
+            });
+
             socket.current.on('incoming-call', async (data) => {
                 console.log('Incoming call data:', data); // Debug log
                 setCallData(data);
@@ -920,13 +1026,14 @@ const ChatLayout = ({
             });
 
             return () => {
+                socket.current.off('ice-candidate');
                 socket.current.off('incoming-call');
                 socket.current.off('call-accepted');
                 socket.current.off('call-rejected');
                 socket.current.off('call-ended');
             };
         }
-    }, [socket?.current, peerConnection]); // Add peerConnection to dependencies
+    }, [socket?.current, peerConnection]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -937,78 +1044,6 @@ const ChatLayout = ({
     }, []);
 
     // Handle outgoing call
-    const startCall = async () => {
-        if (!selectedUser) {
-            toast.error('Please select a user to call');
-            return;
-        }
-
-        try {
-            const pc = await initializeCall();
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-
-            socket.current.emit('call-user', {
-                callerId: currentUser._id,
-                receiverId: selectedUser._id,
-                callerName: currentUser.username || currentUser.employeeName || currentUser.clientName,
-                type: 'audio',
-                signal: offer
-            });
-
-            setCallStatus('outgoing');
-            setShowCallModal(true);
-        } catch (error) {
-            console.error('Error starting call:', error);
-            toast.error('Failed to start call');
-        }
-    };
-
-    // Handle incoming call
-    const handleIncomingCall = async () => {
-        try {
-            const pc = await initializeCall();
-            setIsCallActive(true);
-            
-            // Make sure we have valid signal data
-            if (!callData?.signal) {
-                throw new Error('Invalid signal data');
-            }
-
-            // Set remote description from incoming call signal
-            await pc.setRemoteDescription(new RTCSessionDescription(callData.signal));
-            
-            // Create and set local answer
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            // Send answer to caller
-            socket.current.emit('call-accepted', {
-                signal: answer,
-                callerId: callData.callerId,
-                receiverId: currentUser._id
-            });
-
-            setCallStatus('connected');
-        } catch (error) {
-            console.error('Error handling incoming call:', error);
-            toast.error('Failed to accept call');
-            endCall(); // Clean up on error
-        }
-    };
-
-    // Handle call rejection
-    const rejectCall = () => {
-        if (callData?.callerId) {
-            socket.current.emit('call-rejected', {
-                callerId: callData.callerId,
-                receiverId: currentUser._id
-            });
-        }
-        endCall();
-    };
-
-    // Update the audio call button click handler
     const handleAudioCallClick = () => {
         startCall();
     };
@@ -2058,7 +2093,7 @@ const ChatLayout = ({
                 callStatus={callStatus}
                 callData={callData}
                 onAccept={handleIncomingCall}
-                onReject={rejectCall}
+                onReject={endCall}
                 onEnd={endCall}
                 isCallConnected={isCallConnected}
                 callDuration={callDuration}
