@@ -794,12 +794,6 @@ const ChatLayout = ({
                 }
             });
             
-            // Create and play local audio
-            const localAudio = new Audio();
-            localAudio.muted = true; // Mute local audio to prevent echo
-            localAudio.srcObject = stream;
-            await localAudio.play();
-            
             setLocalStream(stream);
 
             const pc = new RTCPeerConnection({
@@ -811,10 +805,7 @@ const ChatLayout = ({
                         username: 'webrtc@live.com',
                         credential: 'muazkh'
                     }
-                ],
-                iceCandidatePoolSize: 10,
-                bundlePolicy: 'max-bundle',
-                rtcpMuxPolicy: 'require'
+                ]
             });
 
             // Add local stream tracks to peer connection
@@ -829,40 +820,39 @@ const ChatLayout = ({
                 const [remoteStream] = event.streams;
                 setRemoteStream(remoteStream);
 
-                // Create and configure remote audio element
-                const remoteAudio = new Audio();
-                remoteAudio.autoplay = true;
-                remoteAudio.playsInline = true;
-                remoteAudio.srcObject = remoteStream;
-                
-                // Ensure audio is unmuted and volume is up
-                remoteAudio.muted = false;
-                remoteAudio.volume = 1.0;
+                // Create and play remote audio immediately
+                const audio = new Audio();
+                audio.srcObject = remoteStream;
+                audio.autoplay = true;
+                audio.playsInline = true;
+                audio.muted = false;
+                audio.volume = 1.0;
 
-                // Try playing the remote audio
-                const playPromise = remoteAudio.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => {
-                            console.log('Remote audio playing successfully');
-                            audioElement.current = remoteAudio;
-                        })
-                        .catch(error => {
-                            console.error('Remote audio play failed:', error);
-                            // Try playing again with user interaction
-                            const playAudio = () => {
-                                remoteAudio.play();
-                                document.removeEventListener('click', playAudio);
-                            };
-                            document.addEventListener('click', playAudio);
-                        });
-                }
+                // Play audio with error handling
+                audio.play()
+                    .then(() => {
+                        console.log('Remote audio playing successfully');
+                        audioElement.current = audio;
+                    })
+                    .catch(error => {
+                        console.error('Error playing remote audio:', error);
+                        // Add user interaction fallback
+                        const playAudio = () => {
+                            audio.play()
+                                .then(() => {
+                                    console.log('Audio played after user interaction');
+                                    document.removeEventListener('click', playAudio);
+                                })
+                                .catch(console.error);
+                        };
+                        document.addEventListener('click', playAudio);
+                    });
             };
 
             // Enhanced ICE candidate handling
             pc.onicecandidate = (event) => {
                 if (event.candidate && selectedUser?._id) {
-                    console.log('Generated ICE candidate for:', event.candidate.type);
+                    console.log('Generated ICE candidate:', event.candidate);
                     socket.current.emit('ice-candidate', {
                         candidate: event.candidate,
                         to: selectedUser._id
@@ -870,39 +860,29 @@ const ChatLayout = ({
                 }
             };
 
-            pc.onicegatheringstatechange = () => {
-                console.log('ICE gathering state:', pc.iceGatheringState);
-            };
-
             pc.oniceconnectionstatechange = () => {
                 console.log('ICE Connection State:', pc.iceConnectionState);
                 switch (pc.iceConnectionState) {
                     case 'connected':
-                        console.log('Peer Connection Established!');
+                        console.log('Call connected successfully');
                         setIsCallConnected(true);
                         startTimer();
                         break;
                     case 'failed':
-                        console.log('ICE Connection Failed');
+                        console.error('ICE Connection Failed');
                         toast.error('Call connection failed');
                         endCall();
                         break;
                     case 'disconnected':
-                        console.log('ICE Connection Disconnected');
-                        toast.warning('Call connection interrupted');
+                        console.warn('ICE Connection Disconnected');
+                        // Try to reconnect instead of ending immediately
+                        setTimeout(() => {
+                            if (pc.iceConnectionState === 'disconnected') {
+                                toast.error('Call disconnected');
+                                endCall();
+                            }
+                        }, 5000); // Wait 5 seconds before ending call
                         break;
-                }
-            };
-
-            pc.onconnectionstatechange = () => {
-                console.log('Connection State:', pc.connectionState);
-                if (pc.connectionState === 'connected') {
-                    // Ensure audio is playing when connection is established
-                    if (audioElement.current) {
-                        audioElement.current.play().catch(e => 
-                            console.error('Audio play error after connection:', e)
-                        );
-                    }
                 }
             };
 
@@ -926,15 +906,14 @@ const ChatLayout = ({
                 throw new Error('Invalid signal data');
             }
 
-            console.log('Setting remote description for incoming call');
+            // Set remote description first
             await pc.setRemoteDescription(new RTCSessionDescription(callData.signal));
             
-            console.log('Creating answer');
+            // Create and set local description
             const answer = await pc.createAnswer();
-            console.log('Setting local description');
             await pc.setLocalDescription(answer);
 
-            console.log('Sending call accepted signal');
+            // Send answer to caller
             socket.current.emit('call-accepted', {
                 signal: answer,
                 callerId: callData.callerId,

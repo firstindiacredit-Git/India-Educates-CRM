@@ -167,7 +167,7 @@ const ClientDashboard = () => {
                       </div>
                       <div className="mt-5 mb-4 text-center">
                         <Link
-                          to="https://pizeonfly.com/"
+                          to="https://indiaeducates.org/"
                           target="_blank"
                           className="btn btn-outline-primary btn-lg position-relative"
                           style={{

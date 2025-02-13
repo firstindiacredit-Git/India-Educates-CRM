@@ -2318,7 +2318,7 @@ const ProjectDashboard = () => {
 
                 <div className="mt-5 mb-4 text-center">
                   <Link
-                    to="https://pizeonfly.com/"
+                    to="https://indiaeducates.org/"
                     className="btn btn-outline-primary btn-lg position-relative"
                     style={{
                       borderRadius: '30px',
