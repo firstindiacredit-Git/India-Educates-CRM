@@ -7,7 +7,8 @@ import { toast } from 'react-toastify';
 import CustomColorPicker from '../pages/colorpicker/CustomColorPicker';
 import { MultiSelect } from "react-multi-select-component";
 import 'webrtc-adapter';
-import CallModal from './CallModal';
+import VideoCall from './VideoCall';
+// import CallModal from './CallModal';
 
 const ChatLayout = ({
     users,
@@ -61,19 +62,9 @@ const ChatLayout = ({
     // Add new state for dropdown
     const [showGroupsDropdown, setShowGroupsDropdown] = useState(false);
 
-    // Add new state variables after other useState declarations
-    const [showCallModal, setShowCallModal] = useState(false);
-    const [callType, setCallType] = useState(null); // 'audio' or 'video'
-    const [callStatus, setCallStatus] = useState(null); // 'incoming', 'outgoing', or 'ongoing'
-    const [callData, setCallData] = useState(null);
-    const [localStream, setLocalStream] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null);
-    const [peerConnection, setPeerConnection] = useState(null);
-    const [isCallActive, setIsCallActive] = useState(false);
-    const [callDuration, setCallDuration] = useState(0);
-    const [isCallConnected, setIsCallConnected] = useState(false);
-    const timerInterval = useRef(null);
-    const audioElement = useRef(new Audio());
+    const [showVideoCall, setShowVideoCall] = useState(false);
+    const [incomingCall, setIncomingCall] = useState(null);
+    const [meetingData, setMeetingData] = useState(null);
 
     // Modified userOptions mapping with debug logs
     const userOptions = Array.isArray(users) ? users.map(user => {
@@ -429,7 +420,7 @@ const ChatLayout = ({
         if (socket?.current) {
             // Listen for user status changes
             socket.current.on('user_status_changed', (statusData) => {
-                console.log('Status changed:', statusData);
+                // console.log('Status changed:', statusData);
                 setUserStatuses(prev => ({
                     ...prev,
                     [statusData.userId]: {
@@ -759,338 +750,6 @@ const ChatLayout = ({
         );
     };
 
-    // Format time for display (MM:SS)
-    const formatTime = (seconds) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    // Start timer when call is connected
-    const startTimer = () => {
-        setCallDuration(0);
-        timerInterval.current = setInterval(() => {
-            setCallDuration(prev => prev + 1);
-        }, 1000);
-    };
-
-    // Stop timer
-    const stopTimer = () => {
-        if (timerInterval.current) {
-            clearInterval(timerInterval.current);
-            timerInterval.current = null;
-        }
-    };
-
-    // Update initializeCall function
-    const initializeCall = async () => {
-        try {
-            console.log('Initializing call...');
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                audio: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true
-                }
-            });
-            
-            setLocalStream(stream);
-
-            const pc = new RTCPeerConnection({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' },
-                    { 
-                        urls: 'turn:numb.viagenie.ca',
-                        username: 'webrtc@live.com',
-                        credential: 'muazkh'
-                    }
-                ]
-            });
-
-            // Add local stream tracks to peer connection
-            stream.getTracks().forEach(track => {
-                console.log('Adding local track:', track.kind);
-                pc.addTrack(track, stream);
-            });
-
-            // Handle remote stream
-            pc.ontrack = (event) => {
-                console.log('Received remote track:', event.track.kind);
-                const [remoteStream] = event.streams;
-                setRemoteStream(remoteStream);
-
-                // Create and play remote audio immediately
-                const audio = new Audio();
-                audio.srcObject = remoteStream;
-                audio.autoplay = true;
-                audio.playsInline = true;
-                audio.muted = false;
-                audio.volume = 1.0;
-
-                // Play audio with error handling
-                audio.play()
-                    .then(() => {
-                        console.log('Remote audio playing successfully');
-                        audioElement.current = audio;
-                    })
-                    .catch(error => {
-                        console.error('Error playing remote audio:', error);
-                        // Add user interaction fallback
-                        const playAudio = () => {
-                            audio.play()
-                                .then(() => {
-                                    console.log('Audio played after user interaction');
-                                    document.removeEventListener('click', playAudio);
-                                })
-                                .catch(console.error);
-                        };
-                        document.addEventListener('click', playAudio);
-                    });
-            };
-
-            // Enhanced ICE candidate handling
-            pc.onicecandidate = (event) => {
-                if (event.candidate && selectedUser?._id) {
-                    console.log('Generated ICE candidate:', event.candidate);
-                    socket.current.emit('ice-candidate', {
-                        candidate: event.candidate,
-                        to: selectedUser._id
-                    });
-                }
-            };
-
-            pc.oniceconnectionstatechange = () => {
-                console.log('ICE Connection State:', pc.iceConnectionState);
-                switch (pc.iceConnectionState) {
-                    case 'connected':
-                        console.log('Call connected successfully');
-                        setIsCallConnected(true);
-                        startTimer();
-                        break;
-                    case 'failed':
-                        console.error('ICE Connection Failed');
-                        toast.error('Call connection failed');
-                        endCall();
-                        break;
-                    case 'disconnected':
-                        console.warn('ICE Connection Disconnected');
-                        // Try to reconnect instead of ending immediately
-                        setTimeout(() => {
-                            if (pc.iceConnectionState === 'disconnected') {
-                                toast.error('Call disconnected');
-                                endCall();
-                            }
-                        }, 5000); // Wait 5 seconds before ending call
-                        break;
-                }
-            };
-
-            setPeerConnection(pc);
-            return pc;
-        } catch (error) {
-            console.error('Error in initializeCall:', error);
-            toast.error('Failed to initialize call');
-            throw error;
-        }
-    };
-
-    // Update handleIncomingCall function
-    const handleIncomingCall = async () => {
-        try {
-            console.log('Handling incoming call...');
-            const pc = await initializeCall();
-            setIsCallActive(true);
-            
-            if (!callData?.signal) {
-                throw new Error('Invalid signal data');
-            }
-
-            // Set remote description first
-            await pc.setRemoteDescription(new RTCSessionDescription(callData.signal));
-            
-            // Create and set local description
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            // Send answer to caller
-            socket.current.emit('call-accepted', {
-                signal: answer,
-                callerId: callData.callerId,
-                receiverId: currentUser._id
-            });
-
-            setCallStatus('connected');
-        } catch (error) {
-            console.error('Error handling incoming call:', error);
-            toast.error('Failed to accept call');
-            endCall();
-        }
-    };
-
-    // Update startCall function
-    const startCall = async () => {
-        try {
-            console.log('Starting outgoing call...');
-            const pc = await initializeCall();
-            
-            console.log('Creating offer');
-            const offer = await pc.createOffer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: false
-            });
-            
-            console.log('Setting local description');
-            await pc.setLocalDescription(offer);
-
-            console.log('Sending call signal');
-            socket.current.emit('call-user', {
-                callerId: currentUser._id,
-                receiverId: selectedUser._id,
-                callerName: currentUser.username || currentUser.employeeName || currentUser.clientName,
-                type: 'audio',
-                signal: offer
-            });
-
-            setCallStatus('outgoing');
-            setShowCallModal(true);
-            setIsCallActive(true);
-        } catch (error) {
-            console.error('Error starting call:', error);
-            toast.error('Failed to start call');
-            endCall();
-        }
-    };
-
-    // Update endCall function
-    const endCall = () => {
-        try {
-            console.log('Ending call...');
-            
-            if (localStream) {
-                localStream.getTracks().forEach(track => {
-                    track.stop();
-                    track.enabled = false;
-                });
-            }
-            
-            if (remoteStream) {
-                remoteStream.getTracks().forEach(track => {
-                    track.stop();
-                    track.enabled = false;
-                });
-            }
-            
-            if (audioElement.current) {
-                audioElement.current.pause();
-                audioElement.current.srcObject = null;
-                audioElement.current = null;
-            }
-
-            if (peerConnection) {
-                peerConnection.close();
-                setPeerConnection(null);
-            }
-
-            stopTimer();
-            setLocalStream(null);
-            setRemoteStream(null);
-            setIsCallActive(false);
-            setShowCallModal(false);
-            setCallStatus(null);
-            setIsCallConnected(false);
-            setCallDuration(0);
-            setCallData(null);
-
-            if (selectedUser?._id) {
-                socket.current.emit('end-call', {
-                    callerId: currentUser._id,
-                    receiverId: selectedUser._id
-                });
-            }
-        } catch (error) {
-            console.error('Error in endCall:', error);
-        }
-    };
-
-    // Update socket event listeners
-    useEffect(() => {
-        if (socket?.current) {
-            socket.current.on('ice-candidate', async (data) => {
-                try {
-                    if (peerConnection && data.candidate) {
-                        console.log('Received ICE candidate:', data.candidate);
-                        await peerConnection.addIceCandidate(
-                            new RTCIceCandidate(data.candidate)
-                        );
-                    }
-                } catch (error) {
-                    console.error('Error adding ICE candidate:', error);
-                }
-            });
-
-            socket.current.on('incoming-call', async (data) => {
-                console.log('Incoming call data:', data); // Debug log
-                setCallData(data);
-                setCallStatus('incoming');
-                setShowCallModal(true);
-            });
-
-            socket.current.on('call-accepted', async (data) => {
-                try {
-                    console.log('Call accepted data:', data); // Debug log
-                    if (!peerConnection) {
-                        throw new Error('No peer connection established');
-                    }
-                    
-                    await peerConnection.setRemoteDescription(
-                        new RTCSessionDescription(data.signal)
-                    );
-                    setCallStatus('connected');
-                    setIsCallConnected(true);
-                    startTimer();
-                } catch (error) {
-                    console.error('Error in call-accepted handler:', error);
-                    toast.error('Failed to establish connection');
-                    endCall();
-                }
-            });
-
-            socket.current.on('call-rejected', () => {
-                console.log('Call rejected');
-                setCallStatus(null);
-                setShowCallModal(false);
-                endCall();
-            });
-
-            socket.current.on('call-ended', () => {
-                console.log('Call ended');
-                endCall();
-            });
-
-            return () => {
-                socket.current.off('ice-candidate');
-                socket.current.off('incoming-call');
-                socket.current.off('call-accepted');
-                socket.current.off('call-rejected');
-                socket.current.off('call-ended');
-            };
-        }
-    }, [socket?.current, peerConnection]);
-
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            stopTimer();
-            endCall();
-        };
-    }, []);
-
-    // Handle outgoing call
-    const handleAudioCallClick = () => {
-        startCall();
-    };
-
     // Add this useEffect to ensure socket connection
     useEffect(() => {
         if (socket?.current && currentUser?._id) {
@@ -1102,6 +761,140 @@ const ChatLayout = ({
             });
         }
     }, [socket?.current, currentUser]);
+
+    useEffect(() => {
+        if (socket.current) {
+            console.log('Setting up video call listeners');
+
+            // Listen for incoming video call requests
+            socket.current.on('incoming_video_call', (data) => {
+                console.log('Received incoming call:', data);
+                const caller = users.find(user => user._id === data.senderId);
+                if (caller) {
+                    setIncomingCall({
+                        ...data,
+                        callerName: caller.username || caller.employeeName || caller.clientName
+                    });
+
+                    toast.info(
+                        <div>
+                            <p>Incoming video call from {data.senderName}</p>
+                            <div className="d-flex justify-content-around mt-2">
+                                <button 
+                                    className="btn btn-success btn-sm"
+                                    onClick={() => handleAcceptCall(data)}
+                                >
+                                    Accept
+                                </button>
+                                <button 
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleRejectCall(data)}
+                                >
+                                    Reject
+                                </button>
+                            </div>
+                        </div>,
+                        {
+                            autoClose: 15000,
+                            closeOnClick: false,
+                            draggable: false,
+                            closeButton: false
+                        }
+                    );
+                }
+            });
+
+            // Listen for call accepted
+            socket.current.on('video_call_accepted', (data) => {
+                console.log('Call accepted:', data);
+                setMeetingData(data);
+                setShowVideoCall(true);
+            });
+
+            // Listen for call rejected
+            socket.current.on('video_call_rejected', () => {
+                console.log('Call rejected');
+                toast.info('Video call was rejected');
+                setShowVideoCall(false);
+                setMeetingData(null);
+            });
+        }
+
+        return () => {
+            if (socket.current) {
+                socket.current.off('incoming_video_call');
+                socket.current.off('video_call_accepted');
+                socket.current.off('video_call_rejected');
+            }
+        };
+    }, [socket, users]);
+
+    const handleVideoCallClick = async () => {
+        if (!selectedUser) {
+            toast.warning('Please select a user to start a video call');
+            return;
+        }
+
+        try {
+            if (socket.current) {
+                const callData = {
+                    senderId: currentUser._id,
+                    receiverId: selectedUser._id,
+                    senderName: currentUser.username || currentUser.employeeName || currentUser.clientName
+                };
+
+                console.log('Sending video call request:', callData);
+                socket.current.emit('video_call_request', callData);
+                
+                setMeetingData({
+                    isInitiator: true,
+                    partnerId: selectedUser._id
+                });
+                
+                setShowVideoCall(true);
+                toast.info('Calling...', { autoClose: 5000 });
+            }
+        } catch (error) {
+            console.error('Error initiating video call:', error);
+            toast.error('Failed to start video call');
+        }
+    };
+
+    const handleAcceptCall = (callData) => {
+        if (socket.current) {
+            socket.current.emit('video_call_accepted', {
+                senderId: callData.senderId,
+                receiverId: currentUser._id
+            });
+            
+            setMeetingData({
+                isInitiator: false,
+                partnerId: callData.senderId
+            });
+            
+            toast.dismiss();
+            setShowVideoCall(true);
+            setIncomingCall(null);
+        }
+    };
+
+    const handleRejectCall = (callData) => {
+        if (socket.current) {
+            socket.current.emit('video_call_rejected', {
+                senderId: callData.senderId,
+                receiverId: currentUser._id
+            });
+            toast.dismiss();
+            setIncomingCall(null);
+        }
+    };
+
+    const handleCloseVideoCall = () => {
+        setShowVideoCall(false);
+        setIncomingCall(null);
+        setMeetingData(null);
+        toast.dismiss();
+    };
 
     return (
         <div className="container-fluid mt-2" style={{}}>
@@ -1239,22 +1032,19 @@ const ChatLayout = ({
                                         {/* Add this in the chat header section, right before the three dots menu */}
                                         {selectedUser && selectedUser.userType !== 'Group' && (
                                             <>
-
                                                 <button
                                                     className="btn btn-link text-white me-2"
-                                                    onClick={() => {
-                                                        setCallType('video');
-                                                        setCallStatus('outgoing');
-                                                        setShowCallModal(true);
-                                                    }}
+                                                    onClick={handleVideoCallClick}
+                                                    disabled={!selectedUser || showVideoCall}
+                                                    title={
+                                                        !selectedUser 
+                                                            ? "Select a user to start video call" 
+                                                            : showVideoCall 
+                                                                ? "Call in progress" 
+                                                                : "Start video call"
+                                                    }
                                                 >
                                                     <i className="bi bi-camera-video-fill"></i>
-                                                </button>
-                                                <button
-                                                    className="btn btn-link text-white me-2"
-                                                    onClick={handleAudioCallClick}
-                                                >
-                                                    <i className="bi bi-telephone-fill"></i>
                                                 </button>
                                             </>
                                         )}
@@ -2129,19 +1919,17 @@ const ChatLayout = ({
                 </Modal.Footer>
             </Modal>
 
-            {/* Call Modal */}
-            <CallModal
-                show={showCallModal}
-                onHide={() => !isCallActive && setShowCallModal(false)}
-                callStatus={callStatus}
-                callData={callData}
-                onAccept={handleIncomingCall}
-                onReject={endCall}
-                onEnd={endCall}
-                isCallConnected={isCallConnected}
-                callDuration={callDuration}
-                formatTime={formatTime}
-            />
+            {/* Add VideoCall component */}
+            {showVideoCall && (
+                <VideoCall
+                    selectedUser={selectedUser}
+                    currentUser={currentUser}
+                    onClose={handleCloseVideoCall}
+                    isInitiator={meetingData?.isInitiator}
+                    partnerId={meetingData?.partnerId}
+                    meetingData={meetingData}
+                />
+            )}
         </div>
     );
 };
