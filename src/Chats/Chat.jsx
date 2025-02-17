@@ -203,10 +203,10 @@ const Chat = () => {
         }
       });
 
-      socket.current.on('new_notification', (notification) => {
-        setNotifications(prev => [...prev, notification]);
-        new Audio('/notification-sound.mp3').play().catch(e => console.log(e));
-      });
+      // socket.current.on('new_notification', (notification) => {
+      //   setNotifications(prev => [...prev, notification]);
+      //   new Audio('/notification-sound.mp3').play().catch(e => console.log(e));
+      // });
 
       fetchUsers();
       fetchGroups();
