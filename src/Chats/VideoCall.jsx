@@ -1,189 +1,212 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
 import './VideoCall.css';
 
-const VideoCall = ({ selectedUser, currentUser, onClose }) => {
+const VideoCall = ({ selectedUser, currentUser, onClose, socket }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const localVideoRef = useRef(null);
+    const remoteVideoRef = useRef(null);
+    const peerConnection = useRef(null);
+    const localStream = useRef(null);
 
     useEffect(() => {
-        const loadZoomLibrary = async () => {
+        const initializeCall = async () => {
             try {
-                // Request camera and microphone permissions first
-                await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                console.log('Requesting media devices...');
+                // Get local media stream with explicit constraints
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user'
+                    },
+                    audio: true
+                });
+                
+                console.log('Media stream obtained:', stream.getTracks());
+                localStream.current = stream;
 
-                // Create Zoom script element
-                const script = document.createElement('script');
-                script.src = 'https://source.zoom.us/2.9.7/lib/vendor/react.min.js';
-                script.async = true;
-                document.body.appendChild(script);
+                // Display local video
+                if (localVideoRef.current) {
+                    console.log('Setting local video stream');
+                    localVideoRef.current.srcObject = stream;
+                    await localVideoRef.current.play().catch(e => console.error('Error playing local video:', e));
+                }
 
-                // Load Zoom SDK after React
-                script.onload = () => {
-                    const zoomScript = document.createElement('script');
-                    zoomScript.src = 'https://source.zoom.us/2.9.7/zoom.min.js';
-                    zoomScript.async = true;
-                    document.body.appendChild(zoomScript);
-
-                    zoomScript.onload = initZoom;
+                // Initialize WebRTC peer connection
+                const configuration = {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        {
+                            urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
+                            username: 'webrtc',
+                            credential: 'webrtc'
+                        }
+                    ]
                 };
+
+                console.log('Initializing peer connection');
+                peerConnection.current = new RTCPeerConnection(configuration);
+
+                // Add local stream tracks to peer connection
+                stream.getTracks().forEach(track => {
+                    console.log('Adding track to peer connection:', track.kind);
+                    peerConnection.current.addTrack(track, stream);
+                });
+
+                // Handle incoming remote stream
+                peerConnection.current.ontrack = (event) => {
+                    console.log('Received remote track:', event.track.kind);
+                    if (remoteVideoRef.current && event.streams[0]) {
+                        console.log('Setting remote video stream');
+                        remoteVideoRef.current.srcObject = event.streams[0];
+                        remoteVideoRef.current.play().catch(e => console.error('Error playing remote video:', e));
+                    }
+                };
+
+                // ICE candidate handling
+                peerConnection.current.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        console.log('Sending ICE candidate');
+                        socket.current.emit('ice-candidate', {
+                            candidate: event.candidate,
+                            senderId: currentUser._id,
+                            receiverId: selectedUser._id
+                        });
+                    }
+                };
+
+                // Connection state changes
+                peerConnection.current.onconnectionstatechange = () => {
+                    console.log('Connection state:', peerConnection.current.connectionState);
+                };
+
+                // ICE connection state changes
+                peerConnection.current.oniceconnectionstatechange = () => {
+                    console.log('ICE connection state:', peerConnection.current.iceConnectionState);
+                };
+
+                // Create and send offer if initiator
+                if (currentUser._id < selectedUser._id) {
+                    console.log('Creating offer');
+                    const offer = await peerConnection.current.createOffer();
+                    await peerConnection.current.setLocalDescription(offer);
+                    socket.current.emit('offer', {
+                        offer,
+                        senderId: currentUser._id,
+                        receiverId: selectedUser._id
+                    });
+                }
+
+                setIsLoading(false);
             } catch (err) {
+                console.error('Video call initialization error:', err);
                 setError('Failed to access camera/microphone: ' + err.message);
                 setIsLoading(false);
             }
         };
 
-        const initZoom = async () => {
-            try {
-                const ZoomMtg = window.ZoomMtg;
-                
-                // Initialize Zoom with explicit device settings
-                ZoomMtg.setZoomJSLib('https://source.zoom.us/2.9.7/lib', '/av');
-                ZoomMtg.preLoadWasm();
-                ZoomMtg.prepareWebSDK();
-
-                // Set language
-                ZoomMtg.i18n.load('en-US');
-                ZoomMtg.i18n.reload('en-US');
-
-                // Get meeting details
-                const response = await axios.post(
-                    `${import.meta.env.VITE_BASE_URL}api/create-zoom-meeting`,
-                    {
+        // Socket event listeners for WebRTC signaling
+        if (socket.current) {
+            socket.current.on('offer', async (data) => {
+                console.log('Received offer');
+                if (peerConnection.current) {
+                    await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    const answer = await peerConnection.current.createAnswer();
+                    await peerConnection.current.setLocalDescription(answer);
+                    socket.current.emit('answer', {
+                        answer,
                         senderId: currentUser._id,
-                        receiverId: selectedUser._id
-                    }
-                );
+                        receiverId: data.senderId
+                    });
+                }
+            });
 
-                const { signature, meetingNumber, sdkKey } = response.data;
+            socket.current.on('answer', async (data) => {
+                console.log('Received answer');
+                if (peerConnection.current) {
+                    await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.answer));
+                }
+            });
 
-                // Send meeting link in chat
-                const meetingLink = `${window.location.origin}/chat?meeting=${meetingNumber}`;
-                const messageData = {
-                    senderId: currentUser._id,
-                    senderType: currentUser.role === 'admin' ? 'AdminUser' : 
-                               currentUser.role === 'employee' ? 'Employee' : 'Client',
-                    receiverId: selectedUser._id,
-                    receiverType: selectedUser.userType,
-                    message: `Video Call Link: ${meetingLink}\nClick to join the video call!`
-                };
+            socket.current.on('ice-candidate', async (data) => {
+                console.log('Received ICE candidate');
+                if (peerConnection.current) {
+                    await peerConnection.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            });
+        }
 
-                // Send message with meeting link
-                await axios.post(
-                    `${import.meta.env.VITE_BASE_URL}api/createChat`,
-                    messageData
-                );
-
-                // Initialize meeting with explicit device settings
-                ZoomMtg.init({
-                    leaveUrl: `${window.location.origin}/chat`,
-                    disableCORP: true,
-                    isSupportAV: true,
-                    isSupportChat: true,
-                    videoOptions: {
-                        isResizable: true,
-                        viewSizes: ['fullscreen', 'default'],
-                        defaultQuality: 'high'
-                    },
-                    audioOptions: {
-                        autoAdjustMic: true
-                    },
-                    success: () => {
-                        ZoomMtg.join({
-                            signature: signature,
-                            meetingNumber: meetingNumber.toString(),
-                            userName: currentUser.username || currentUser.employeeName || currentUser.clientName,
-                            sdkKey: sdkKey,
-                            userEmail: currentUser.email || currentUser.emailid || currentUser.clientEmail,
-                            passWord: "",
-                            success: () => {
-                                setIsLoading(false);
-                                console.log('Joined meeting successfully');
-                                
-                                // Explicitly start video and unmute audio
-                                ZoomMtg.getClient().startVideo();
-                                ZoomMtg.getClient().unmuteAudio();
-                            },
-                            error: (joinError) => {
-                                setError('Failed to join meeting: ' + joinError.errorMessage);
-                                console.error('Join meeting error:', joinError);
-                                setIsLoading(false);
-                            }
-                        });
-                    },
-                    error: (initError) => {
-                        setError('Failed to initialize Zoom: ' + initError.errorMessage);
-                        console.error('Init error:', initError);
-                        setIsLoading(false);
-                    }
-                });
-            } catch (error) {
-                setError('Failed to setup video call: ' + error.message);
-                console.error('Setup error:', error);
-                setIsLoading(false);
-            }
-        };
-
-        // Load Zoom library
-        loadZoomLibrary();
+        initializeCall();
 
         // Cleanup function
         return () => {
-            if (window.ZoomMtg) {
-                try {
-                    window.ZoomMtg.leaveMeeting({});
-                } catch (error) {
-                    console.error('Error leaving meeting:', error);
-                }
+            console.log('Cleaning up video call');
+            if (localStream.current) {
+                localStream.current.getTracks().forEach(track => {
+                    console.log('Stopping track:', track.kind);
+                    track.stop();
+                });
             }
-            // Remove Zoom scripts
-            const scripts = document.querySelectorAll('script[src*="zoom"]');
-            scripts.forEach(script => script.remove());
+            if (peerConnection.current) {
+                peerConnection.current.close();
+            }
+            if (socket.current) {
+                socket.current.off('offer');
+                socket.current.off('answer');
+                socket.current.off('ice-candidate');
+            }
         };
-    }, []);
+    }, [currentUser, selectedUser, socket]);
 
-    if (isLoading) {
-        return (
-            <div className="video-call-container d-flex justify-content-center align-items-center">
-                <div className="text-center text-white">
-                    <div className="spinner-border" role="status">
+    return (
+        <div className="video-call-container">
+            {isLoading ? (
+                <div className="loading-container">
+                    <div className="spinner-border text-light" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </div>
-                    <p className="mt-2">Initializing video call...</p>
-                    <small className="d-block mt-1">Please allow camera and microphone access when prompted</small>
+                    <p className="text-light mt-3">Initializing video call...</p>
                 </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="video-call-container d-flex justify-content-center align-items-center">
-                <div className="text-center">
+            ) : error ? (
+                <div className="error-container">
                     <div className="alert alert-danger">
                         <p>{error}</p>
-                        <button 
-                            className="btn btn-outline-danger mt-2"
-                            onClick={onClose}
-                        >
+                        <button className="btn btn-danger mt-2" onClick={onClose}>
                             Close
                         </button>
                     </div>
                 </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="video-call-container">
-            <div id="zmmtg-root"></div>
-            <button 
-                className="btn btn-danger position-absolute top-0 end-0 m-3"
-                onClick={onClose}
-                style={{ zIndex: 10001 }}
-            >
-                End Call
-            </button>
+            ) : (
+                <>
+                    <div className="video-grid">
+                        <div className="video-box local-video">
+                            <video
+                                ref={localVideoRef}
+                                autoPlay
+                                playsInline
+                                muted
+                            />
+                            <div className="video-label">You</div>
+                        </div>
+                        <div className="video-box remote-video">
+                            <video
+                                ref={remoteVideoRef}
+                                autoPlay
+                                playsInline
+                            />
+                            <div className="video-label">
+                                {selectedUser?.username || selectedUser?.employeeName || selectedUser?.clientName}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="controls">
+                        <button className="btn btn-danger" onClick={onClose}>
+                            End Call
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

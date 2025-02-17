@@ -1967,9 +1967,7 @@ const ChatLayout = ({
                     selectedUser={selectedUser}
                     currentUser={currentUser}
                     onClose={handleCloseVideoCall}
-                    isInitiator={meetingData?.isInitiator}
-                    partnerId={meetingData?.partnerId}
-                    meetingData={meetingData}
+                    socket={socket}
                 />
             )}
         </div>
