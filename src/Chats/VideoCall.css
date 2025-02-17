@@ -4,30 +4,23 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
-    background-color: #1a1a1a;
+    background-color: #000;
+    z-index: 1000;
 }
 
 #zmmtg-root {
     display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
     height: 100%;
-    z-index: 10000;
 }
 
-.video-call-container .spinner-border {
+.spinner-border {
     width: 3rem;
     height: 3rem;
-    color: #ffffff;
 }
 
-.video-call-container .alert {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    padding: 20px;
+.alert {
     max-width: 400px;
     margin: 0 auto;
 }

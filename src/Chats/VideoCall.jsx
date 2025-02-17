@@ -7,29 +7,37 @@ const VideoCall = ({ selectedUser, currentUser, onClose }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const loadZoomLibrary = () => {
-            // Create Zoom script element
-            const script = document.createElement('script');
-            script.src = 'https://source.zoom.us/2.9.7/lib/vendor/react.min.js';
-            script.async = true;
-            document.body.appendChild(script);
+        const loadZoomLibrary = async () => {
+            try {
+                // Request camera and microphone permissions first
+                await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-            // Load Zoom SDK after React
-            script.onload = () => {
-                const zoomScript = document.createElement('script');
-                zoomScript.src = 'https://source.zoom.us/2.9.7/zoom.min.js';
-                zoomScript.async = true;
-                document.body.appendChild(zoomScript);
+                // Create Zoom script element
+                const script = document.createElement('script');
+                script.src = 'https://source.zoom.us/2.9.7/lib/vendor/react.min.js';
+                script.async = true;
+                document.body.appendChild(script);
 
-                zoomScript.onload = initZoom;
-            };
+                // Load Zoom SDK after React
+                script.onload = () => {
+                    const zoomScript = document.createElement('script');
+                    zoomScript.src = 'https://source.zoom.us/2.9.7/zoom.min.js';
+                    zoomScript.async = true;
+                    document.body.appendChild(zoomScript);
+
+                    zoomScript.onload = initZoom;
+                };
+            } catch (err) {
+                setError('Failed to access camera/microphone: ' + err.message);
+                setIsLoading(false);
+            }
         };
 
         const initZoom = async () => {
             try {
                 const ZoomMtg = window.ZoomMtg;
                 
-                // Initialize Zoom
+                // Initialize Zoom with explicit device settings
                 ZoomMtg.setZoomJSLib('https://source.zoom.us/2.9.7/lib', '/av');
                 ZoomMtg.preLoadWasm();
                 ZoomMtg.prepareWebSDK();
@@ -61,17 +69,25 @@ const VideoCall = ({ selectedUser, currentUser, onClose }) => {
                 };
 
                 // Send message with meeting link
-                const messageResponse = await axios.post(
+                await axios.post(
                     `${import.meta.env.VITE_BASE_URL}api/createChat`,
                     messageData
                 );
 
-                // Initialize meeting
+                // Initialize meeting with explicit device settings
                 ZoomMtg.init({
                     leaveUrl: `${window.location.origin}/chat`,
                     disableCORP: true,
                     isSupportAV: true,
                     isSupportChat: true,
+                    videoOptions: {
+                        isResizable: true,
+                        viewSizes: ['fullscreen', 'default'],
+                        defaultQuality: 'high'
+                    },
+                    audioOptions: {
+                        autoAdjustMic: true
+                    },
                     success: () => {
                         ZoomMtg.join({
                             signature: signature,
@@ -83,6 +99,10 @@ const VideoCall = ({ selectedUser, currentUser, onClose }) => {
                             success: () => {
                                 setIsLoading(false);
                                 console.log('Joined meeting successfully');
+                                
+                                // Explicitly start video and unmute audio
+                                ZoomMtg.getClient().startVideo();
+                                ZoomMtg.getClient().unmuteAudio();
                             },
                             error: (joinError) => {
                                 setError('Failed to join meeting: ' + joinError.errorMessage);
@@ -130,6 +150,7 @@ const VideoCall = ({ selectedUser, currentUser, onClose }) => {
                         <span className="visually-hidden">Loading...</span>
                     </div>
                     <p className="mt-2">Initializing video call...</p>
+                    <small className="d-block mt-1">Please allow camera and microphone access when prompted</small>
                 </div>
             </div>
         );
