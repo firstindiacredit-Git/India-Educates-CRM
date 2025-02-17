@@ -21,6 +21,7 @@ const Chat = () => {
   const [showFilePreview, setShowFilePreview] = useState(false);
   const [groups, setGroups] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [showVideoCall, setShowVideoCall] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -39,9 +40,9 @@ const Chat = () => {
   const fetchGroups = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/groups`);
-      const userGroups = response.data.filter(group => 
-        group.members.some(member => 
-          member.userId === currentUser._id && 
+      const userGroups = response.data.filter(group =>
+        group.members.some(member =>
+          member.userId === currentUser._id &&
           !member.isRemoved
         )
       );
@@ -167,37 +168,37 @@ const Chat = () => {
       });
 
       socket.current.on('group_updated', (updatedGroup) => {
-        setGroups(prevGroups => 
-            prevGroups.map(group => 
-                group._id === updatedGroup._id ? updatedGroup : group
-            )
+        setGroups(prevGroups =>
+          prevGroups.map(group =>
+            group._id === updatedGroup._id ? updatedGroup : group
+          )
         );
       });
 
       socket.current.on('member_removed_from_group', (data) => {
         if (currentUser._id === data.memberId) {
           setGroups(prevGroups => prevGroups.filter(group => group._id !== data.groupId));
-          
+
           if (selectedUser && selectedUser._id === data.groupId) {
             setSelectedUser(null);
             setMessages([]);
           }
         } else {
-          setGroups(prevGroups => 
-              prevGroups.map(group => {
-                  if (group._id === data.groupId) {
-                      return {
-                          ...group,
-                          members: group.members.map(member => {
-                              if (member.userId === data.memberId) {
-                                  return { ...member, isRemoved: true };
-                              }
-                              return member;
-                          })
-                      };
-                  }
-                  return group;
-              })
+          setGroups(prevGroups =>
+            prevGroups.map(group => {
+              if (group._id === data.groupId) {
+                return {
+                  ...group,
+                  members: group.members.map(member => {
+                    if (member.userId === data.memberId) {
+                      return { ...member, isRemoved: true };
+                    }
+                    return member;
+                  })
+                };
+              }
+              return group;
+            })
           );
         }
       });
@@ -281,7 +282,7 @@ const Chat = () => {
             type: 'AdminUser'
           }
         };
-        
+
         console.log('Emitting group message:', groupMessageData);
         socket.current.emit('group_message', groupMessageData);
       } else {
@@ -321,10 +322,10 @@ const Chat = () => {
         <div className="d-flex align-items-center">
           <div className="position-relative">
             <img
-               src={`${import.meta.env.VITE_BASE_URL}${(isEmployee ? user.employeeImage : user.clientImage).replace('uploads/', '')}`}
-               className="avatar rounded-circle"
-               style={{ objectFit: 'contain' }}
-               alt={isEmployee ? user.employeeName : user.clientName}
+              src={`${import.meta.env.VITE_BASE_URL}${(isEmployee ? user.employeeImage : user.clientImage).replace('uploads/', '')}`}
+              className="avatar rounded-circle"
+              style={{ objectFit: 'contain' }}
+              alt={isEmployee ? user.employeeName : user.clientName}
             />
             {userNotifications > 0 && (
               <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -535,13 +536,41 @@ const Chat = () => {
         userId: currentUser._id,
         senderId
       });
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.filter(n => n.senderId !== senderId)
       );
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }
   };
+
+
+  useEffect(() => {
+    // Check for meeting parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const meetingNumber = urlParams.get('meeting');
+
+    if (meetingNumber) {
+      // Join the meeting
+      const joinMeeting = async () => {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}api/join-zoom-meeting`,
+            { meetingNumber }
+          );
+
+          if (response.data) {
+            setShowVideoCall(true);
+          }
+        } catch (error) {
+          console.error('Error joining meeting:', error);
+          toast.error('Failed to join meeting');
+        }
+      };
+
+      joinMeeting();
+    }
+  }, []);
 
   return (
     <>
@@ -593,6 +622,13 @@ const Chat = () => {
               file={selectedFile}
               onSend={handleFileSend}
             />
+            {showVideoCall && (
+              <VideoCall
+                selectedUser={selectedUser}
+                currentUser={currentUser} // or currentEmployee or currentClient
+                onClose={() => setShowVideoCall(false)}
+              />
+            )}
           </div>
         </div>
       </div>

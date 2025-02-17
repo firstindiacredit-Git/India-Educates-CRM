@@ -3,7 +3,8 @@ import { Modal, Dropdown, Button } from 'react-bootstrap';
 import EmojiPicker from 'emoji-picker-react';
 import RecordingWave from './RecordingWave';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import CustomColorPicker from '../pages/colorpicker/CustomColorPicker';
 import { MultiSelect } from "react-multi-select-component";
 import 'webrtc-adapter';
@@ -65,6 +66,7 @@ const ChatLayout = ({
     const [showVideoCall, setShowVideoCall] = useState(false);
     const [incomingCall, setIncomingCall] = useState(null);
     const [meetingData, setMeetingData] = useState(null);
+    const [showIncomingCallModal, setShowIncomingCallModal] = useState(false);
 
     // Modified userOptions mapping with debug logs
     const userOptions = Array.isArray(users) ? users.map(user => {
@@ -769,39 +771,8 @@ const ChatLayout = ({
             // Listen for incoming video call requests
             socket.current.on('incoming_video_call', (data) => {
                 console.log('Received incoming call:', data);
-                const caller = users.find(user => user._id === data.senderId);
-                if (caller) {
-                    setIncomingCall({
-                        ...data,
-                        callerName: caller.username || caller.employeeName || caller.clientName
-                    });
-
-                    toast.info(
-                        <div>
-                            <p>Incoming video call from {data.senderName}</p>
-                            <div className="d-flex justify-content-around mt-2">
-                                <button 
-                                    className="btn btn-success btn-sm"
-                                    onClick={() => handleAcceptCall(data)}
-                                >
-                                    Accept
-                                </button>
-                                <button 
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() => handleRejectCall(data)}
-                                >
-                                    Reject
-                                </button>
-                            </div>
-                        </div>,
-                        {
-                            autoClose: 15000,
-                            closeOnClick: false,
-                            draggable: false,
-                            closeButton: false
-                        }
-                    );
-                }
+                setIncomingCall(data);
+                setShowIncomingCallModal(true);
             });
 
             // Listen for call accepted
@@ -836,11 +807,41 @@ const ChatLayout = ({
         }
 
         try {
+            // Create a Zoom meeting first
+            const response = await axios.post(
+                `${import.meta.env.VITE_BASE_URL}api/create-zoom-meeting`,
+                {
+                    senderId: currentUser._id,
+                    receiverId: selectedUser._id
+                }
+            );
+
+            const { meetingNumber } = response.data;
+            const meetingLink = `${window.location.origin}/chat?meeting=${meetingNumber}`;
+
+            // Send the meeting link as a message
+            const messageData = {
+                senderId: currentUser._id,
+                senderType: currentUser.role === 'admin' ? 'AdminUser' : 
+                           currentUser.role === 'employee' ? 'Employee' : 'Client',
+                receiverId: selectedUser._id,
+                receiverType: selectedUser.userType,
+                message: `🎥 Video Call Link: ${meetingLink}\nClick to join the video call!`,
+                isSystemMessage: true
+            };
+
+            // Send message with meeting link
+            await axios.post(
+                `${import.meta.env.VITE_BASE_URL}api/createChat`,
+                messageData
+            );
+
             if (socket.current) {
                 const callData = {
                     senderId: currentUser._id,
                     receiverId: selectedUser._id,
-                    senderName: currentUser.username || currentUser.employeeName || currentUser.clientName
+                    senderName: currentUser.username || currentUser.employeeName || currentUser.clientName,
+                    meetingNumber: meetingNumber
                 };
 
                 console.log('Sending video call request:', callData);
@@ -848,7 +849,8 @@ const ChatLayout = ({
                 
                 setMeetingData({
                     isInitiator: true,
-                    partnerId: selectedUser._id
+                    partnerId: selectedUser._id,
+                    meetingNumber: meetingNumber
                 });
                 
                 setShowVideoCall(true);
@@ -900,6 +902,46 @@ const ChatLayout = ({
         <div className="container-fluid mt-2" style={{}}>
             <div className="row g-0 rounded-2" style={{ height: '94vh', border: '1px solid #00000061' }}>
 
+                {/* Incoming Call Modal */}
+                {showIncomingCallModal && incomingCall && (
+                    <div className="position-absolute top-50 start-50 translate-middle" 
+                         style={{ 
+                             zIndex: 1000, 
+                             backgroundColor: '#075E54',
+                             padding: '20px',
+                             borderRadius: '10px',
+                             boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+                             width: '300px'
+                         }}>
+                        <div className="text-center text-white mb-3">
+                            <i className="bi bi-telephone-fill fs-1"></i>
+                            <h5 className="mt-2">Incoming Video Call</h5>
+                            <p className="mb-3">from {incomingCall.senderName}</p>
+                        </div>
+                        <div className="d-flex justify-content-center gap-3">
+                            <button
+                                className="btn btn-success"
+                                onClick={() => {
+                                    handleAcceptCall(incomingCall);
+                                    setShowIncomingCallModal(false);
+                                }}
+                            >
+                                <i className="bi bi-telephone-fill me-2"></i>
+                                Accept
+                            </button>
+                            <button
+                                className="btn btn-danger"
+                                onClick={() => {
+                                    handleRejectCall(incomingCall);
+                                    setShowIncomingCallModal(false);
+                                }}
+                            >
+                                <i className="bi bi-telephone-x-fill me-2"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Chat Area */}
                 <div className="col-md-8 rounded-2" style={{ height: '93vh', backgroundColor: '#efeae2' }}>

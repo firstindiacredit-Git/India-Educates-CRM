@@ -40,10 +40,31 @@ const VideoCall = ({ selectedUser, currentUser, onClose }) => {
 
                 // Get meeting details
                 const response = await axios.post(
-                    `${import.meta.env.VITE_BASE_URL}api/create-zoom-meeting`
+                    `${import.meta.env.VITE_BASE_URL}api/create-zoom-meeting`,
+                    {
+                        senderId: currentUser._id,
+                        receiverId: selectedUser._id
+                    }
                 );
 
                 const { signature, meetingNumber, sdkKey } = response.data;
+
+                // Send meeting link in chat
+                const meetingLink = `${window.location.origin}/chat?meeting=${meetingNumber}`;
+                const messageData = {
+                    senderId: currentUser._id,
+                    senderType: currentUser.role === 'admin' ? 'AdminUser' : 
+                               currentUser.role === 'employee' ? 'Employee' : 'Client',
+                    receiverId: selectedUser._id,
+                    receiverType: selectedUser.userType,
+                    message: `Video Call Link: ${meetingLink}\nClick to join the video call!`
+                };
+
+                // Send message with meeting link
+                const messageResponse = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}api/createChat`,
+                    messageData
+                );
 
                 // Initialize meeting
                 ZoomMtg.init({

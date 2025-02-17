@@ -27,7 +27,7 @@ const Signin = () => {
     const fetchRoles = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/crm-access`);
-        console.log(response.data);
+        // console.log(response.data);
         setRoles(response.data);
       } catch (error) {
         console.error("Error fetching roles:", error);

@@ -21,6 +21,7 @@ const EmployeeChat = () => {
   const [showFilePreview, setShowFilePreview] = useState(false);
   const [groups, setGroups] = useState([]);
   const [notifications, setNotifications] = useState([]);
+  const [showVideoCall, setShowVideoCall] = useState(false);
 
   useEffect(() => {
     socket.current = io(import.meta.env.VITE_BASE_URL);
@@ -41,8 +42,8 @@ const EmployeeChat = () => {
 
       // Add this new listener for group updates
       socket.current.on('group_updated', (updatedGroup) => {
-        setGroups(prevGroups => 
-          prevGroups.map(group => 
+        setGroups(prevGroups =>
+          prevGroups.map(group =>
             group._id === updatedGroup._id ? updatedGroup : group
           )
         );
@@ -55,7 +56,7 @@ const EmployeeChat = () => {
             if (selectedUser?.userType === 'Group' && message.receiverId === selectedUser._id) {
               return [...prev, message];
             }
-            else if (selectedUser && 
+            else if (selectedUser &&
               (message.senderId === selectedUser._id || message.receiverId === selectedUser._id)) {
               return [...prev, message];
             }
@@ -117,7 +118,7 @@ const EmployeeChat = () => {
         if (currentEmployee._id === data.memberId) {
           // Remove the group from the local state if current employee is removed
           setGroups(prevGroups => prevGroups.filter(group => group._id !== data.groupId));
-          
+
           // If the removed group is currently selected, clear the selection
           if (selectedUser && selectedUser._id === data.groupId) {
             setSelectedUser(null);
@@ -125,7 +126,7 @@ const EmployeeChat = () => {
           }
         } else {
           // Update the group's member list in local state
-          setGroups(prevGroups => 
+          setGroups(prevGroups =>
             prevGroups.map(group => {
               if (group._id === data.groupId) {
                 return {
@@ -190,9 +191,9 @@ const EmployeeChat = () => {
   const fetchGroups = async () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/groups`);
-      const userGroups = response.data.filter(group => 
-        group.members.some(member => 
-          member.userId === currentEmployee._id && 
+      const userGroups = response.data.filter(group =>
+        group.members.some(member =>
+          member.userId === currentEmployee._id &&
           !member.isRemoved
         )
       );
@@ -222,7 +223,7 @@ const EmployeeChat = () => {
         userId: currentEmployee._id,
         senderId
       });
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.filter(n => n.senderId !== senderId)
       );
     } catch (error) {
@@ -275,53 +276,53 @@ const EmployeeChat = () => {
     if (!newMessage.trim() || !selectedUser) return;
 
     try {
-        const messageData = {
-            senderId: currentEmployee._id,
-            senderType: 'Employee',
-            senderName: currentEmployee.employeeName,
-            senderImage: currentEmployee.employeeImage,
-            receiverId: selectedUser._id,
-            receiverType: selectedUser.userType,
-            message: newMessage
+      const messageData = {
+        senderId: currentEmployee._id,
+        senderType: 'Employee',
+        senderName: currentEmployee.employeeName,
+        senderImage: currentEmployee.employeeImage,
+        receiverId: selectedUser._id,
+        receiverType: selectedUser.userType,
+        message: newMessage
+      };
+
+      console.log('Employee sending message:', messageData); // Debug log
+
+      setNewMessage('');
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/createChat`,
+        messageData
+      );
+
+      if (selectedUser.userType === 'Group') {
+        const groupMessageData = {
+          ...response.data,
+          groupId: selectedUser._id,
+          members: selectedUser.members,
+          senderDetails: {
+            name: currentEmployee.employeeName,
+            email: currentEmployee.emailid,
+            image: currentEmployee.employeeImage,
+            type: 'Employee'
+          }
         };
 
-        console.log('Employee sending message:', messageData); // Debug log
+        console.log('Emitting group message:', groupMessageData); // Debug log
+        socket.current.emit('group_message', groupMessageData);
+      } else {
+        socket.current.emit('private_message', {
+          receiverId: selectedUser._id,
+          message: response.data
+        });
+      }
 
-        setNewMessage('');
-
-        const response = await axios.post(
-            `${import.meta.env.VITE_BASE_URL}api/createChat`,
-            messageData
-        );
-
-        if (selectedUser.userType === 'Group') {
-            const groupMessageData = {
-                ...response.data,
-                groupId: selectedUser._id,
-                members: selectedUser.members,
-                senderDetails: {
-                    name: currentEmployee.employeeName,
-                    email: currentEmployee.emailid,
-                    image: currentEmployee.employeeImage,
-                    type: 'Employee'
-                }
-            };
-            
-            console.log('Emitting group message:', groupMessageData); // Debug log
-            socket.current.emit('group_message', groupMessageData);
-        } else {
-            socket.current.emit('private_message', {
-                receiverId: selectedUser._id,
-                message: response.data
-            });
-        }
-
-        // Add message locally immediately
-        // setMessages(prev => [...prev, response.data]);
+      // Add message locally immediately
+      // setMessages(prev => [...prev, response.data]);
 
     } catch (error) {
-        console.error('Error sending message:', error);
-        toast.error('Error sending message');
+      console.error('Error sending message:', error);
+      toast.error('Error sending message');
     }
   };
 
@@ -494,30 +495,57 @@ const EmployeeChat = () => {
 
   useEffect(() => {
     if (selectedUser?.userType === 'Group') {
-        const interval = setInterval(() => {
-            fetchGroupMessages(selectedUser._id);
-        }, 3000);
+      const interval = setInterval(() => {
+        fetchGroupMessages(selectedUser._id);
+      }, 3000);
 
-        return () => clearInterval(interval);
+      return () => clearInterval(interval);
     }
   }, [selectedUser]);
 
   const fetchChatSettings = async (otherUserId) => {
     try {
-        // Only fetch if we have valid IDs
-        if (!currentEmployee?._id || !otherUserId) {
-            console.log('Missing user IDs for chat settings');
-            return;
-        }
+      // Only fetch if we have valid IDs
+      if (!currentEmployee?._id || !otherUserId) {
+        console.log('Missing user IDs for chat settings');
+        return;
+      }
 
-        const response = await axios.get(
-            `${import.meta.env.VITE_BASE_URL}api/getChatSettings/${currentEmployee._id}/${otherUserId}`
-        );
-        // Handle the settings...
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}api/getChatSettings/${currentEmployee._id}/${otherUserId}`
+      );
+      // Handle the settings...
     } catch (error) {
-        console.error('Error fetching chat settings:', error);
+      console.error('Error fetching chat settings:', error);
     }
   };
+
+  useEffect(() => {
+    // Check for meeting parameter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const meetingNumber = urlParams.get('meeting');
+
+    if (meetingNumber) {
+      // Join the meeting
+      const joinMeeting = async () => {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_BASE_URL}api/join-zoom-meeting`,
+            { meetingNumber }
+          );
+
+          if (response.data) {
+            setShowVideoCall(true);
+          }
+        } catch (error) {
+          console.error('Error joining meeting:', error);
+          toast.error('Failed to join meeting');
+        }
+      };
+
+      joinMeeting();
+    }
+  }, []);
 
   return (
     <div id="mytask-layout">
@@ -569,6 +597,13 @@ const EmployeeChat = () => {
             file={selectedFile}
             onSend={handleFileSend}
           />
+          {showVideoCall && (
+            <VideoCall
+              selectedUser={selectedUser}
+              currentUser={currentUser} // or currentEmployee or currentClient
+              onClose={() => setShowVideoCall(false)}
+            />
+          )}
         </div>
       </div>
     </div>
