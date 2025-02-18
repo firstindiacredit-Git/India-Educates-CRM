@@ -251,13 +251,13 @@ const Sidebar = () => {
                 data-bs-target="#client-Components"
                 href="#"
               >
-                <i className={`icofont-user-male ${textColorClass}`} /> <span>Our Associates</span>{" "}
+                <i className={`icofont-users-alt-5 ${textColorClass}`} /> <span>Our Team</span>{" "}
                 <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
               </a>
               <ul className="sub-menu collapse" id="client-Components">
                 <li>
                   <Link className="ms-link" to="/clients">
-                    <span>Associates</span>
+                    <span>Members</span>
                   </Link>
                 </li>
               </ul>
@@ -269,13 +269,13 @@ const Sidebar = () => {
                 data-bs-target="#emp-Components"
                 href="#"
               >
-                <i className={`icofont-users-alt-5 ${textColorClass}`} /> <span>Our Agents</span>{" "}
+                <i className={`icofont-user-male ${textColorClass}`} /> <span>Our Associates</span>{" "}
                 <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
               </a>
               <ul className="sub-menu collapse" id="emp-Components">
                 <li>
                   <Link className="ms-link" to="/members">
-                    <span>Members</span>
+                    <span>Associates</span>
                   </Link>
                 </li>
                 <li>

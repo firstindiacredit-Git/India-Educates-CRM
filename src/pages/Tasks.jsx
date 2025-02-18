@@ -724,7 +724,7 @@ const Tasks = () => {
                     </div>
                   </div>
                 </div>{" "}
-                <div className="row g-3 border-bottom mb-3">
+                <div className="d-flex justify-content-between border-bottom mb-3">
                   <div className="col-12 col-md-4 mb-3">
                     <div className="d-flex">
                       {viewMode === 'row' ? (
@@ -772,7 +772,7 @@ const Tasks = () => {
                     )}
                   </div>
 
-                  <div className="col-12 col-md-4">
+                  {/* <div className="col-12 col-md-4">
                     <div className="input-group d-flex gap-2 align-items-center" style={{ width: "20rem" }}>
                       <span className="fw-bold">Filter by Date - </span>
                       <input
@@ -782,7 +782,7 @@ const Tasks = () => {
                         onChange={(e) => setFilterDate(e.target.value)}
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Row end  */}
@@ -955,103 +955,136 @@ const Tasks = () => {
 
                             return (
                               <div key={task._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                                <div className="card task-card h-100" style={{ backgroundColor }}>
-                                  <div className="card-body">
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                <div className="card task-card" style={{ 
+                                  backgroundColor,
+                                  height: '100%',
+                                  minHeight: '400px', // Set minimum height
+                                  display: 'flex',
+                                  flexDirection: 'column'
+                                }}>
+                                  <div className="card-body d-flex flex-column">
+                                    {/* Header */}
+                                    <div className="d-flex justify-content-between align-items-center mb-3">
                                       <span className="fw-bold fs-6">{index + 1}. </span>
-                                      <h5 className="fw-bold mb-0">{task.projectName}</h5>
-
+                                      <h5 className="card-title text-capitalize fw-bold text-center mb-0 text-truncate"
+                                        style={{ maxWidth: '200px' }}
+                                        title={task.projectName}>{task.projectName}
+                                      </h5>
                                       {task.taskImages && task.taskImages.length > 0 && (
                                         <button
-                                          className="btn btn-link"
+                                          className="btn btn-link p-0"
                                           onClick={() => handleOpenTaskImages(task)}
                                         >
                                           <i className="bi-paperclip fs-6" />
                                         </button>
                                       )}
                                     </div>
-                                    <input
-                                      className="form-control"
-                                      type="text"
-                                      name="taskTitle"
-                                      placeholder="Task Title"
-                                      value={task.taskTitle}
-                                      onChange={(e) => taskHandleChange(e, task._id)}
-                                      style={{
-                                        backgroundColor: 'transparent',
-                                        border: 'none',
-                                        fontWeight: 'bold',
-                                        width: '80%'
-                                      }}
-                                    />
-                                    <textarea
-                                      className="form-control mb-2"
-                                      rows="5"
-                                      name="description"
-                                      value={task.description}
-                                      onChange={(e) => taskHandleChange(e, task._id)}
-                                      style={{ resize: 'none',  backgroundColor: 'transparent' }}
-                                    />
-                                    <p className="mb-1 fw-semibold text-primary">Assigned to: {task.taskAssignPerson && task.taskAssignPerson.employeeName ? task.taskAssignPerson.employeeName : 'Unassigned'}</p>
-                                    <p className="mb-1 fw-semibold" style={{color:"green"}}>By: {task.assignedBy}</p>
-                                    <input
-                                      type="date"
-                                      className="form-control mb-2"
-                                      name="taskEndDate"
-                                      value={task.taskEndDate}
-                                      onChange={(e) => taskHandleChange(e, task._id)}
-                                    />
-                                    <select
-                                      className="form-select mb-2"
-                                      name="taskPriority"
-                                      value={task.taskPriority}
-                                      onChange={(e) => taskHandleChange(e, task._id)}
-                                    >
-                                      <option value="">Set Priority</option>
-                                      <option value="Highest">Highest</option>
-                                      <option value="Medium">Medium</option>
-                                      <option value="Lowest">Lowest</option>
-                                    </select>
 
-                                    <div className="d-flex justify-content-between align-items-center">
-                                      {task.taskStatus === 'Not Started' && (
-                                        <span className="badge bg-warning text-dark">Not Started</span>
-                                      )}
-                                      {task.taskStatus === 'In Progress' && (
-                                        <span className="badge bg-info text-dark">In Progress</span>
-                                      )}
-                                      {task.taskStatus === 'Completed' && (
-                                        <span className="badge bg-success">Completed</span>
-                                      )}
-                                      <button
-                                        className="btn btn-sm position-relative"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#taskMessage"
-                                        onClick={() => handleOpenMessages(task)}
-                                      >
-                                        <i className="bi bi-chat-left-dots"></i>
-                                        {notifications[task._id] > 0 && (
-                                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                            {notifications[task._id]}
-                                          </span>
-                                        )}
-                                      </button>
+                                    {/* Task Content - Using flex-grow to take available space */}
+                                    <div className="flex-grow-1">
+                                      <input
+                                        className="form-control mb-2"
+                                        type="text"
+                                        name="taskTitle"
+                                        placeholder="Task Title"
+                                        value={task.taskTitle}
+                                        onChange={(e) => taskHandleChange(e, task._id)}
+                                        style={{
+                                          backgroundColor: 'transparent',
+                                          border: 'none',
+                                          fontWeight: 'bold',
+                                          width: '100%'
+                                        }}
+                                      />
+                                      <textarea
+                                        className="form-control mb-3"
+                                        rows=""
+                                        name="description"
+                                        value={task.description}
+                                        onChange={(e) => taskHandleChange(e, task._id)}
+                                        style={{ 
+                                          resize: 'none', 
+                                          backgroundColor: 'transparent',
+                                          height: '90px' // Fixed height for description
+                                        }}
+                                      />
+                                      
+                                      {/* Task Details */}
+                                      <div className="mb-3">
+                                        <p className="mb-1 fw-semibold text-primary">
+                                          Assigned to: {task.taskAssignPerson && task.taskAssignPerson.employeeName ? task.taskAssignPerson.employeeName : 'Unassigned'}
+                                        </p>
+                                        <p className="mb-2 fw-semibold" style={{ color: "green" }}>
+                                          By: {task.assignedBy}
+                                        </p>
+                                      </div>
+
+                                      {/* Task Controls */}
+                                      <div className="mb-3">
+                                        <input
+                                          type="date"
+                                          className="form-control mb-2"
+                                          name="taskEndDate"
+                                          value={task.taskEndDate}
+                                          onChange={(e) => taskHandleChange(e, task._id)}
+                                        />
+                                        <select
+                                          className="form-select mb-2"
+                                          name="taskPriority"
+                                          value={task.taskPriority}
+                                          onChange={(e) => taskHandleChange(e, task._id)}
+                                        >
+                                          <option value="">Set Priority</option>
+                                          <option value="Highest">Highest</option>
+                                          <option value="Medium">Medium</option>
+                                          <option value="Lowest">Lowest</option>
+                                        </select>
+                                      </div>
                                     </div>
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                      <button
-                                        onClick={() => taskHandleSubmit(task._id)}
-                                        className="btn btn-sm btn-primary"
-                                      >
-                                        <i className="bi bi-check2"></i> Update
-                                      </button>
-                                      <button
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#dremovetask"
-                                        onClick={() => setDeletableId(task._id)}
-                                        className="btn btn-sm btn-danger text-white"
-                                      >
-                                        <i className="bi bi-trash"></i> Delete
-                                      </button>
+
+                                    {/* Footer Actions - Always at bottom */}
+                                    <div className="mt-auto">
+                                      <div className="d-flex justify-content-between align-items-center mb-2">
+                                        {task.taskStatus === 'Not Started' && (
+                                          <span className="badge bg-warning text-dark">Not Started</span>
+                                        )}
+                                        {task.taskStatus === 'In Progress' && (
+                                          <span className="badge bg-info text-dark">In Progress</span>
+                                        )}
+                                        {task.taskStatus === 'Completed' && (
+                                          <span className="badge bg-success">Completed</span>
+                                        )}
+                                        <button
+                                          className="btn btn-sm position-relative"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#taskMessage"
+                                          onClick={() => handleOpenMessages(task)}
+                                        >
+                                          <i className="bi bi-chat-left-dots"></i>
+                                          {notifications[task._id] > 0 && (
+                                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                              {notifications[task._id]}
+                                            </span>
+                                          )}
+                                        </button>
+                                      </div>
+                                      
+                                      <div className="d-flex justify-content-between gap-2">
+                                        <button
+                                          onClick={() => taskHandleSubmit(task._id)}
+                                          className="btn btn-sm btn-primary"
+                                        >
+                                          <i className="bi bi-check2"></i> Update
+                                        </button>
+                                        <button
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#dremovetask"
+                                          onClick={() => setDeletableId(task._id)}
+                                          className="btn btn-sm btn-danger text-white"
+                                        >
+                                          <i className="bi bi-trash"></i> Delete
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1262,7 +1295,7 @@ const Tasks = () => {
                               value={selectedEmployees[0]?.value || ""}
                               onChange={(e) => setSelectedEmployees([{ label: e.target.options[e.target.selectedIndex].text, value: e.target.value }])}
                             >
-                              <option value="" disabled>Select Employee</option>
+                              <option value="" disabled>Select Associates</option>
                               {assignEmployee.map((employee) => (
                                 <option key={employee.value} value={employee.value}>
                                   {employee.label}

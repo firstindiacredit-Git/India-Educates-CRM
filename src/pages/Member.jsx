@@ -743,7 +743,7 @@ const Member = () => {
                     <div className="card border-0 mb-4 no-bg">
                       <div className="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
                         <h3 className=" fw-bold flex-fill mb-0 mt-sm-0">
-                          AGENTS
+                          ASSOCIATES
                         </h3>
                         <button
                           type="button"
@@ -752,7 +752,7 @@ const Member = () => {
                           data-bs-target="#createemp"
                         >
                           <i className="icofont-plus-circle me-2 fs-6" />
-                          Add Agent
+                          Add Associate
                         </button>
 
                       </div>
@@ -789,7 +789,7 @@ const Member = () => {
                                 setSearchQuery(e.target.value);
                                 handleSearch(e.target.value);
                               }}
-                              placeholder="Enter Agent Name"
+                              placeholder="Enter Associate Name"
                             />
                             <button
                               type="button"
@@ -811,7 +811,7 @@ const Member = () => {
                   <div className="custom-loader"></div>
                 ) : employees.length === 0 ? (
                   <div className="text-center mt-4">
-                    <h1 className="text-muted">No agents available. Please add an agent.</h1>
+                    <h1 className="text-muted">No Associates available. Please add an Associate.</h1>
                   </div>
                 ) : (viewMode === 'grid' ? (
                   <div className="row g-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2 row-cols-xxl-2 row-deck py-1 pb-4">
@@ -1359,7 +1359,7 @@ const Member = () => {
                       id="createprojectlLabel"
                     >
                       {" "}
-                      Edit Agent
+                      Edit Associate
                     </h5>
                     <button
                       type="button"
@@ -1374,7 +1374,7 @@ const Member = () => {
                         htmlFor="exampleFormControlInput877"
                         className="form-label"
                       >
-                        Agent Name
+                        Associate Name
                       </label>
                       <input
                         type="text"
@@ -1391,7 +1391,7 @@ const Member = () => {
                         htmlFor="updateEmployeeImage"
                         className="form-label"
                       >
-                        Agent Image
+                        Associate Image
                       </label>
                       <input
                         className="form-control"
@@ -1454,7 +1454,7 @@ const Member = () => {
                               htmlFor="exampleFormControlInput1778"
                               className="form-label"
                             >
-                              Agent ID
+                              Associate ID
                             </label>
                             <input
                               type="text"
@@ -1864,7 +1864,7 @@ const Member = () => {
                       id="createprojectlLabel"
                     >
                       {" "}
-                      Add Agent
+                      Add Associate
                     </h5>
                     <button
                       type="button"
@@ -1879,13 +1879,13 @@ const Member = () => {
                         htmlFor="exampleFormControlInput877"
                         className="form-label"
                       >
-                        Agent Name<span className="text-danger">*</span>
+                        Associate Name<span className="text-danger">*</span>
                       </label>
                       <input
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput877"
-                        placeholder="Agent Name"
+                        placeholder="Associate Name"
                         name="employeeName"
                         value={formData.employeeName}
                         onChange={handleChange}
@@ -1896,7 +1896,7 @@ const Member = () => {
                         htmlFor="formFileMultipleoneone"
                         className="form-label"
                       >
-                        Agent Image <span className="text-danger">*</span>
+                        Associate Image <span className="text-danger">*</span>
                       </label>
                       <input
                         className="form-control"
@@ -1959,13 +1959,13 @@ const Member = () => {
                               htmlFor="exampleFormControlInput1778"
                               className="form-label"
                             >
-                              Agent ID <span className="text-danger">*</span>
+                              Associate ID <span className="text-danger">*</span>
                             </label>
                             <input
                               type="text"
                               className="form-control"
                               id="exampleFormControlInput1778"
-                              placeholder="Agent ID"
+                              placeholder="Associate ID"
                               name="employeeId"
                               value={formData.employeeId}
                               onChange={handleChange}

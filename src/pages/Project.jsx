@@ -372,7 +372,7 @@ const Project = () => {
     e.preventDefault();
     try {
       const formDataToSend = new FormData();
-      
+
       // Add all non-file fields
       Object.keys(projectFormData).forEach(key => {
         if (key !== 'projectImage' && key !== 'projectIcon' && key !== 'taskAssignPerson' && key !== 'clientAssignPerson') {
@@ -1000,10 +1000,10 @@ const Project = () => {
                                 <tr>
                                   <th>Sr.No.</th>
                                   <th>Project Name</th>
-                                  <th style={{ width: "6rem" }}>Clients</th>
+                                  <th style={{ width: "6rem" }}>Team</th>
                                   <th>Start Date</th>
                                   <th>End Date</th>
-                                  <th>Members</th>
+                                  <th>Associates</th>
                                   <th>Progress</th>
                                   <th>Edit</th>
                                   <th>Delete</th>
@@ -1226,10 +1226,10 @@ const Project = () => {
                                           </td>
                                           <td>
                                             <small>
-                                              <strong>Clients:</strong> {project.clientAssignPerson?.map(client => client.clientName).join(", ")}<br />
+                                              <strong>Team:</strong> {project.clientAssignPerson?.map(client => client.clientName).join(", ")}<br />
                                               <strong>Start:</strong> {getFormattedDate(project.projectStartDate)}<br />
                                               <strong>End:</strong> {getFormattedDate(project.projectEndDate)}<br />
-                                              <strong>Members:</strong> {project.taskAssignPerson.map(name => name.employeeName).join(", ")}<br />
+                                              <strong>Associates:</strong> {project.taskAssignPerson.map(name => name.employeeName).join(", ")}<br />
                                               <strong>Progress:</strong> {project.progress}%
                                             </small>
                                             <div className="progress mt-1" style={{ height: "10px" }}>
@@ -1338,15 +1338,17 @@ const Project = () => {
                                   style={{
                                     backgroundColor: project.backgroundColor || '#ffffff',
                                     color: project.backgroundColor ? getContrastColor(project.backgroundColor) : 'inherit',
-                                    height: '470px' // Fixed height for the card
+                                    height: '320px', // Reduced fixed height
+                                    display: 'flex',
+                                    flexDirection: 'column'
                                   }}
                                 >
                                   <div className="card-body d-flex flex-column">
-                                    <div className="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between align-items-center">
                                       <span className="fw-bold fs-5">{index + 1}. </span>
 
-                                      <div className="d-flex">
-                                        {project.projectIcon && (
+                                      <div className="d-flex flex-grow-1 justify-content-center">
+                                        {/* {project.projectIcon && (
                                           <img
                                             src={`${import.meta.env.VITE_BASE_URL}${project.projectIcon.replace('uploads/', '')}`}
                                             alt="Project Icon"
@@ -1364,11 +1366,13 @@ const Project = () => {
                                               modal.show();
                                             }}
                                           />
-                                        )}
-                                        <h5 className="card-title text-capitalize fw-bold">
-                                          <Link to="/tasks" state={{ projectName: project.projectName }}>
-                                            {project.projectName}
-                                          </Link>
+                                        )} */}
+                                        <h5 className="card-title text-capitalize fw-bold text-center mb-0 text-truncate"
+                                          style={{ maxWidth: '200px' }}
+                                          title={project.projectName}>
+                                          {/* <Link to="/tasks" state={{ projectName: project.projectName }}> */}
+                                          {project.projectName}
+                                          {/* </Link> */}
                                         </h5>
                                       </div>
 
@@ -1382,98 +1386,99 @@ const Project = () => {
                                       )}
                                     </div>
 
-                                    <div className="">
+                                    <div className="mt-2">
                                       <div className="d-flex justify-content-between">
-                                        <span className="text-muted fw-bold">Start: {getFormattedDate(project.projectStartDate)}</span>
-                                        <span className="text-muted fw-bold">End: {getFormattedDate(project.projectEndDate)}</span>
+                                        <span className="text-muted fw-bold small">Start: {getFormattedDate(project.projectStartDate)}</span>
+                                        <span className="text-muted fw-bold small">End: {getFormattedDate(project.projectEndDate)}</span>
                                       </div>
 
-                                      <div className="mt-1">
-                                        <strong>Members:</strong>
+                                      <div className="mt-2">
+                                        <strong>Associates:</strong>
                                         <div
                                           className="ms-2 members-list"
                                           style={{
-                                            height: '110px',
+                                            height: '100px', // Reduced height
                                             overflowY: 'auto',
-                                            scrollbarWidth: 'none',  // Hide scrollbar in Firefox
-                                            msOverflowStyle: 'none',  // Hide scrollbar in IE/Edge
-                                            '&::-webkit-scrollbar': {  // Hide scrollbar in Chrome/Safari
+                                            scrollbarWidth: 'none',
+                                            msOverflowStyle: 'none',
+                                            '&::-webkit-scrollbar': {
                                               display: 'none'
                                             }
                                           }}
                                         >
                                           {project.taskAssignPerson.map((member, idx) => (
-                                            <div key={idx} className="mb-2 text-dark">
-                                              <div className="d-flex gap-2" style={{ width: '20rem' }}>
-                                                <span className="">
-                                                  <i className=" bi bi-dot" />
+                                            <div key={idx} className="mb-1 text-dark">
+                                              <div className="d-flex gap-2">
+                                                <span className="text-truncate" style={{ maxWidth: '200px' }} title={member.employeeName}>
+                                                  <i className="bi bi-dot" />
                                                   {member.employeeName}
                                                 </span>
-                                                <span className="" style={{ width: '13rem' }}>
+                                                {/* <span className="" style={{ width: '13rem' }}>
                                                   {project.memberStats?.find(stat => stat._id === member._id) && (
                                                     <EmployeeTaskProgress
                                                       employee={project.memberStats.find(stat => stat._id === member._id)}
                                                     />
                                                   )}
-                                                </span>
+                                                </span> */}
                                               </div>
                                             </div>
                                           ))}
                                         </div>
                                       </div>
 
-                                      <div className="mt-1">
-                                        <strong>Clients:</strong>
+                                      <div className="mt-2">
+                                        <strong>Team:</strong>
                                         <div
-                                          className=" clients-list"
+                                          className="clients-list"
                                           style={{
-                                            height: '50px',
+                                            height: '40px', // Reduced height
                                             overflowY: 'auto',
-                                            scrollbarWidth: 'none',  // Hide scrollbar in Firefox
-                                            msOverflowStyle: 'none',  // Hide scrollbar in IE/Edge
-                                            '&::-webkit-scrollbar': {  // Hide scrollbar in Chrome/Safari
+                                            scrollbarWidth: 'none',
+                                            msOverflowStyle: 'none',
+                                            '&::-webkit-scrollbar': {
                                               display: 'none'
                                             }
                                           }}
                                         >
                                           {project.clientAssignPerson?.map((client, idx) => (
-                                            <div key={idx} className="fw-bold text-primary">
-                                              <span className="me-1 fw-bold"><i className="bi bi-dot"></i></span> {client.clientName}
+                                            <div key={idx} className="fw-bold text-primary text-truncate"
+                                              style={{ maxWidth: '200px' }}
+                                              title={client.clientName}>
+                                              <span className="me-1 fw-bold"><i className="bi bi-dot"></i></span>
+                                              {client.clientName}
                                             </div>
                                           ))}
                                         </div>
                                       </div>
                                     </div>
 
-                                    <div className="mt-2">
-                                      <ProjectProgressBar project={project} />
+                                    <div className=" d-flex justify-content-between align-items-center mt-auto">
+                                      {/* <ProjectProgressBar project={project} /> */}
+                                      <span className="d-flex justify-content-start text-muted small">
+                                        {getFormattedDate(project.projectDate, true)}
+                                      </span>
                                       <div className="d-flex justify-content-between">
                                         <button
                                           onClick={() => setToEdit(project._id)}
-                                          className="btn icofont-edit text-success fs-5"
+                                          className="btn icofont-edit text-success"
                                           data-bs-toggle="modal"
                                           data-bs-target="#editproject"
                                           title="Edit"
-                                        >
-
-                                        </button>
+                                        />
                                         <button
-                                          className="btn icofont-ui-delete text-danger fs-5"
+                                          className="btn icofont-ui-delete text-danger"
                                           data-bs-toggle="modal"
                                           data-bs-target="#deleteproject"
                                           onClick={() => setDeletableId(project._id)}
                                           title="Delete"
-                                        >
-
-                                        </button>
+                                        />
                                         <button
-                                          className="btn bi bi-chat-left-dots text-primary position-relative fs-5"
+                                          className="btn bi bi-chat-left-dots text-primary position-relative"
                                           data-bs-toggle="modal"
                                           data-bs-target="#addUser"
                                           onClick={() => handleOpenMessages(project)}
                                           title="Message"
                                         >
-
                                           {notifications[project._id] > 0 && (
                                             <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                                               {notifications[project._id]}
@@ -1481,9 +1486,7 @@ const Project = () => {
                                           )}
                                         </button>
                                       </div>
-                                      <div className="d-flex justify-content-start text-muted">
-                                        {getFormattedDate(project.projectDate, true)}
-                                      </div>
+
                                     </div>
                                   </div>
                                 </div>
@@ -1550,26 +1553,6 @@ const Project = () => {
                         value={formData.projectCategory}
                         onChange={handleChange}
                       />
-                      <span className="d-flex justify-content-center text-muted">OR</span>
-                      <select
-                        className="form-select"
-                        aria-label="Default select Project Category"
-                        name="projectCategory"
-                        value={formData.projectCategory}
-                        onChange={handleChange}
-                      >
-                        <option selected="">Add Category</option>
-                        <option value={"UI/UX Design"}>UI/UX Design</option>
-                        <option value={"Website Developement"}>
-                          Website Developement
-                        </option>
-                        <option value={"App Development"}>
-                          App Development
-                        </option>
-                        <option value={"Digital Marketing"}>
-                          Digital Marketing
-                        </option>
-                      </select>
                     </div>
 
                     <div className="mb-3">
@@ -1644,7 +1627,7 @@ const Project = () => {
                               htmlFor="formFileMultipleone"
                               className="form-label"
                             >
-                              Project Assign Person <span className="text-danger">*</span>
+                              Project Assign Associates <span className="text-danger">*</span>
                             </label>
                             <div>
                               <MultiSelect
@@ -1659,7 +1642,7 @@ const Project = () => {
                         <div className="row g-3 mb-3">
                           <div className="col-sm-12">
                             <label className="form-label">
-                              Project Assign Associate
+                              Project Assign Team
                             </label>
                             <div>
                               <MultiSelect
@@ -1858,7 +1841,7 @@ const Project = () => {
                               htmlFor="formFileMultipleone"
                               className="form-label"
                             >
-                              Task Assign Person
+                              Project Assign Associates
                             </label>
                             <div>
                               <MultiSelect
@@ -1873,7 +1856,7 @@ const Project = () => {
                         <div className="row g-3 mb-3">
                           <div className="col-sm-12">
                             <label className="form-label">
-                              Project Assign Associate
+                              Project Assign Team
                             </label>
                             <div>
                               <MultiSelect

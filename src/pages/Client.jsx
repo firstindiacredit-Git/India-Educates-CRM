@@ -313,7 +313,7 @@ const Client = () => {
                                     <div className="col-md-12">
                                         <div className="card border-0 mb-2 no-bg">
                                             <div className="card-header py-3 px-0 d-flex align-items-center  justify-content-between border-bottom">
-                                                <h3 className=" fw-bold flex-fill mb-0">Associates</h3>
+                                                <h3 className=" fw-bold flex-fill mb-0">Team Members</h3>
                                                 <div className="col-auto d-flex">
                                                     <button
                                                         type="button"
@@ -322,9 +322,8 @@ const Client = () => {
                                                         data-bs-target="#createproject"
                                                     >
                                                         <i className="icofont-plus-circle me-2 fs-6" />
-                                                        Add Associate
+                                                        Add Team Member
                                                     </button>
-
                                                 </div>
                                             </div>
 
@@ -361,7 +360,7 @@ const Client = () => {
                                                                 setSearchQuery(e.target.value);
                                                                 handleSearchSubmit(e.target.value);
                                                             }}
-                                                            placeholder="Enter Associate Name"
+                                                            placeholder="Enter Member Name"
                                                         />
                                                         <button
                                                             type="button"
@@ -382,7 +381,7 @@ const Client = () => {
                                     <div className="custom-loader "></div>
                                 ) : clients.length === 0 ? (
                                     <div className="text-center mt-4">
-                                        <h1 className="text-muted">No Associates available. Please add a associate.</h1>
+                                        <h1 className="text-muted">No Members available. Please add a Member.</h1>
                                     </div>
                                 ) : (
                                     viewMode === 'grid' ? (
@@ -518,7 +517,7 @@ const Client = () => {
                                                         <table id="myProjectTable" className="table table-hover align-middle mb-0" style={{ width: '100%' }}>
                                                             <thead>
                                                                 <tr>
-                                                                    <th>Client</th>
+                                                                    <th>Member</th>
                                                                     <th>Business Name</th>
                                                                     <th>Contact</th>
                                                                     <th>Address</th>
@@ -607,7 +606,7 @@ const Client = () => {
                                     <div className="modal-header">
                                         <h5 className="modal-title  fw-bold" id="createprojectlLabel">
                                             {" "}
-                                            Add Associate
+                                            Add Member
                                         </h5>
                                         <button
                                             type="button"
@@ -619,13 +618,13 @@ const Client = () => {
                                     <div className="modal-body">
                                         <div className="mb-3">
                                             <label htmlFor="exampleFormControlInput877" className="form-label">
-                                                Associate Name <span className="text-danger">*</span>
+                                                Member Name <span className="text-danger">*</span>
                                             </label>
                                             <input
                                                 type="text"
                                                 className="form-control"
                                                 id="exampleFormControlInput877"
-                                                placeholder="Associate Name"
+                                                placeholder="Member Name"
                                                 name="clientName" value={formData.clientName} onChange={handleChange}
                                             />
                                         </div>
@@ -888,12 +887,12 @@ const Client = () => {
                             <div className="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                                 <div className="modal-content">
                                     <div className="modal-header">
-                                        <h5 className="modal-title fw-bold" id="createprojectlLabel">Edit Associate</h5>
+                                        <h5 className="modal-title fw-bold" id="createprojectlLabel">Edit Member</h5>
                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
                                     </div>
                                     <div className="modal-body">
                                         <div className="mb-3">
-                                            <label htmlFor="exampleFormControlInput877" className="form-label">Associate Name</label>
+                                            <label htmlFor="exampleFormControlInput877" className="form-label">Member Name</label>
                                             <input
                                                 type="text"
                                                 className="form-control"

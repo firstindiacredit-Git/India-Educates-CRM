@@ -367,11 +367,11 @@ const ProjectDashboard = () => {
   };
 
   const projectsChartData = createChartData('Projects', totalProjects, 'rgba(255, 99, 132, 0.6)');
-  const clientsChartData = createChartData('Associates', totalClients, 'rgba(54, 162, 235, 0.6)');
-  const employeesChartData = createChartData('Agents', totalEmployees, 'rgba(75, 192, 192, 0.6)');
+  const clientsChartData = createChartData('Team', totalClients, 'rgba(54, 162, 235, 0.6)');
+  const employeesChartData = createChartData('Associates', totalEmployees, 'rgba(75, 192, 192, 0.6)');
 
   const chartData = {
-    labels: ['Projects', 'Clients', 'Employees'],
+    labels: ['Projects', 'Team', 'Associates'],
     datasets: [
       {
         label: 'Total Count',
@@ -1507,7 +1507,7 @@ const ProjectDashboard = () => {
                     <Link to="/clients">
                       <div className="card shadow-lg" style={darkModeStyles.card}>
                         <div className="card-body">
-                          <h5 className="card-title text-center">Associates</h5>
+                          <h5 className="card-title text-center">Team</h5>
                           <h2 className="text-center mb-4" style={{ color: 'rgba(54, 162, 235, 1)' }}>{totalClients}</h2>
                           <Bar data={clientsChartData} options={chartOptions} />
                         </div>
@@ -1518,7 +1518,7 @@ const ProjectDashboard = () => {
                     <Link to="/members">
                       <div className="card shadow-lg" style={darkModeStyles.card}>
                         <div className="card-body">
-                          <h5 className="card-title text-center">Agents</h5>
+                          <h5 className="card-title text-center">Associates</h5>
                           <h2 className="text-center mb-4" style={{ color: 'rgba(75, 192, 192, 1)' }}>{totalEmployees}</h2>
                           <Bar data={employeesChartData} options={chartOptions} />
                         </div>

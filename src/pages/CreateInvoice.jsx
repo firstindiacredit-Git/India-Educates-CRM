@@ -267,11 +267,20 @@ const CreateInvoice = () => {
 
 
 
-  const [rows, setRows] = useState([{ item: '', description: '', rate: '', quantity: '', price: 0, gstPercentage: 0, igst: 0, cgst: 0, sgst: 0 }]);
-  const [total, setTotal] = useState({ subtotal: 0, gstTotal: 0, grandTotal: 0 });
+  const [rows, setRows] = useState([{ 
+    item: '', 
+    description: '', 
+    rate: '', 
+    quantity: '', 
+    total: 0  // Changed from price, removed GST-related fields
+  }]);
+
+  const [total, setTotal] = useState({
+    grandTotal: 0  // Simplified total object
+  });
 
   const handleAddRow = () => {
-    setRows([...rows, { item: '', description: '', rate: '', quantity: '', price: 0, gstPercentage: 0, igst: 0, cgst: 0, sgst: 0 }]);
+    setRows([...rows, { item: '', description: '', rate: '', quantity: '', total: 0 }]);
   };
   const handleDeleteRow = (index) => {
     const newRows = rows.filter((row, i) => i !== index);
@@ -283,25 +292,10 @@ const CreateInvoice = () => {
     const newRows = rows.map((row, i) => {
       if (i === index) {
         const updatedRow = { ...row, [field]: value };
-        if (field === 'rate' || field === 'quantity' || field === 'gstPercentage') {
-          const rate = parseFloat(updatedRow.rate.replace(/,/g, '')) || 0; // Remove commas for calculation
+        if (field === 'rate' || field === 'quantity') {
+          const rate = parseFloat(updatedRow.rate.replace(/,/g, '')) || 0;
           const quantity = parseInt(updatedRow.quantity, 10) || 0;
-          const gstPercentage = parseInt(updatedRow.gstPercentage)
-          const gstAmount = (rate * quantity * gstPercentage) / 100;
-          let igst, cgst, sgst;
-          if (selectedState === 'HR') {
-            igst = 0;
-            cgst = gstAmount / 2;
-            sgst = gstAmount / 2;
-          } else {
-            igst = gstAmount;
-            cgst = 0;
-            sgst = 0;
-          }
-          updatedRow.price = rate * quantity;
-          updatedRow.igst = igst;
-          updatedRow.cgst = cgst;
-          updatedRow.sgst = sgst;
+          updatedRow.total = rate * quantity;  // Calculate row total
         }
         return updatedRow;
       }
@@ -329,19 +323,14 @@ const CreateInvoice = () => {
   };
 
   const updateTotal = (newRows) => {
-    const subtotal = newRows.reduce((acc, row) => acc + row.price, 0);
-    const gstTotal = newRows.reduce((acc, row) => acc + row.igst + row.cgst + row.sgst, 0);
-    const grandTotal = subtotal + gstTotal;
-    setTotal({ subtotal, gstTotal, grandTotal });
+    const grandTotal = newRows.reduce((acc, row) => acc + row.total, 0);
+    setTotal({ grandTotal });
 
     setFormData(prevFormData => ({
       ...prevFormData,
       table: newRows,
-      amount: subtotal,
-      totalGst: gstTotal,
       total: grandTotal
     }));
-    // console.log(formData);
   };
   useEffect(() => {
     updateTotal(rows);
@@ -541,59 +530,8 @@ const CreateInvoice = () => {
                       </div>
                     </div>
                   </div>
-                  {/* logo */}
-                  <div className="d-flex flex-column align-items-end">
-                    <div className="d-flex mb-2 no-print">
-                      {/* Add logo dropdown */}
-                      <select
-                        className="form-select me-2"
-                        onChange={(e) => {
-                          // console.log('Selected value:', e.target.value); // Debug log
-                          handleStoredLogoSelect(e.target.value);
-                        }}
-                        style={{ maxWidth: '200px' }}
-                      >
-                        <option value="">Select Existing Logo</option>
-                        {Array.isArray(storedLogos) && storedLogos.map((logoPath, index) => {
-                          // console.log('Logo path:', logoPath); // Debug log
-                          return (
-                            <option key={index} value={logoPath}>
-                              {getLogoDisplayName(logoPath)}
-                            </option>
-                          );
-                        })}
-                      </select>
-
-                      {/* Existing file input */}
-                      <input
-                        type="file"
-                        name="logo"
-                        onChange={handleLogoChange}
-                        accept="image/*"
-                        className="form-control"
-                        style={{ maxWidth: '250px' }}
-                      />
-                    </div>
-                    {logo && (
-                      <img
-                        style={{ width: "10rem", objectFit: "contain" }}
-                        src={logo}
-                        alt="Company Logo"
-                        onError={(e) => {
-                          console.error('Failed to load image from:', logo);
-                          // Remove 'uploads/' and try again if it exists in the path
-                          if (logo.includes('uploads/')) {
-                            const retryUrl = `${import.meta.env.VITE_BASE_URL}${logo.split('uploads/')[1]}`;
-                            // console.log('Retrying with:', retryUrl);
-                            e.target.src = retryUrl;
-                          } else {
-                            // Set a default logo or hide the image
-                            e.target.style.display = 'none';
-                          }
-                        }}
-                      />
-                    )}
-                  </div>
+                
+                  <img src="Images/IndiaEducatesLogo.png" alt="Company Logo" style={{ width: "12rem", objectFit: "contain" }} />
                 </div>
 
 
@@ -620,7 +558,7 @@ const CreateInvoice = () => {
                         }
                       }}
                     >
-                      <option value="">Select Client</option>
+                      <option value="">Select Team Member</option>
                       {clients.map(client => (
                         <option key={client._id} value={client._id}>
                           {client.clientName}
@@ -653,7 +591,7 @@ const CreateInvoice = () => {
                   </div>
 
                 </div>
-                <div className="d-flex justify-content-around mt-2 ">
+                {/* <div className="d-flex justify-content-around mt-2 ">
                   <div className="d-flex">
                     <span className="fw-bold" style={{ textWrap: "nowrap", padding: "8px" }}>Country of Supply :</span>
                     <select
@@ -688,156 +626,63 @@ const CreateInvoice = () => {
                       ))}
                     </select>
                   </div>
-                </div>
+                </div> */}
                 <div className="a4-height" style={{ marginTop: "-20px" }}>
                   {selectedCountry.length > 0 ?
 
                     <table className="items border-light">
-                      {selectedState === 'HR' ?
-                        <tbody >
-                          <tr >
-                            <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
-                            <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
-                            <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
-                            <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
-                            <th style={{ width: 60, background: "#fe6730", color: "white" }} className="border-secondary">GST %</th>
-                            {/* <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">IGST</th> */}
-                            <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">CGST</th>
-                            <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">SGST</th>
-                          </tr>
-                          {rows.map((row, index) => (
-                            <tr key={index} className="item-row ">
-                              <td className="item-name border-secondary">
-                                <div className="delete-wpr ">
-                                  <textarea rows="2" style={{ border: "none" }} value={row.item} onChange={(e) => handleInputChange(e, index, 'item')} />
-                                  <a className="delete" href="javascript:;" onClick={() => handleDeleteRow(index)} title="Remove row">X</a>
-                                </div>
-                              </td>
-                              <td className="description border-secondary">
-                                <textarea rows="2" style={{ border: "none" }} value={row.description} onChange={(e) => handleInputChange(e, index, 'description')} />
-                              </td>
-                              <td className="border-secondary">
-                                <textarea
-                                  style={{ border: "none" }}
-                                  className="rate"
-                                  value={row.rate}
-                                  onChange={(e) => handleInputChange(e, index, 'rate')}
-                                  onBlur={(e) => handleBlur(e, index, 'rate')}
-                                />
-                              </td>
-                              <td className="border-secondary">
-                                <textarea rows="2" style={{ border: "none" }} className="quantity" value={row.quantity} onChange={(e) => handleInputChange(e, index, 'quantity')} />
-                              </td >
-                              <td className="border-secondary">
-                                <textarea rows="2" style={{ border: "none" }} className="gstPercentage" value={row.gstPercentage} onChange={(e) => handleInputChange(e, index, 'gstPercentage')} />
-                              </td>
-                              {/* <td className="border-secondary">
-                                 <span className="igst">₹ {row.igst.toFixed(2)}</span>
-                               </td> */}
-                              <td className="border-secondary">
-                                <span className="cgst">₹ {formatNumber(row.cgst)}</span>
-                              </td>
-                              <td className="border-secondary">
-                                <span className="sgst">₹ {formatNumber(row.sgst)}</span>
-                              </td>
-                            </tr>
-                          ))}
-                          <tr id="hiderow" >
-                            <td colSpan={5} className="border-secondary">
-                              <a id="addrow" href="javascript:;" onClick={handleAddRow} title="Add a row">Add a row</a>
+                      <tbody>
+                        <tr>
+                          <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
+                          <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
+                          <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
+                          <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
+                          <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Total</th>
+                        </tr>
+                        {rows.map((row, index) => (
+                          <tr key={index} className="item-row">
+                            <td className="item-name border-secondary">
+                              <div className="delete-wpr">
+                                <textarea style={{ border: "none" }} value={row.item} onChange={(e) => handleInputChange(e, index, 'item')} />
+                                <a className="delete" href="javascript:;" onClick={() => handleDeleteRow(index)} title="Remove row">X</a>
+                              </div>
+                            </td>
+                            <td className="description border-secondary">
+                              <textarea style={{ border: "none" }} value={row.description} onChange={(e) => handleInputChange(e, index, 'description')} />
+                            </td>
+                            <td className="border-secondary">
+                              <textarea
+                                style={{ border: "none" }}
+                                className="rate"
+                                value={row.rate}
+                                onChange={(e) => handleInputChange(e, index, 'rate')}
+                                onBlur={(e) => handleBlur(e, index, 'rate')}
+                              />
+                            </td>
+                            <td className="border-secondary">
+                              <textarea style={{ border: "none" }} className="quantity" value={row.quantity} onChange={(e) => handleInputChange(e, index, 'quantity')} />
+                            </td>
+                            <td className="border-secondary">
+                              <span>₹ {formatNumber(row.total)}</span>
                             </td>
                           </tr>
-                          <tr>
-                            <td colSpan={4} className="blank border-secondary">Amount</td>
-                            <td colSpan={2} className="total-line border-secondary">₹ {formatNumber(total.subtotal)}</td>
-                          </tr>
-                          <tr>
-                            <td colSpan={4} className="blank border-secondary">Total GST</td>
-                            <td colSpan={2} className="total-line border-secondary">₹ {formatNumber(total.gstTotal)}</td>
-                          </tr>
-                          <tr>
-                            <td colSpan={4} className="blank border-secondary">Total (INR)</td>
-                            <td colSpan={2} className="total-line border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}>₹ {formatNumber(total.grandTotal)}</td>
-                          </tr>
-                        </tbody>
-                        :
-                        <tbody >
-                          <tr >
-                            <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
-                            <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
-                            <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
-                            <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
-                            <th style={{ width: 60, background: "#fe6730", color: "white" }} className="border-secondary">GST %</th>
-                            <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">IGST</th>
-                            {/* <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">CGST</th>
-                                <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">SGST</th> */}
-                          </tr>
-                          {rows.map((row, index) => (
-                            <tr key={index} className="item-row ">
-                              <td className="item-name border-secondary">
-                                <div className="delete-wpr ">
-                                  <textarea style={{ border: "none" }} value={row.item} onChange={(e) => handleInputChange(e, index, 'item')} />
-                                  <a className="delete" href="javascript:;" onClick={() => handleDeleteRow(index)} title="Remove row">X</a>
-                                </div>
-                              </td>
-                              <td className="description border-secondary">
-                                <textarea style={{ border: "none" }} value={row.description} onChange={(e) => handleInputChange(e, index, 'description')} />
-                              </td>
-                              <td className="border-secondary">
-                                <textarea
-                                  style={{ border: "none" }}
-                                  className="rate"
-                                  value={row.rate}
-                                  onChange={(e) => handleInputChange(e, index, 'rate')}
-                                  onBlur={(e) => handleBlur(e, index, 'rate')}
-                                />
-                              </td>
-                              <td className="border-secondary">
-                                <textarea style={{ border: "none" }} className="quantity" value={row.quantity} onChange={(e) => handleInputChange(e, index, 'quantity')} />
-                              </td >
-                              <td className="border-secondary">
-                                <textarea style={{ border: "none" }} className="gstPercentage" value={row.gstPercentage} onChange={(e) => handleInputChange(e, index, 'gstPercentage')} />
-                              </td>
-                              <td className="border-secondary">
-                                <span className="igst">₹ {formatNumber(row.igst)}</span>
-                              </td>
-                              {/* <td className="border-secondary">
-                                    <span className="cgst">₹ {row.cgst.toFixed(2)}</span>
-                                  </td>
-                                  <td className="border-secondary">
-                                    <span className="sgst">₹ {row.sgst.toFixed(2)}</span>
-                                  </td> */}
-                            </tr>
-                          ))}
-                          <tr id="hiderow" >
-                            <td colSpan={5} className="border-secondary">
-                              <a id="addrow" href="javascript:;" onClick={handleAddRow} title="Add a row">Add a row</a>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td colSpan={3} className="blank border-secondary"></td>
-                            <td colSpan={2} className="total-line border-secondary">Amount</td>
-                            <td className="total-value border-secondary">
-                              <div id="subtotal">₹ {formatNumber(total.subtotal)}</div>
-                            </td>
-                          </tr>
-                          <tr>
+                        ))}
+                        <tr id="hiderow">
+                          <td colSpan={5} className="border-secondary">
+                            <a id="addrow" href="javascript:;" onClick={handleAddRow} title="Add a row">Add a row</a>
+                          </td>
+                        </tr>
+                        <tr>
                             <td colSpan={3} className="blank border-secondary"> </td>
-                            <td colSpan={2} className="total-line border-secondary">Total GST</td>
-                            <td className="total-value border-secondary"><div id="total-gst">₹ {formatNumber(total.gstTotal)}</div></td>
+                            <td colSpan={1} className="total-line border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}>Total</td>
+                            <td className="total-value border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}><div id="grand-total" style={{ color: "#0A9400", width: "max-content" }}>₹ {formatNumber(total.grandTotal)}</div></td>
                           </tr>
-                          <tr>
-                            <td colSpan={3} className="blank border-secondary"> </td>
-                            <td colSpan={2} className="total-line border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}>Total (INR)</td>
-                            <td className="total-value border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}><div id="grand-total" style={{ background: "#fe6730", color: "white", width: "max-content" }}>₹ {formatNumber(total.grandTotal)}</div></td>
-                          </tr>
-                        </tbody>
-                      }
+                      </tbody>
                     </table>
                     :
                     <div style={{ height: "90px" }}></div>
                   }
-                  <div style={{ width: "45%", marginTop: "-60px" }}>
+                  <div style={{ width: "45%" }}>
                     <div className="p-2 rounded" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
                       <h2 className="h5" style={{ backgroundColor: "#F3BCA7", border: "none",color:'#0a9400' }}>Bank Details</h2>
                       <table className="items " style={{ backgroundColor: "#F3BCA7", border: "none", marginTop: "-1px" }}>
