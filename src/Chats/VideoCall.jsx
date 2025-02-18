@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './VideoCall.css';
 
 const VideoCall = ({ selectedUser, currentUser, onClose, socket }) => {
@@ -8,108 +8,98 @@ const VideoCall = ({ selectedUser, currentUser, onClose, socket }) => {
     const remoteVideoRef = useRef(null);
     const peerConnection = useRef(null);
     const localStream = useRef(null);
+    const connectionEstablished = useRef(false);
 
-    useEffect(() => {
-        const initializeCall = async () => {
-            try {
-                console.log('Requesting media devices...');
-                // Get local media stream with explicit constraints
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: {
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 },
-                        facingMode: 'user'
+    const initializePeerConnection = useCallback(async () => {
+        if (connectionEstablished.current) return;
+
+        try {
+            console.log('Requesting media devices...');
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    facingMode: 'user'
+                },
+                audio: true
+            });
+
+            localStream.current = stream;
+
+            if (localVideoRef.current) {
+                localVideoRef.current.srcObject = stream;
+            }
+
+            const configuration = {
+                iceServers: [
+                    {
+                        urls: "stun:stun.relay.metered.ca:80",
                     },
-                    audio: true
-                });
-                
-                console.log('Media stream obtained:', stream.getTracks());
-                localStream.current = stream;
+                    {
+                        urls: "turn:global.relay.metered.ca:80",
+                        username: "9348afee20c90d47a859bcb9",
+                        credential: "oFQZw8oWOvFdR9GI",
+                    },
+                    {
+                        urls: "turn:global.relay.metered.ca:80?transport=tcp",
+                        username: "9348afee20c90d47a859bcb9",
+                        credential: "oFQZw8oWOvFdR9GI",
+                    },
+                    {
+                        urls: "turn:global.relay.metered.ca:443",
+                        username: "9348afee20c90d47a859bcb9",
+                        credential: "oFQZw8oWOvFdR9GI",
+                    },
+                    {
+                        urls: "turns:global.relay.metered.ca:443?transport=tcp",
+                        username: "9348afee20c90d47a859bcb9",
+                        credential: "oFQZw8oWOvFdR9GI",
+                    },
+                ]
+            };
 
-                // Display local video
-                if (localVideoRef.current) {
-                    console.log('Setting local video stream');
-                    localVideoRef.current.srcObject = stream;
-                    await localVideoRef.current.play().catch(e => console.error('Error playing local video:', e));
+            peerConnection.current = new RTCPeerConnection(configuration);
+
+            stream.getTracks().forEach(track => {
+                peerConnection.current.addTrack(track, stream);
+            });
+
+            peerConnection.current.ontrack = (event) => {
+                if (remoteVideoRef.current && event.streams[0]) {
+                    remoteVideoRef.current.srcObject = event.streams[0];
                 }
+            };
 
-                // Initialize WebRTC peer connection
-                const configuration = {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        {
-                            urls: 'turn:turn.anyfirewall.com:443?transport=tcp',
-                            username: 'webrtc',
-                            credential: 'webrtc'
-                        }
-                    ]
-                };
-
-                console.log('Initializing peer connection');
-                peerConnection.current = new RTCPeerConnection(configuration);
-
-                // Add local stream tracks to peer connection
-                stream.getTracks().forEach(track => {
-                    console.log('Adding track to peer connection:', track.kind);
-                    peerConnection.current.addTrack(track, stream);
-                });
-
-                // Handle incoming remote stream
-                peerConnection.current.ontrack = (event) => {
-                    console.log('Received remote track:', event.track.kind);
-                    if (remoteVideoRef.current && event.streams[0]) {
-                        console.log('Setting remote video stream');
-                        remoteVideoRef.current.srcObject = event.streams[0];
-                        remoteVideoRef.current.play().catch(e => console.error('Error playing remote video:', e));
-                    }
-                };
-
-                // ICE candidate handling
-                peerConnection.current.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        console.log('Sending ICE candidate');
-                        socket.current.emit('ice-candidate', {
-                            candidate: event.candidate,
-                            senderId: currentUser._id,
-                            receiverId: selectedUser._id
-                        });
-                    }
-                };
-
-                // Connection state changes
-                peerConnection.current.onconnectionstatechange = () => {
-                    console.log('Connection state:', peerConnection.current.connectionState);
-                };
-
-                // ICE connection state changes
-                peerConnection.current.oniceconnectionstatechange = () => {
-                    console.log('ICE connection state:', peerConnection.current.iceConnectionState);
-                };
-
-                // Create and send offer if initiator
-                if (currentUser._id < selectedUser._id) {
-                    console.log('Creating offer');
-                    const offer = await peerConnection.current.createOffer();
-                    await peerConnection.current.setLocalDescription(offer);
-                    socket.current.emit('offer', {
-                        offer,
+            peerConnection.current.onicecandidate = (event) => {
+                if (event.candidate && socket.current) {
+                    socket.current.emit('ice-candidate', {
+                        candidate: event.candidate,
                         senderId: currentUser._id,
                         receiverId: selectedUser._id
                     });
                 }
+            };
 
-                setIsLoading(false);
-            } catch (err) {
-                console.error('Video call initialization error:', err);
-                setError('Failed to access camera/microphone: ' + err.message);
-                setIsLoading(false);
-            }
-        };
+            connectionEstablished.current = true;
+            setIsLoading(false);
 
-        // Socket event listeners for WebRTC signaling
-        if (socket.current) {
+        } catch (err) {
+            console.error('Video call initialization error:', err);
+            setError('Failed to access camera/microphone: ' + err.message);
+            setIsLoading(false);
+        }
+    }, [currentUser._id, selectedUser._id]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        const setupSocketListeners = () => {
+            if (!socket.current) return;
+
             socket.current.on('offer', async (data) => {
-                console.log('Received offer');
+                if (!mounted) return;
+                await initializePeerConnection();
+
                 if (peerConnection.current) {
                     await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.offer));
                     const answer = await peerConnection.current.createAnswer();
@@ -123,30 +113,41 @@ const VideoCall = ({ selectedUser, currentUser, onClose, socket }) => {
             });
 
             socket.current.on('answer', async (data) => {
-                console.log('Received answer');
-                if (peerConnection.current) {
-                    await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.answer));
-                }
+                if (!mounted || !peerConnection.current) return;
+                await peerConnection.current.setRemoteDescription(new RTCSessionDescription(data.answer));
             });
 
             socket.current.on('ice-candidate', async (data) => {
-                console.log('Received ICE candidate');
-                if (peerConnection.current) {
+                if (!mounted || !peerConnection.current) return;
+                try {
                     await peerConnection.current.addIceCandidate(new RTCIceCandidate(data.candidate));
+                } catch (err) {
+                    console.error('Error adding ICE candidate:', err);
                 }
             });
-        }
+        };
 
-        initializeCall();
+        const startCall = async () => {
+            await initializePeerConnection();
 
-        // Cleanup function
-        return () => {
-            console.log('Cleaning up video call');
-            if (localStream.current) {
-                localStream.current.getTracks().forEach(track => {
-                    console.log('Stopping track:', track.kind);
-                    track.stop();
+            if (currentUser._id < selectedUser._id && peerConnection.current) {
+                const offer = await peerConnection.current.createOffer();
+                await peerConnection.current.setLocalDescription(offer);
+                socket.current.emit('offer', {
+                    offer,
+                    senderId: currentUser._id,
+                    receiverId: selectedUser._id
                 });
+            }
+        };
+
+        setupSocketListeners();
+        startCall();
+
+        return () => {
+            mounted = false;
+            if (localStream.current) {
+                localStream.current.getTracks().forEach(track => track.stop());
             }
             if (peerConnection.current) {
                 peerConnection.current.close();
@@ -156,8 +157,9 @@ const VideoCall = ({ selectedUser, currentUser, onClose, socket }) => {
                 socket.current.off('answer');
                 socket.current.off('ice-candidate');
             }
+            connectionEstablished.current = false;
         };
-    }, [currentUser, selectedUser, socket]);
+    }, [currentUser._id, selectedUser._id, initializePeerConnection]);
 
     return (
         <div className="video-call-container">
