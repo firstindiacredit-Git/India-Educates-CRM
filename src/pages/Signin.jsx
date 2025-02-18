@@ -208,7 +208,7 @@ const Signin = () => {
                         >
                           <option value="superadmin">Admin</option>
                           <option value="employee">Associate</option>
-                          {/* <option value="client">Agent</option> */}
+                          <option value="client">Team</option>
                           {/* <option value="student">Student</option> */}
                         </select>
                       </div>
