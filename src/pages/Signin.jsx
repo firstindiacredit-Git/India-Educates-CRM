@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Signin = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    role: "",
+    role: "superadmin",
     email: "",
     password: "",
   });
@@ -56,14 +56,53 @@ const Signin = () => {
     setLoading(true);
 
     try {
+      let endpoint;
+      let tokenKey;
+      let userKey;
+      let redirectPath;
+
+      // Determine endpoint and storage keys based on role
+      switch (form.role) {
+        case 'admin':
+        case 'superadmin':
+          endpoint = 'login';
+          tokenKey = 'token';
+          userKey = 'user';
+          redirectPath = '/project-dashboard';
+          break;
+        case 'employee':
+          endpoint = 'employeelogin';
+          tokenKey = 'emp_token';
+          userKey = 'emp_user';
+          redirectPath = '/employee-dashboard';
+          break;
+        case 'client':
+          endpoint = 'clientlogin';
+          tokenKey = 'client_token';
+          userKey = 'client_user';
+          redirectPath = '/client-dashboard';
+          break;
+        case 'student':
+          endpoint = 'studentlogin';
+          tokenKey = 'student_token';
+          userKey = 'student_user';
+          redirectPath = '/student-dashboard';
+          break;
+        default:
+          setError("Invalid role selected");
+          setLoading(false);
+          return;
+      }
+
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}api/login`,
+        `${import.meta.env.VITE_BASE_URL}api/${endpoint}`,
         form
       );
+      
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
-      navigate("/project-dashboard");
+      localStorage.setItem(tokenKey, token);
+      localStorage.setItem(userKey, JSON.stringify(user));
+      navigate(redirectPath);
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setError("Invalid email or password");
@@ -103,11 +142,13 @@ const Signin = () => {
                   style={{ maxWidth: "32rem" }}
                 >
                   <form onSubmit={handleSubmit} className="row g-1 p-3 p-md-4">
-                    <div className="col-12 text-center mb-1 mb-lg-5">
-                      <h1>Admin Sign in</h1>
-                      <span>Admin Panel</span>
-                    </div>
                     <div className="col-12 text-center mb-4">
+                      <h1>India Educates</h1>
+                      <span> Please enter your details to Sign In</span>
+                      {/* <h1>Admin Sign in</h1> */}
+                      {/* <span>Admin Panel</span> */}
+                    </div>
+                    {/* <div className="col-12 text-center mb-4">
                       <div className="d-flex gap-5">
                         <Link
                           className="btn"
@@ -155,7 +196,7 @@ const Signin = () => {
                         </Link>
                       </div>
                       <span className="dividers text-muted mt-4">OR</span>
-                    </div>
+                    </div> */}
                     <div className="col-12">
                       <div className="mb-2">
                         <label className="form-label">Role</label>
@@ -165,9 +206,10 @@ const Signin = () => {
                           value={form.role}
                           onChange={handleChange}
                         >
-                          <option value="">Select Role</option>
-                          <option value="superadmin"> Admin</option>
-                          {/* <option value="admin"></option> */}
+                          <option value="superadmin">Admin</option>
+                          <option value="employee">Associate</option>
+                          {/* <option value="client">Agent</option> */}
+                          {/* <option value="student">Student</option> */}
                         </select>
                       </div>
                     </div>
@@ -225,8 +267,8 @@ const Signin = () => {
                       >
                         {loading ? "Signing In..." : "SIGN IN"}
                       </button>
+                    {error && <p className="text-white">{error}</p>}
                     </div>
-                    {error && <p className="text-danger">{error}</p>}
                   </form>
                 </div>
               </div>

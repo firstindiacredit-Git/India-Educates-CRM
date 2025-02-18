@@ -77,7 +77,8 @@ const ClientHeader = () => {
   const handleSignOut = () => {
     localStorage.removeItem("client_token");
     localStorage.removeItem("client_user");
-    navigation("/clientsignin");
+    // navigation("/clientsignin");
+    navigation("/");
   };
 
   //   GET CLIENTS

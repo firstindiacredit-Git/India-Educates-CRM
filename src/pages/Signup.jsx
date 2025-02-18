@@ -72,31 +72,23 @@ const Signup = () => {
   return (
     <>
       <div id="mytask-layout">
-        <div className="main p-2 py-3 p-xl-5">
+        <div className="main p-2 py-3 p-xl-5" style={{
+          backgroundImage: `url('../Images/Indiaeducates.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#ffffff63',
+          backgroundBlendMode: 'overlay'
+        }}>
           <div className="body d-flex p-0 p-xl-5">
             <div className="container-xxl">
               <div className="row g-0">
                 <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center rounded-lg auth-h100">
-                  <div style={{ maxWidth: "25rem" }}>
+                  <div style={{ maxWidth: "50rem" }}>
                     <img
-                      src="../Images/pizeonflylogo.png"
+                      src="../Images/IndiaEducatesLogo.png"
                       className="mb-4"
-                      style={{ width: "-webkit-fill-available" }}
+                      style={{ width: "-webkit-fill-available", filter: "drop-shadow(0 0 40px white)" }}
                     />
-                    <div className="d-flex justify-content-center ">
-                      <img
-                        src="../Images/crm.jpeg"
-                        className="text-center"
-                        style={{ height: "30px" }}
-                      />
-                    </div>
-                    {/* Image block */}
-                    <div>
-                      <img
-                        src="../assets/images/login-img.svg"
-                        alt="login-img"
-                      />
-                    </div>
                   </div>
                 </div>
                 <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">
@@ -134,11 +126,11 @@ const Signup = () => {
                     ) : (
                       // Existing Signup Form
                       <form onSubmit={handleSubmit} className="row g-1 p-3 p-md-4">
-                        <div className="col-12 text-center mb-1 mb-lg-5">
-                          <h1>Admin Sign up</h1>
-                          <span>Create your account as a Admin</span>
+                        <div className="col-12 text-center">
+                          <h3>Create your account as a Admin</h3>
+                          <span>Please enter your details to Sign Up</span>
                         </div>
-                        <div className="col-12 text-center ">
+                        {/* <div className="col-12 text-center ">
                           <Link
                             className="btn btn-lg btn-outline-secondary btn-block" style={{ marginTop: "-40px" }}
                             to="/employeesignup"
@@ -149,7 +141,7 @@ const Signup = () => {
                             </span>
                           </Link>
                           <span className="dividers text-muted mt-4">OR</span>
-                        </div>
+                        </div> */}
                         <div className="col-12">
                           <div className="mb-2">
                             <label className="form-label">Full name</label>
@@ -198,8 +190,8 @@ const Signup = () => {
                               onChange={handleChange}
                             >
                               <option value="">Add Role</option>
-                              <option value="superadmin">Super Admin</option>
-                              <option value="admin">Admin</option>
+                              <option value="superadmin">Admin</option>
+                              {/* <option value="admin">Admin</option> */}
                             </select>
                           </div>
                         </div>
@@ -208,6 +200,7 @@ const Signup = () => {
                             type="submit"
                             className="btn btn-lg btn-block btn-light lift text-uppercase"
                             alt="SIGNUP"
+                            style={{ backgroundColor: "#0A9400", color: "white" }}
                           >
                             SIGN UP
                           </button>
@@ -216,10 +209,10 @@ const Signup = () => {
                       </form>
                     )}
 
-                    <div className="col-12 text-center mt-4">
-                      <span className="text-muted">
+                    <div className="col-12 text-center">
+                      <span className="">
                         Already have an account?{" "}
-                        <Link to="/" title="Sign in" className="text-secondary">
+                        <Link to="/" title="Sign in" style={{ color: "#0A9400" }}>
                           Sign in here
                         </Link>
                       </span>

@@ -123,7 +123,8 @@ const Header = () => {
   const handleSignOut = () => {
     localStorage.removeItem("emp_token");
     localStorage.removeItem("emp_user");
-    navigation("/employeesignin");
+    // navigation("/employeesignin");
+    navigation("/");
   };
 
   //   GET EMPLOYEES

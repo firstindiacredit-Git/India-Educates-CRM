@@ -119,7 +119,8 @@ const Header = () => {
   const handleSignOut = () => {
     localStorage.removeItem("student_token");
     localStorage.removeItem("student_user");
-    navigation("/studentsignin");
+    // navigation("/studentsignin");
+    navigation("/");
   };
 
   //   GET studentS
