@@ -507,7 +507,7 @@ const Student = () => {
                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w-75">
                               <div className="position-relative d-inline-block">
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${student.studentImage}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${student.studentImage}`}
                                   alt=""
                                   className="avatar xl rounded-circle img-thumbnail shadow-sm"
                                   style={{
@@ -524,7 +524,7 @@ const Student = () => {
                                     e.target.style.zIndex = '1';
                                   }}
                                   onClick={() => handleImageClick(
-                                    `${import.meta.env.VITE_BASE_URL}${student.studentImage}`,
+                                    `${import.meta.env.VITE_BASE_URL}/uploads/${student.studentImage}`,
                                     student.studentName
                                   )}
                                 />
@@ -879,7 +879,7 @@ const Student = () => {
                                     <td>
                                       <div className="d-flex align-items-center">
                                         <img
-                                          src={`${import.meta.env.VITE_BASE_URL}${student.studentImage}`}
+                                          src={`${import.meta.env.VITE_BASE_URL}/uploads/${student.studentImage}`}
                                           alt=""
                                           className="avatar rounded-circle me-2"
                                           style={{
@@ -889,7 +889,7 @@ const Student = () => {
                                             cursor: 'pointer'
                                           }}
                                           onClick={() => handleImageClick(
-                                            `${import.meta.env.VITE_BASE_URL}${student.studentImage}`,
+                                            `${import.meta.env.VITE_BASE_URL}/uploads/${student.studentImage}`,
                                             student.studentName
                                           )}
                                         />

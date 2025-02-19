@@ -87,7 +87,7 @@ function AppContent() {
   const { isDarkMode } = useTheme();
 
   return (
-    <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
+    <div className={`app ${isDarkMode ? 'dark' : 'light'}`} >
       <BrowserRouter>
         <Routes>
           <Route path='/signup' element={<Signup />}></Route>

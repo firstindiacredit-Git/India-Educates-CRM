@@ -394,13 +394,13 @@ const Client = () => {
                                                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
                                                                 <div className="position-relative d-inline-block">
                                                                     <img
-                                                                        src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`}
+                                                                        src={`${import.meta.env.VITE_BASE_URL}/uploads/${client.clientImage}`}
                                                                         alt=""
                                                                         className="avatar xl rounded-circle img-thumbnail shadow-sm"
                                                                         style={{
                                                                             transition: 'transform 0.3s ease-in-out',
                                                                             cursor: 'pointer',
-                                                                            objectFit: 'contain'
+                                                                            objectFit: 'cover'
                                                                         }}
                                                                         onMouseEnter={(e) => {
                                                                             e.target.style.transform = 'scale(2.5)';
@@ -527,7 +527,7 @@ const Client = () => {
                                                                     <tr key={client._id}>
                                                                         <td>
                                                                             <div className="d-flex align-items-center">
-                                                                                <img className="avatar rounded-circle me-2" src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`} alt="" style={{ width: '40px', height: '40px' }} />
+                                                                                <img className="avatar rounded-circle me-2" src={`${import.meta.env.VITE_BASE_URL}/uploads/${client.clientImage}`} alt="" style={{ width: '40px', height: '40px' }} />
                                                                                 <div>
                                                                                     <h6 className="mb-0">{client.clientName}</h6>
                                                                                     <small>{client.clientEmail}</small>

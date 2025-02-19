@@ -8,8 +8,8 @@ const SaasManager = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     return (
         <>
-            <div id="mytask-layout">
-                <Sidebar />
+            <div id="mytask-layout" style={{ backgroundColor:'#F4F4F5' }}>
+                <Sidebar /> 
                 <div className="main px-lg-4 px-md-4">
                     <Header />
 
