@@ -467,7 +467,7 @@ const EmployeeChat = () => {
         <div className="d-flex align-items-center">
           <div className="position-relative">
             <img
-              src={`${import.meta.env.VITE_BASE_URL}${(isAdmin ? user.profileImage : user.clientImage).replace('uploads/', '')}`}
+              src={`${import.meta.env.VITE_BASE_URL}${(isAdmin ? user.profileImage : "uploads/"+ user.clientImage)}`}
               className="avatar rounded-circle"
               style={{ objectFit: 'contain' }}
               alt={isAdmin ? user.username : user.clientName}
@@ -571,7 +571,7 @@ const EmployeeChat = () => {
             activeTab={activeTab}
             tabs={[
               { id: 'admins', label: 'Admins' },
-              { id: 'clients', label: 'Associates' },
+              { id: 'clients', label: 'Team Members' },
               { id: 'groups', label: 'Groups' }
             ]}
             onTabChange={setActiveTab}

@@ -619,7 +619,7 @@ const ChatLayout = ({
                 {!message.isCurrentUser && selectedUser?.userType === 'Group' && (
                     <div className="sender-info me-2">
                         <img
-                            src={`${import.meta.env.VITE_BASE_URL}${message.senderDetails?.image?.replace('uploads/', '')}`}
+                            src={`${import.meta.env.VITE_BASE_URL}${message.senderDetails?.image}`}
                             className="avatar rounded-circle"
                             style={{ width: '30px', height: '30px', objectFit: 'cover' }}
                             // alt="{msg.senderDetails?.name}"
@@ -695,12 +695,12 @@ const ChatLayout = ({
                             {message.imageUrls && message.imageUrls.map((url, i) => (
                                 <img
                                     key={i}
-                                    src={`${import.meta.env.VITE_BASE_URL}${url?.replace('uploads/', '') || ''}`}
+                                    src={`${import.meta.env.VITE_BASE_URL}${url || ''}`}
                                     alt="Shared image"
                                     className="img-fluid rounded mb-1 py-2"
                                     style={{ maxHeight: '200px', cursor: 'pointer' }}
                                     onClick={() => {
-                                        setSelectedImage(`${import.meta.env.VITE_BASE_URL}${url?.replace('uploads/', '') || ''}`);
+                                        setSelectedImage(`${import.meta.env.VITE_BASE_URL}${url || ''}`);
                                     }}
                                 />
                             ))}
@@ -712,7 +712,7 @@ const ChatLayout = ({
                                     className="img-fluid rounded mb-1 py-2"
                                     style={{ maxHeight: '200px' }}
                                 >
-                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.videoUrl?.replace('uploads/', '') || ''}`} type="video/mp4" />
+                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.videoUrl || ''}`} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             )}
@@ -720,7 +720,7 @@ const ChatLayout = ({
                             {/* Audio */}
                             {message.audioUrl && (
                                 <audio controls className="w-100 mb-1">
-                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.audioUrl?.replace('uploads/', '') || ''}`} type="audio/mpeg" />
+                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.audioUrl || ''}`} type="audio/mpeg" />
                                     Your browser does not support the audio element.
                                 </audio>
                             )}
@@ -728,7 +728,7 @@ const ChatLayout = ({
                             {/* Voice Recording */}
                             {message.recordingUrl && (
                                 <audio controls className="mb-1 py-2">
-                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.recordingUrl?.replace('uploads/', '') || ''}`} type="audio/webm" style={{ backgroundColor: 'black' }} />
+                                    <source src={`${import.meta.env.VITE_BASE_URL}${message.recordingUrl || ''}`} type="audio/webm" style={{ backgroundColor: 'black' }} />
                                     Your browser does not support the audio element.
                                 </audio>
                             )}
@@ -973,11 +973,11 @@ const ChatLayout = ({
                                                             {selectedUser.members?.slice(0, 4).map((member, idx) => {
                                                                 let imagePath;
                                                                 if (member.userType === 'Employee') {
-                                                                    imagePath = member.employeeImage?.replace('uploads/', '');
+                                                                    imagePath = member.employeeImage;
                                                                 } else if (member.userType === 'AdminUser') {
-                                                                    imagePath = member.profileImage?.replace('uploads/', '');
+                                                                    imagePath = member.profileImage;
                                                                 } else if (member.userType === 'Client') {
-                                                                    imagePath = member.image?.replace('uploads/', '');
+                                                                    imagePath = member.image;
                                                                 }
 
                                                                 return (
@@ -1018,7 +1018,7 @@ const ChatLayout = ({
                                                 ) : selectedUser.userType === 'AdminUser' ? (
                                                     // Admin Avatar
                                                     <img
-                                                        src={`${import.meta.env.VITE_BASE_URL}${selectedUser.profileImage?.replace('uploads/', '')}`}
+                                                        src={`${import.meta.env.VITE_BASE_URL}${selectedUser.profileImage}`}
                                                         className="avatar rounded-circle"
                                                         alt={selectedUser.username}
                                                         style={{ width: '40px', height: '40px', objectFit: 'contain' }}
@@ -1026,7 +1026,7 @@ const ChatLayout = ({
                                                 ) : selectedUser.userType === 'Employee' ? (
                                                     // Employee Avatar
                                                     <img
-                                                        src={`${import.meta.env.VITE_BASE_URL}${selectedUser.employeeImage?.replace('uploads/', '')}`}
+                                                        src={`${import.meta.env.VITE_BASE_URL}${selectedUser.employeeImage}`}
                                                         className="avatar rounded-circle"
                                                         alt={selectedUser.employeeName}
                                                         style={{ width: '40px', height: '40px', objectFit: 'contain' }}
@@ -1034,10 +1034,10 @@ const ChatLayout = ({
                                                 ) : (
                                                     // Client Avatar
                                                     <img
-                                                        src={`${import.meta.env.VITE_BASE_URL}${selectedUser.clientImage?.replace('uploads/', '')}`}
+                                                        src={`${import.meta.env.VITE_BASE_URL}/uploads/${selectedUser.clientImage}`}
                                                         className="avatar rounded-circle"
                                                         alt={selectedUser.clientName}
-                                                        style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                                                        style={{ width: '40px', height: '40px', objectFit: 'cover' }}
                                                     />
                                                 )
                                             )}
@@ -1134,7 +1134,7 @@ const ChatLayout = ({
                                     overflowY: 'auto',
                                     backgroundColor: backgroundColor,
                                     ...(backgroundImage ? {
-                                        backgroundImage: `url("${import.meta.env.VITE_BASE_URL}${backgroundImage?.replace('uploads/', '')}")`,
+                                        backgroundImage: `url("${import.meta.env.VITE_BASE_URL}${backgroundImage}")`,
                                     } : {
                                         backgroundImage: `url('../Images/chatbg.jpeg')`,
                                         backgroundSize: 'cover',
@@ -1382,11 +1382,11 @@ const ChatLayout = ({
                                                                         {group.members.slice(0, 4).map((member, idx) => {
                                                                             let imagePath;
                                                                             if (member.userType === 'Employee') {
-                                                                                imagePath = member.employeeImage?.replace('uploads/', '');
+                                                                                imagePath = member.employeeImage;
                                                                             } else if (member.userType === 'AdminUser') {
-                                                                                imagePath = member.profileImage?.replace('uploads/', '');
+                                                                                imagePath = member.profileImage;
                                                                             } else if (member.userType === 'Client') {
-                                                                                imagePath = member.image?.replace('uploads/', '');
+                                                                                imagePath = member.image;
                                                                             }
 
                                                                             return (
@@ -1493,11 +1493,11 @@ const ChatLayout = ({
                                     {selectedUser.members?.slice(0, 4).map((member, idx) => {
                                         let imagePath;
                                         if (member.userType === 'Employee') {
-                                            imagePath = member.employeeImage?.replace('uploads/', '');
+                                            imagePath = member.employeeImage;
                                         } else if (member.userType === 'AdminUser') {
-                                            imagePath = member.profileImage?.replace('uploads/', '');
+                                            imagePath = member.profileImage;
                                         } else if (member.userType === 'Client') {
-                                            imagePath = member.image?.replace('uploads/', '');
+                                            imagePath = member.image;
                                         }
 
                                         return (
@@ -1538,19 +1538,19 @@ const ChatLayout = ({
                         ) : (
                             <img
                                 src={`${import.meta.env.VITE_BASE_URL}${selectedUser?.userType === 'Employee'
-                                    ? selectedUser?.employeeImage?.replace('uploads/', '')
+                                    ? selectedUser?.employeeImage
                                     : selectedUser?.userType === 'AdminUser'
-                                        ? selectedUser?.profileImage?.replace('uploads/', '')
-                                        : selectedUser?.clientImage?.replace('uploads/', '')
+                                        ? selectedUser?.profileImage
+                                        : "uploads/"+selectedUser?.clientImage
                                     }`}
                                 className="rounded-circle"
                                 alt="Profile"
-                                style={{ width: '100px', height: '100px', objectFit: 'contain', cursor: 'pointer' }}
+                                style={{ width: '100px', height: '100px', objectFit: 'cover', cursor: 'pointer' }}
                                 onClick={() => handleProfileImageClick(`${import.meta.env.VITE_BASE_URL}${selectedUser?.userType === 'Employee'
-                                    ? selectedUser?.employeeImage?.replace('uploads/', '')
+                                    ? selectedUser?.employeeImage
                                     : selectedUser?.userType === 'AdminUser'
-                                        ? selectedUser?.profileImage?.replace('uploads/', '')
-                                        : selectedUser?.clientImage?.replace('uploads/', '')
+                                        ? selectedUser?.profileImage
+                                        : "uploads/"+selectedUser?.clientImage
                                     }`)}
                             />
                         )}
@@ -1598,11 +1598,11 @@ const ChatLayout = ({
                                             .map(member => {
                                                 let imagePath;
                                                 if (member.userType === 'Employee') {
-                                                    imagePath = member.employeeImage?.replace('uploads/', '');
+                                                    imagePath = member.employeeImage;
                                                 } else if (member.userType === 'AdminUser') {
-                                                    imagePath = member.profileImage?.replace('uploads/', '');
+                                                    imagePath = member.profileImage;
                                                 } else if (member.userType === 'Client') {
-                                                    imagePath = member.image?.replace('uploads/', '');
+                                                    imagePath = member.image;
                                                 }
                                                 return (
                                                     <div key={member.userId} className="d-flex align-items-center mb-1 py-1 rounded-3 border-bottom">

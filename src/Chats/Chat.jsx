@@ -322,9 +322,9 @@ const Chat = () => {
         <div className="d-flex align-items-center">
           <div className="position-relative">
             <img
-              src={`${import.meta.env.VITE_BASE_URL}${(isEmployee ? user.employeeImage : user.clientImage).replace('uploads/', '')}`}
+              src={`${import.meta.env.VITE_BASE_URL}${(isEmployee ? user.employeeImage : "uploads/"+ user.clientImage)}`}
               className="avatar rounded-circle"
-              style={{ objectFit: 'contain' }}
+              style={{ objectFit: 'cover' }}
               alt={isEmployee ? user.employeeName : user.clientName}
             />
             {userNotifications > 0 && (
@@ -595,8 +595,8 @@ const Chat = () => {
               newMessage={newMessage}
               activeTab={activeTab}
               tabs={[
-                { id: 'employees', label: 'Agents' },
-                { id: 'clients', label: 'Associates' },
+                { id: 'employees', label: 'Associates' },
+                { id: 'clients', label: 'Team Members' },
                 { id: 'groups', label: 'Groups' }
               ]}
               onTabChange={setActiveTab}
