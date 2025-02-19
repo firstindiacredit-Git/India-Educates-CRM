@@ -21,26 +21,13 @@ const Member = () => {
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
     employeeName: "",
-    employeeCompany: "",
     employeeImage: null,
-    resume: null,
-    aadhaarCard: null,
-    panCard: null,
     employeeId: "",
     joiningDate: "",
     password: "",
     emailid: "",
     phone: "+91 ",
-    department: "",
-    designation: "",
     description: "",
-    linkedin: "",
-    instagram: "",
-    youtube: "",
-    facebook: "",
-    github: "",
-    website: "",
-    other: "",
     bankName: "",
     accountHolderName: "",
     accountNumber: "",
@@ -76,8 +63,6 @@ const Member = () => {
     formDataToSend.append('emailid', formData.emailid);
     formDataToSend.append('password', formData.password);
     formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('department', formData.department);
-    formDataToSend.append('designation', formData.designation);
     formDataToSend.append('description', formData.description);
     formDataToSend.append('joiningDate', formData.joiningDate);
 
@@ -85,27 +70,9 @@ const Member = () => {
     if (formData.employeeImage) {
       formDataToSend.append('employeeImage', formData.employeeImage);
     }
-    if (formData.resume) {
-      formDataToSend.append('resume', formData.resume);
-    }
-    if (formData.aadhaarCard) {
-      formDataToSend.append('aadhaarCard', formData.aadhaarCard);
-    }
-    if (formData.panCard) {
-      formDataToSend.append('panCard', formData.panCard);
-    }
     if (formData.qrCode) {
       formDataToSend.append('qrCode', formData.qrCode);
     }
-
-    // Add social links
-    formDataToSend.append('linkedin', formData.linkedin || '');
-    formDataToSend.append('instagram', formData.instagram || '');
-    formDataToSend.append('youtube', formData.youtube || '');
-    formDataToSend.append('facebook', formData.facebook || '');
-    formDataToSend.append('github', formData.github || '');
-    formDataToSend.append('website', formData.website || '');
-    formDataToSend.append('other', formData.other || '');
 
     // Add bank details
     formDataToSend.append('bankName', formData.bankName || '');
@@ -131,26 +98,13 @@ const Member = () => {
       // Clear the form
       setFormData({
         employeeName: "",
-        employeeCompany: "",
         employeeImage: null,
-        resume: null,
-        aadhaarCard: null,
-        panCard: null,
         employeeId: "",
         joiningDate: "",
         password: "",
         emailid: "",
         phone: "+91 ",
-        department: "",
-        designation: "",
         description: "",
-        linkedin: "",
-        instagram: "",
-        youtube: "",
-        facebook: "",
-        github: "",
-        website: "",
-        other: "",
         bankName: "",
         accountHolderName: "",
         accountNumber: "",
@@ -308,27 +262,13 @@ const Member = () => {
   // UPDATE EMPLOYEE
   const [employeeData, setEmployeeData] = useState({
     employeeName: "",
-    employeeCompany: "",
     employeeImage: null,
-    resume: null,
-    aadhaarCard: null,
-    panCard: null,
     employeeId: "",
     joiningDate: "",
-    username: "",
     password: "",
     emailid: "",
     phone: "+91",
-    department: "",
-    designation: "",
     description: "",
-    linkedin: "",
-    instagram: "",
-    youtube: "",
-    facebook: "",
-    github: "",
-    website: "",
-    other: "",
     bankName: "",
     accountHolderName: "",
     accountNumber: "",
@@ -363,27 +303,13 @@ const Member = () => {
         // console.log(fStartDate);
         setEmployeeData({
           employeeName: data.employeeName,
-          employeeCompany: data.employeeCompany,
           employeeImage: data.employeeImage,
-          resume: data.resume,
-          aadhaarCard: data.aadhaarCard,
-          panCard: data.panCard,
           employeeId: data.employeeId,
           joiningDate: fStartDate,
-          username: data.username,
           password: data.password,
           emailid: data.emailid,
           phone: data.phone,
-          department: data.department,
-          designation: data.designation,
           description: data.description,
-          linkedin: data.socialLinks?.linkedin || '',
-          instagram: data.socialLinks?.instagram || '',
-          youtube: data.socialLinks?.youtube || '',
-          facebook: data.socialLinks?.facebook || '',
-          github: data.socialLinks?.github || '',
-          website: data.socialLinks?.website || '',
-          other: data.socialLinks?.other || '',
           bankName: data.bankDetails?.bankName || '',
           accountHolderName: data.bankDetails?.accountHolderName || '',
           accountNumber: data.bankDetails?.accountNumber || '',
@@ -424,13 +350,6 @@ const Member = () => {
     setToEdit(employee._id);
     setEmployeeData({
       ...employee,
-      linkedin: employee.socialLinks?.linkedin || '',
-      instagram: employee.socialLinks?.instagram || '',
-      youtube: employee.socialLinks?.youtube || '',
-      facebook: employee.socialLinks?.facebook || '',
-      github: employee.socialLinks?.github || '',
-      website: employee.socialLinks?.website || '',
-      other: employee.socialLinks?.other || '',
       bankName: employee.bankDetails?.bankName || '',
       accountHolderName: employee.bankDetails?.accountHolderName || '',
       accountNumber: employee.bankDetails?.accountNumber || '',
@@ -500,27 +419,9 @@ const Member = () => {
         }
       });
 
-      // Add social links fields individually, ensuring they're strings
-      formData.append('linkedin', String(employeeData.linkedin || ''));
-      formData.append('instagram', String(employeeData.instagram || ''));
-      formData.append('youtube', String(employeeData.youtube || ''));
-      formData.append('facebook', String(employeeData.facebook || ''));
-      formData.append('github', String(employeeData.github || ''));
-      formData.append('website', String(employeeData.website || ''));
-      formData.append('other', String(employeeData.other || ''));
-
       // Add files if they exist
       if (employeeData.employeeImage instanceof File) {
         formData.append('employeeImage', employeeData.employeeImage);
-      }
-      if (employeeData.resume instanceof File) {
-        formData.append('resume', employeeData.resume);
-      }
-      if (employeeData.aadhaarCard instanceof File) {
-        formData.append('aadhaarCard', employeeData.aadhaarCard);
-      }
-      if (employeeData.panCard instanceof File) {
-        formData.append('panCard', employeeData.panCard);
       }
 
       // Add bank details
@@ -864,8 +765,7 @@ const Member = () => {
                                   </p>
                                 </div>
 
-                                <div className="mt-2 text-start border-top pt-2">
-                                  {/* Aadhaar Card Row */}
+                                {/* <div className="mt-2 text-start border-top pt-2">
                                   <div className="row border-bottom pb-2 mb-2">
                                     <div className="col-md-6 d-flex align-items-center">
                                       <strong>Aadhaar -</strong>
@@ -919,7 +819,6 @@ const Member = () => {
                                     </div>
                                   </div>
 
-                                  {/* PAN Card Row */}
                                   <div className="row border-bottom pb-2 mb-2">
                                     <div className="col-md-6 d-flex align-items-center">
                                       <strong>Pan -</strong>
@@ -973,7 +872,6 @@ const Member = () => {
                                     </div>
                                   </div>
 
-                                  {/* Resume Row */}
                                   <div className="row border-bottom pb-2 mb-2">
                                     <div className="col-md-6 d-flex align-items-center">
                                       <strong>Resume -</strong>
@@ -1027,7 +925,7 @@ const Member = () => {
                                     </div>
                                   </div>
 
-                                </div>
+                                </div> */}
 
                               </div>
 
@@ -1044,10 +942,7 @@ const Member = () => {
                                       >
                                         {employee.employeeName}
                                       </h6>
-                                      <div className="followers me-2">
-                                        <i className="bi bi-person-vcard-fill text-danger fs-6 me-2" />
-                                        <span>{employee.employeeId}</span>
-                                      </div>
+
                                     </div>
 
                                     <div>
@@ -1080,12 +975,14 @@ const Member = () => {
                                     </div>
                                   </div>
                                   <div className="d-flex justify-content-between">
-                                    <span className="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
+
+                                    <span className="fw-bold small-11 mb-0 mt-1">
                                       <i className="bi bi-calendar-check-fill text-primary fs-6 me-2" />
                                       {date}/{month}/{year}
                                     </span>
-                                    <span className="light-info-bg p-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">
-                                      {employee.designation}
+                                    <span className="fw-bold small-11 mb-0 mt-1">
+                                    <i className="bi bi-person-vcard-fill text-success fs-6 me-2" />
+                                    {employee.employeeId}
                                     </span>
                                   </div>
                                 </div>
@@ -1401,51 +1298,6 @@ const Member = () => {
                         onChange={updateChange}
                       />
                     </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="updateResume"
-                        className="form-label"
-                      >
-                        Resume
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="updateResume"
-                        name="resume"
-                        onChange={updateChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="updateAadhaar"
-                        className="form-label"
-                      >
-                        Aadhaar Card
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="updateAadhaar"
-                        name="aadhaarCard"
-                        onChange={updateChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="updatePan"
-                        className="form-label"
-                      >
-                        PAN Card
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="updatePan"
-                        name="panCard"
-                        onChange={updateChange}
-                      />
-                    </div>
                     <div className="deadline-form">
                       <form>
                         <div className="row g-3 mb-3">
@@ -1539,164 +1391,6 @@ const Member = () => {
                             />
                           </div>
                         </div>
-                        <div className="row g-3 mb-3">
-                          <div className="col">
-                            <label className="form-label">Department</label>
-                            <select
-                              className="form-select"
-                              aria-label="Default select Project Category"
-                              name="department"
-                              value={employeeData.department}
-                              onChange={updateChange}
-                            >
-                              <option value={""}></option>
-                              <option value={"Web Development"}>
-                                Web Development
-                              </option>
-                              <option value={"It Management"}>
-                                It Management
-                              </option>
-                              <option value={"Marketing"}>Marketing</option>
-                              <option value={"Manager"}>Manager</option>
-                            </select>
-                          </div>
-                          <div className="col">
-                            <label className="form-label">Designation</label>
-                            <select
-                              className="form-select"
-                              aria-label="Default select Project Category"
-                              name="designation"
-                              value={employeeData.designation}
-                              onChange={updateChange}
-                            >
-                              <option value={""}></option>
-                              <option value={"UI/UX Design"}>
-                                UI/UX Design
-                              </option>
-                              <option value={"Website Design"}>
-                                Website Design
-                              </option>
-                              <option value={"App Development"}>
-                                App Development
-                              </option>
-                              <option value={"Quality Assurance"}>
-                                Quality Assurance
-                              </option>
-                              <option value={"Development"}>Development</option>
-                              <option value={"Backend Development"}>
-                                Backend Development
-                              </option>
-                              <option value={"Software Testing"}>
-                                Software Testing
-                              </option>
-                              <option value={"Website Design"}>
-                                Website Design
-                              </option>
-                              <option value={"Marketing"}>Marketing</option>
-                              <option value={"SEO"}>SEO</option>
-                              <option value={"Project Manager"}>
-                                Project Manager
-                              </option>
-                              <option value={"Other"}>Other</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Social Media & Website Links</label>
-                          <div className="row g-3">
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-linkedin"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="LinkedIn Profile URL"
-                                  name="linkedin"
-                                  value={employeeData.linkedin || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-instagram"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Instagram Profile URL"
-                                  name="instagram"
-                                  value={employeeData.instagram || employeeData.socialLinks?.instagram || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-youtube"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="YouTube Channel URL"
-                                  name="youtube"
-                                  value={employeeData.youtube || employeeData.socialLinks?.youtube || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-facebook"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Facebook Profile URL"
-                                  name="facebook"
-                                  value={employeeData.facebook || employeeData.socialLinks?.facebook || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-github"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="GitHub Profile URL"
-                                  name="github"
-                                  value={employeeData.github || employeeData.socialLinks?.github || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-globe"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Personal Website URL"
-                                  name="website"
-                                  value={employeeData.website || employeeData.socialLinks?.website || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-link-45deg"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Other URL"
-                                  name="other"
-                                  value={employeeData.other || employeeData.socialLinks?.other || ''}
-                                  onChange={updateChange}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                         <div className="mb-3">
                           <label className="form-label">Bank Details</label>
                           <div className="row g-3">
@@ -1708,8 +1402,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Bank Name"
                                   name="bankName"
-                                  value={employeeData.bankName || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.bankName || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1721,8 +1415,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Account Holder Name"
                                   name="accountHolderName"
-                                  value={employeeData.accountHolderName || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.accountHolderName || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1734,8 +1428,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Account Number"
                                   name="accountNumber"
-                                  value={employeeData.accountNumber || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.accountNumber || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1747,8 +1441,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="IFSC Code"
                                   name="ifscCode"
-                                  value={employeeData.ifscCode || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.ifscCode || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1758,8 +1452,8 @@ const Member = () => {
                                 <select
                                   className="form-select"
                                   name="accountType"
-                                  value={employeeData.accountType || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.accountType || ''}
+                                  onChange={updateChange}
                                 >
                                   <option value="">Select Account Type</option>
                                   <option value="Savings">Savings</option>
@@ -1776,8 +1470,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="UPI ID"
                                   name="upiId"
-                                  value={employeeData.upiId || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.upiId || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1788,7 +1482,7 @@ const Member = () => {
                                   type="file"
                                   className="form-control"
                                   name="qrCode"
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  onChange={updateChange}
                                   accept="image/*"
                                 />
                               </div>
@@ -1801,8 +1495,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Payment App (e.g., PayTM, PhonePe)"
                                   name="paymentApp"
-                                  value={employeeData.paymentApp || ''} // Use employeeData for edit form
-                                  onChange={updateChange} // Use updateChange for edit form
+                                  value={employeeData.paymentApp || ''}
+                                  onChange={updateChange}
                                 />
                               </div>
                             </div>
@@ -1835,7 +1529,7 @@ const Member = () => {
                       className="btn btn-secondary"
                       data-bs-dismiss="modal"
                     >
-                      Done
+                      Cancel
                     </button>
                     <button
                       type="button"
@@ -1906,51 +1600,6 @@ const Member = () => {
                         onChange={handleFileChange}
                       />
                     </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="resumeUpload"
-                        className="form-label"
-                      >
-                        Resume
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="resumeUpload"
-                        name="resume"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="aadhaarUpload"
-                        className="form-label"
-                      >
-                        Aadhaar Card
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="aadhaarUpload"
-                        name="aadhaarCard"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label
-                        htmlFor="panUpload"
-                        className="form-label"
-                      >
-                        PAN Card
-                      </label>
-                      <input
-                        className="form-control"
-                        type="file"
-                        id="panUpload"
-                        name="panCard"
-                        onChange={handleFileChange}
-                      />
-                    </div>
                     <div className="deadline-form">
                       <form>
                         <div className="row g-3 mb-3">
@@ -1990,7 +1639,6 @@ const Member = () => {
                           </div>
                         </div>
                         <div className="row g-3 mb-3">
-
                           <div className="col">
                             <label
                               htmlFor="exampleFormControlInput477"
@@ -2046,172 +1694,6 @@ const Member = () => {
                             />
                           </div>
                         </div>
-                        <div className="row g-3 mb-3">
-                          <div className="col">
-                            <label className="form-label">Department</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter department or select"
-                              name="department"
-                              value={formData.department}
-                              onChange={handleChange}
-                            />
-                            {/* <select
-                              className="form-select mt-2"
-                              aria-label="Department options"
-                              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                            >
-                              <option value="">Select Department</option>
-                              <option value="Web Development">Web Development</option>
-                              <option value="IT Management">IT Management</option>
-                              <option value="Marketing">Marketing</option>
-                              <option value="Manager">Manager</option>
-                              <button>Add Department</button>
-                            </select> */}
-                          </div>
-                          <div className="col">
-                            <label className="form-label">Designation</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter designation"
-                              name="designation"
-                              value={formData.designation}
-                              onChange={handleChange}
-                            />
-                            {/* <select
-                              className="form-select"
-                              aria-label="Default select Project Category"
-                              name="designation"
-                              value={formData.designation}
-                              onChange={handleChange}
-                            >
-                              <option value={""}>Select Designation</option>
-                              <option value={"UI/UX Design"}>
-                                UI/UX Design
-                              </option>
-                              <option value={"Website Design"}>
-                                Web Design
-                              </option>
-                              <option value={"App Development"}>
-                                App Development
-                              </option>
-                              <option value={"Quality Assurance"}>
-                                Quality Assurance
-                              </option>
-                              <option value={"Fontend Development"}>Frontend Development</option>
-                              <option value={"Backend Development"}>
-                                Backend Development
-                              </option>
-                              <option value={"Software Testing"}>
-                                Software Testing
-                              </option>
-                              <option value={"Digital Marketing"}>Digital Marketing</option>
-                              <option value={"SEO"}>SEO</option>
-                              <option value={"Project Manager"}>
-                                Project Manager
-                              </option>
-                              <option value={"Other"}>Other</option>
-                            </select> */}
-                          </div>
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Social Media & Website Links</label>
-                          <div className="row g-3">
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-linkedin"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="LinkedIn Profile URL"
-                                  name="linkedin"
-                                  value={formData.linkedin}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-instagram"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Instagram Profile URL"
-                                  name="instagram"
-                                  value={formData.instagram}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-youtube"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="YouTube Channel URL"
-                                  name="youtube"
-                                  value={formData.youtube}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-facebook"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Facebook Profile URL"
-                                  name="facebook"
-                                  value={formData.facebook}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-github"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="GitHub Profile URL"
-                                  name="github"
-                                  value={formData.github}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-globe"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Personal Website URL"
-                                  name="website"
-                                  value={formData.website}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="input-group mb-3">
-                                <span className="input-group-text"><i className="bi bi-link-45deg"></i></span>
-                                <input
-                                  type="url"
-                                  className="form-control"
-                                  placeholder="Other URL"
-                                  name="other"
-                                  value={formData.other}
-                                  onChange={handleChange}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
 
                         <div className="mb-3">
                           <label className="form-label">Bank Details</label>
@@ -2224,8 +1706,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Bank Name"
                                   name="bankName"
-                                  value={formData.bankName || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.bankName}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2237,8 +1719,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Account Holder Name"
                                   name="accountHolderName"
-                                  value={formData.accountHolderName || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.accountHolderName}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2250,8 +1732,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Account Number"
                                   name="accountNumber"
-                                  value={formData.accountNumber || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.accountNumber}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2263,8 +1745,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="IFSC Code"
                                   name="ifscCode"
-                                  value={formData.ifscCode || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.ifscCode}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2274,8 +1756,8 @@ const Member = () => {
                                 <select
                                   className="form-select"
                                   name="accountType"
-                                  value={formData.accountType || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.accountType}
+                                  onChange={handleChange}
                                 >
                                   <option value="">Select Account Type</option>
                                   <option value="Savings">Savings</option>
@@ -2292,8 +1774,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="UPI ID"
                                   name="upiId"
-                                  value={formData.upiId || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.upiId}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2304,7 +1786,7 @@ const Member = () => {
                                   type="file"
                                   className="form-control"
                                   name="qrCode"
-                                  onChange={handleFileChange} // Use updateChange for edit form
+                                  onChange={handleFileChange}
                                   accept="image/*"
                                 />
                               </div>
@@ -2317,8 +1799,8 @@ const Member = () => {
                                   className="form-control"
                                   placeholder="Payment App (e.g., PayTM, PhonePe)"
                                   name="paymentApp"
-                                  value={formData.paymentApp || ''} // Use employeeData for edit form
-                                  onChange={handleChange} // Use updateChange for edit form
+                                  value={formData.paymentApp}
+                                  onChange={handleChange}
                                 />
                               </div>
                             </div>
@@ -2352,7 +1834,7 @@ const Member = () => {
                       className="btn btn-secondary"
                       data-bs-dismiss="modal"
                     >
-                      Done
+                      Cancel
                     </button>
                     <button
                       type="button"
@@ -2672,170 +2154,6 @@ const Member = () => {
                 </div>
               </div>
             </div>
-
-            {/* View Documents Modal */}
-            <div className="modal fade" id="viewDocumentsModal" tabIndex={-1} aria-hidden="true" style={{ zIndex: 9998 }}>
-              <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title fw-bold">Employee Documents</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                  </div>
-                  <div className="modal-body">
-                    {selectedEmployee && (
-                      <div className="row g-3">
-                        <div className="col-12">
-                          <h6 className="border-bottom pb-2">Resume</h6>
-                          {selectedEmployee.resume ? (
-                            <div className="d-flex align-items-center gap-3">
-                              {selectedEmployee.resume.toLowerCase().endsWith('.pdf') ? (
-                                <a href="#" onClick={(e) => handleFileClick(
-                                  e,
-                                  `${import.meta.env.VITE_BASE_URL}${selectedEmployee.resume}`,
-                                  'pdf',
-                                  selectedEmployee.employeeName
-                                )}>View PDF</a>
-                              ) : (
-                                <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.resume}`}
-                                  alt="Resume"
-                                  className="img-thumbnail"
-                                  style={{ maxWidth: '100px', cursor: 'pointer' }}
-                                  onClick={(e) => handleFileClick(
-                                    e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.resume}`,
-                                    'image',
-                                    selectedEmployee.employeeName
-                                  )}
-                                />
-                              )}
-                              <div className="d-flex gap-2">
-                                <button
-                                  className="btn btn-sm btn-primary"
-                                  onClick={() => handleDownload(selectedEmployee.resume, `${selectedEmployee.employeeName}_resume${selectedEmployee.resume.substr(selectedEmployee.resume.lastIndexOf('.'))}`)}
-                                >
-                                  <i className="bi bi-download"></i> Download
-                                </button>
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => handleDocumentDelete(selectedEmployee._id, 'resume')}
-                                >
-                                  <i className="bi bi-trash"></i> Delete
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-muted">No resume uploaded</p>
-                          )}
-                        </div>
-
-                        <div className="col-12">
-                          <h6 className="border-bottom pb-2">Aadhaar Card</h6>
-                          {selectedEmployee.aadhaarCard ? (
-                            <div className="row align-items-center g-2">
-                              <div className="col-6">
-                                {selectedEmployee.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
-                                  <a href="#" onClick={(e) => handleFileClick(
-                                    e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`,
-                                    'pdf',
-                                    selectedEmployee.employeeName
-                                  )}>View</a>
-                                ) : (
-                                  <img
-                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`}
-                                    alt=""
-                                    className="avatar sm img-thumbnail shadow-sm"
-                                    onClick={(e) => handleFileClick(
-                                      e,
-                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`,
-                                      'image',
-                                      selectedEmployee.employeeName
-                                    )}
-                                    style={{ cursor: 'pointer' }}
-                                  />
-                                )}
-                              </div>
-                              <div className="col-3 text-center">
-                                <i
-                                  className="bi bi-download text-primary"
-                                  style={{ cursor: 'pointer' }}
-                                  onClick={() => handleDownload(selectedEmployee.aadhaarCard, `${selectedEmployee.employeeName}_aadhaar${selectedEmployee.aadhaarCard.substr(selectedEmployee.aadhaarCard.lastIndexOf('.'))}`)}
-                                  title="Download Aadhaar Card"
-                                ></i>
-                              </div>
-                              <div className="col-3 text-center">
-                                <i
-                                  className="bi bi-trash text-danger"
-                                  style={{ cursor: 'pointer' }}
-                                  onClick={() => handleDocumentDelete(selectedEmployee._id, 'aadhaarCard')}
-                                  title="Delete Aadhaar Card"
-                                ></i>
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-muted">No Aadhaar card uploaded</p>
-                          )}
-                        </div>
-
-                        <div className="col-12">
-                          <h6 className="border-bottom pb-2">PAN Card</h6>
-                          {selectedEmployee.panCard ? (
-                            <div className="row align-items-center g-2">
-                              <div className="col-6">
-                                {selectedEmployee.panCard.toLowerCase().endsWith('.pdf') ? (
-                                  <a href="#" onClick={(e) => handleFileClick(
-                                    e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`,
-                                    'pdf',
-                                    selectedEmployee.employeeName
-                                  )}>View</a>
-                                ) : (
-                                  <img
-                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`}
-                                    alt=""
-                                    className="avatar sm img-thumbnail shadow-sm"
-                                    onClick={(e) => handleFileClick(
-                                      e,
-                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`,
-                                      'image',
-                                      selectedEmployee.employeeName
-                                    )}
-                                    style={{ cursor: 'pointer' }}
-                                  />
-                                )}
-                              </div>
-                              <div className="col-3 text-center">
-                                <i
-                                  className="bi bi-download text-primary"
-                                  style={{ cursor: 'pointer' }}
-                                  onClick={() => handleDownload(selectedEmployee.panCard, `${selectedEmployee.employeeName}_pan${selectedEmployee.panCard.substr(selectedEmployee.panCard.lastIndexOf('.'))}`)}
-                                  title="Download Pan Card"
-                                ></i>
-                              </div>
-                              <div className="col-3 text-center">
-                                <i
-                                  className="bi bi-trash text-danger"
-                                  style={{ cursor: 'pointer' }}
-                                  onClick={() => handleDocumentDelete(selectedEmployee._id, 'panCard')}
-                                  title="Delete Pan Card"
-                                ></i>
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-muted">No PAN card uploaded</p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </>
         </div>
         <ToastContainer />
