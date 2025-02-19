@@ -25,21 +25,15 @@ const CreateInvoice = () => {
     logo: null,
     billedBy: 'First India Credit \n\n88,Sant Nagar,Near India Post Office, \nEast of Kailash, New Delhi, Delhi, \nIndia - 110065  \n\nGSTIN: 06AATFG8894M1Z8 \nPAN: AATFG8894M \nEmail:fzal9000i@gmail.com',
     clientDetail: '',
-    country: 'IN',
-    state: 'DL',
     table: [{
       item: '',
       description: '',
       rate: '',
       quantity: '',
-      gst: '',
-      igst: '',
-      cgst: '',
-      sgst: ''
+      total: 0
     }],
-    amount: '',
-    totalGst: '',
-    total: '',
+    amount: 0,
+    total: 0,
     bankDetails: {
       accountName: 'First India Credit',
       accountNumber: '002105501589',
@@ -104,21 +98,15 @@ const CreateInvoice = () => {
         logo: null,
         billedBy: 'First India Credit \n\n88,Sant Nagar,Near India Post Office, \nEast of Kailash, New Delhi, Delhi \nIndia - 110065 \n\nGSTIN: 06AATFG8894M1Z8 \nPAN: AATFG8894M \nEmail:afzal9000i@gmail.com',
         clientDetail: '',
-        country: 'IN',
-        state: 'DL',
         table: [{
           item: '',
           description: '',
           rate: '',
           quantity: '',
-          gst: '',
-          igst: '',
-          cgst: '',
-          sgst: ''
+          total: 0
         }],
-        amount: '',
-        totalGst: '',
-        total: '',
+        amount: 0,
+        total: 0,
         bankDetails: {
           accountName: 'First India Credit',
           accountNumber: '002105501589',
@@ -201,66 +189,6 @@ const CreateInvoice = () => {
       billedBy: billedByValue
     }));
     // console.log(formData);
-  };
-
-  //Country & State
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState('IN');
-  const [selectedState, setSelectedState] = useState('DL');
-  useEffect(() => {
-    fetch("https://api.countrystatecity.in/v1/countries", {
-      method: 'GET',
-      headers: {
-        'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        setCountries(data);
-      })
-      .catch(error => console.error('Error fetching countries:', error));
-  }, []);
-  useEffect(() => {
-    if (selectedCountry) {
-      fetch(`https://api.countrystatecity.in/v1/countries/${selectedCountry}/states`, {
-        method: 'GET',
-        headers: {
-          'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          setStates(data);
-          // Set default state in formData
-          setFormData(prev => ({
-            ...prev,
-            country: selectedCountry,
-            state: selectedState
-          }));
-        })
-        .catch(error => console.error('Error fetching states:', error));
-    } else {
-      setStates([]);
-    }
-  }, [selectedCountry]);
-  const handleCountryChange = (event) => {
-    const country = event.target.value || 'IN';  // Default to IN if empty
-    setSelectedCountry(country);
-    setSelectedState('DL');  // Reset to Delhi when country changes
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      country: country,
-      state: 'DL'
-    }));
-  };
-  const handleStateChange = (event) => {
-    const state = event.target.value || 'DL';  // Default to DL if empty
-    setSelectedState(state);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      state: state
-    }));
   };
 
 
@@ -591,97 +519,56 @@ const CreateInvoice = () => {
                   </div>
 
                 </div>
-                {/* <div className="d-flex justify-content-around mt-2 ">
-                  <div className="d-flex">
-                    <span className="fw-bold" style={{ textWrap: "nowrap", padding: "8px" }}>Country of Supply :</span>
-                    <select
-                      id="country-select"
-                      className="form-control"
-                      style={{ backgroundColor: "white", border: "none" }}
-                      value={selectedCountry || 'IN'}
-                      onChange={handleCountryChange}
-                    >
-                      <option value="IN">India</option>
-                      {countries.map(country => (
-                        <option key={country.iso2} value={country.iso2}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="d-flex">
-                    <span className="fw-bold" style={{ textWrap: "nowrap", padding: "8px" }}>Place of Supply :</span>
-                    <select
-                      id="state-select"
-                      className="form-control"
-                      style={{ backgroundColor: "white", border: "none" }}
-                      value={selectedState || 'DL'}
-                      onChange={handleStateChange}
-                    >
-                      <option value="DL">Delhi</option>
-                      {states.map(state => (
-                        <option key={state.iso2} value={state.iso2}>
-                          {state.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div> */}
                 <div className="a4-height" style={{ marginTop: "-20px" }}>
-                  {selectedCountry.length > 0 ?
-
-                    <table className="items border-light">
-                      <tbody>
-                        <tr>
-                          <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
-                          <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
-                          <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
-                          <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
-                          <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Total</th>
-                        </tr>
-                        {rows.map((row, index) => (
-                          <tr key={index} className="item-row">
-                            <td className="item-name border-secondary">
-                              <div className="delete-wpr">
-                                <textarea style={{ border: "none" }} value={row.item} onChange={(e) => handleInputChange(e, index, 'item')} />
-                                <a className="delete" href="javascript:;" onClick={() => handleDeleteRow(index)} title="Remove row">X</a>
-                              </div>
-                            </td>
-                            <td className="description border-secondary">
-                              <textarea style={{ border: "none" }} value={row.description} onChange={(e) => handleInputChange(e, index, 'description')} />
-                            </td>
-                            <td className="border-secondary">
-                              <textarea
-                                style={{ border: "none" }}
-                                className="rate"
-                                value={row.rate}
-                                onChange={(e) => handleInputChange(e, index, 'rate')}
-                                onBlur={(e) => handleBlur(e, index, 'rate')}
-                              />
-                            </td>
-                            <td className="border-secondary">
-                              <textarea style={{ border: "none" }} className="quantity" value={row.quantity} onChange={(e) => handleInputChange(e, index, 'quantity')} />
-                            </td>
-                            <td className="border-secondary">
-                              <span>₹ {formatNumber(row.total)}</span>
-                            </td>
-                          </tr>
-                        ))}
-                        <tr id="hiderow">
-                          <td colSpan={5} className="border-secondary">
-                            <a id="addrow" href="javascript:;" onClick={handleAddRow} title="Add a row">Add a row</a>
+                  <table className="items border-light">
+                    <tbody>
+                      <tr>
+                        <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
+                        <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
+                        <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
+                        <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
+                        <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Total</th>
+                      </tr>
+                      {rows.map((row, index) => (
+                        <tr key={index} className="item-row">
+                          <td className="item-name border-secondary">
+                            <div className="delete-wpr">
+                              <textarea style={{ border: "none" }} value={row.item} onChange={(e) => handleInputChange(e, index, 'item')} />
+                              <a className="delete" href="javascript:;" onClick={() => handleDeleteRow(index)} title="Remove row">X</a>
+                            </div>
+                          </td>
+                          <td className="description border-secondary">
+                            <textarea style={{ border: "none" }} value={row.description} onChange={(e) => handleInputChange(e, index, 'description')} />
+                          </td>
+                          <td className="border-secondary">
+                            <textarea
+                              style={{ border: "none" }}
+                              className="rate"
+                              value={row.rate}
+                              onChange={(e) => handleInputChange(e, index, 'rate')}
+                              onBlur={(e) => handleBlur(e, index, 'rate')}
+                            />
+                          </td>
+                          <td className="border-secondary">
+                            <textarea style={{ border: "none" }} className="quantity" value={row.quantity} onChange={(e) => handleInputChange(e, index, 'quantity')} />
+                          </td>
+                          <td className="border-secondary">
+                            <span>₹ {formatNumber(row.total)}</span>
                           </td>
                         </tr>
-                        <tr>
-                            <td colSpan={3} className="blank border-secondary"> </td>
-                            <td colSpan={1} className="total-line border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}>Total</td>
-                            <td className="total-value border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}><div id="grand-total" style={{ color: "#0A9400", width: "max-content" }}>₹ {formatNumber(total.grandTotal)}</div></td>
-                          </tr>
-                      </tbody>
-                    </table>
-                    :
-                    <div style={{ height: "90px" }}></div>
-                  }
+                      ))}
+                      <tr id="hiderow">
+                        <td colSpan={5} className="border-secondary">
+                          <a id="addrow" href="javascript:;" onClick={handleAddRow} title="Add a row">Add a row</a>
+                        </td>
+                      </tr>
+                      <tr>
+                          <td colSpan={3} className="blank border-secondary"> </td>
+                          <td colSpan={1} className="total-line border-secondary fs-6 fw-bold text-center" style={{ color: "#fe6730" }}>Total</td>
+                          <td className="total-value border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}><div id="grand-total" style={{ color: "#0A9400", width: "max-content" }}>₹ {formatNumber(total.grandTotal)}</div></td>
+                        </tr>
+                    </tbody>
+                  </table>
                   <div style={{ width: "45%" }}>
                     <div className="p-2 rounded" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
                       <h2 className="h5" style={{ backgroundColor: "#F3BCA7", border: "none",color:'#0a9400' }}>Bank Details</h2>
@@ -771,9 +658,3 @@ const CreateInvoice = () => {
 };
 
 export default CreateInvoice;
-
-
-
-
-
-// To handle GST calculations based on state-wise rules (IGST, CGST, and SGST)

@@ -13,7 +13,6 @@ const UpdateInvoice = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Add check for invoice data
   if (!location.state || !location.state.invoice) {
     return <div>No invoice data available. Please try again.</div>;
   }
@@ -22,56 +21,11 @@ const UpdateInvoice = () => {
 
   const initialInvoice = {
     ...invoice,
-    clientDetail: invoice.clientDetail || {
-      businessName: '',
-      clientAddress: '',
-      clientGst: '',
-      clientPhone: '',
-      clientEmail: ''
-    }
+    clientDetail: invoice.clientDetail || ''
   };
 
   const [updatedInvoice, setUpdatedInvoice] = useState(initialInvoice);
   const [error, setError] = useState('');
-
-  const isHaryanaState = updatedInvoice.state === 'HR';
-
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState(updatedInvoice.country || 'IN');
-  const [selectedState, setSelectedState] = useState(updatedInvoice.state || 'DL');
-
-  useEffect(() => {
-    fetch("https://api.countrystatecity.in/v1/countries", {
-      method: 'GET',
-      headers: {
-        'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        setCountries(data);
-      })
-      .catch(error => console.error('Error fetching countries:', error));
-  }, []);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      fetch(`https://api.countrystatecity.in/v1/countries/${selectedCountry}/states`, {
-        method: 'GET',
-        headers: {
-          'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          setStates(data);
-        })
-        .catch(error => console.error('Error fetching states:', error));
-    } else {
-      setStates([]);
-    }
-  }, [selectedCountry]);
 
   const formatNumber = (number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -80,101 +34,63 @@ const UpdateInvoice = () => {
     }).format(number);
   };
 
-  const calculateGST = (rate, quantity, gstPercentage) => {
-    const amount = rate * quantity;
-    const gstAmount = (amount * gstPercentage) / 100;
-    const cgst = gstAmount / 2;
-    const sgst = gstAmount / 2;
-    const igst = gstAmount;
-    return {
-      amount: formatNumber(amount),
-      cgst: formatNumber(cgst),
-      sgst: formatNumber(sgst),
-      igst: formatNumber(igst)
-    };
-  };
-
-  const calculateTotal = (table) => {
-    let totalAmount = 0;
-    let totalGST = 0;
-
-    table.forEach(item => {
-      const { rate, quantity, gstPercentage } = item;
-      const { amount, cgst, sgst, igst } = calculateGST(rate, quantity, gstPercentage);
-      totalAmount += parseFloat(amount.replace(/,/g, ','));
-      totalGST += parseFloat(cgst.replace(/,/g, ',')) + parseFloat(sgst.replace(/,/g, ''));  // Or totalGST += parseFloat(igst.replace(/,/g, '')) if IGST is used.
-    });
-
-    return {
-      totalAmount: formatNumber(totalAmount),
-      totalGST: formatNumber(totalGST)
-    };
-  };
-
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name.includes('.')) {
-      const nestedKeys = name.split('.');
-      setUpdatedInvoice(prevState => ({
-        ...prevState,
-        [nestedKeys[0]]: {
-          ...prevState[nestedKeys[0]],
-          [nestedKeys[1]]: value
+      const [parent, child] = name.split('.');
+      setUpdatedInvoice(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
         }
       }));
     } else {
-      setUpdatedInvoice(prevState => ({
-        ...prevState,
+      setUpdatedInvoice(prev => ({
+        ...prev,
         [name]: value
       }));
     }
   };
 
   const handleDateChange = (date, field) => {
-    setUpdatedInvoice(prevState => ({
-      ...prevState,
+    setUpdatedInvoice(prev => ({
+      ...prev,
       [field]: date
     }));
   };
 
   const handleTableChange = (e, index, field) => {
     const { value } = e.target;
-    const numericValue = parseFloat(value) || 0;  // Convert to number or default to 0
-    const updatedTable = updatedInvoice.table.map((item, idx) =>
-      idx === index ? { ...item, [field]: numericValue } : item
-    );
+    const numericValue = field === 'rate' || field === 'quantity' ? parseFloat(value) || 0 : value;
 
-    const recalculatedTable = updatedTable.map((item, idx) => {
+    const updatedTable = updatedInvoice.table.map((item, idx) => {
       if (idx === index) {
-        const { rate, quantity, gstPercentage } = item;
-        const { amount, cgst, sgst, igst } = calculateGST(rate, quantity, gstPercentage);
-        return { ...item, amount, cgst, sgst, igst };
+        const updatedItem = { ...item, [field]: numericValue };
+        if (field === 'rate' || field === 'quantity') {
+          updatedItem.total = (updatedItem.rate || 0) * (updatedItem.quantity || 0);
+        }
+        return updatedItem;
       }
       return item;
     });
 
-    const { totalAmount, totalGST } = calculateTotal(recalculatedTable);
+    const totalAmount = updatedTable.reduce((sum, item) => sum + (item.total || 0), 0);
 
-    setUpdatedInvoice(prevState => ({
-      ...prevState,
-      table: recalculatedTable,
+    setUpdatedInvoice(prev => ({
+      ...prev,
+      table: updatedTable,
       amount: totalAmount,
-      totalGst: totalGST,
-      total: formatNumber(parseFloat(totalAmount.replace(/,/g, '')) + parseFloat(totalGST.replace(/,/g, '')))
+      total: totalAmount
     }));
   };
 
-
-
-
   const handleBankDetailsChange = (e, field) => {
     const { value } = e.target;
-    setUpdatedInvoice(prevState => ({
-      ...prevState,
+    setUpdatedInvoice(prev => ({
+      ...prev,
       bankDetails: {
-        ...prevState.bankDetails,
+        ...prev.bankDetails,
         [field]: value
       }
     }));
@@ -182,48 +98,24 @@ const UpdateInvoice = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated Invoice Data:", updatedInvoice);
     try {
-      const response = await axios.put(`${import.meta.env.VITE_BASE_URL}api/invoices/${updatedInvoice._id}`, updatedInvoice);
-      console.log("Response Data:", response.data);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}api/invoices/${updatedInvoice._id}`,
+        updatedInvoice
+      );
       if (response.status === 200) {
-        navigate(`/all-invoice`);
+        navigate('/all-invoice');
       } else {
         setError('Failed to update invoice');
       }
-      // Reload the page after 5 seconds
-      setTimeout(() => {
-        window.location.reload();
-      }, 5000);
     } catch (err) {
       console.error("Update Invoice Error:", err);
-      setError('Failed to update invoice');
+      setError(err.response?.data?.message || 'Failed to update invoice');
     }
   };
 
-
   const handlePrint = () => {
     window.print();
-  };
-
-  const handleCountryChange = (event) => {
-    const country = event.target.value || 'IN';
-    setSelectedCountry(country);
-    setSelectedState('DL');
-    setUpdatedInvoice(prevState => ({
-      ...prevState,
-      country: country,
-      state: 'DL'
-    }));
-  };
-
-  const handleStateChange = (event) => {
-    const state = event.target.value || 'DL';
-    setSelectedState(state);
-    setUpdatedInvoice(prevState => ({
-      ...prevState,
-      state: state
-    }));
   };
 
   return (
@@ -282,21 +174,8 @@ const UpdateInvoice = () => {
                 </div>
               </div>
             </div>
-            {invoice.logo ? (
-              <img
-                id="image"
-                style={{ width: "10rem", objectFit: "contain" }}
-                src={`${import.meta.env.VITE_BASE_URL}${invoice.logo?.replace(/\\/g, '/').replace('uploads/', '')}`}
-                alt="logo"
-              />
-            ) : (
-              <img
-                id="image"
-                style={{ width: "13rem", height: "2.5rem" }}
-                src="Images/icon.png"
-                alt="default logo"
-              />
-            )}       </div>
+            <img src="Images/IndiaEducatesLogo.png" alt="Company Logo" style={{ width: "12rem", objectFit: "contain" }} />
+          </div>
 
           <div className="d-flex justify-content-between">
             <div style={{ width: "49%" }}>
@@ -327,273 +206,131 @@ const UpdateInvoice = () => {
             </div>
           </div>
 
-          <div className="d-flex justify-content-around mt-2">
-            <div className="d-flex">
-              <span className="fw-bold" style={{ textWrap: "nowrap", padding: "8px" }}>Country of Supply :</span>
-              <select
-                id="country-select"
-                className="form-control"
-                style={{ backgroundColor: "white", border: "none" }}
-                value={selectedCountry}
-                onChange={handleCountryChange}
-              >
-                <option value="IN">India</option>
-                {countries.map(country => (
-                  <option key={country.iso2} value={country.iso2}>
-                    {country.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="d-flex">
-              <span className="fw-bold" style={{ textWrap: "nowrap", padding: "8px" }}>Place of Supply :</span>
-              <select
-                id="state-select"
-                className="form-control"
-                style={{ backgroundColor: "white", border: "none" }}
-                value={selectedState}
-                onChange={handleStateChange}
-              >
-                <option value="DL">Delhi</option>
-                {states.map(state => (
-                  <option key={state.iso2} value={state.iso2}>
-                    {state.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
           <div className="a4-height" style={{ marginTop: "-20px" }}>
             <table className="items border-light">
-              {isHaryanaState ? (
-                <>
-                  <tbody>
-                    <tr>
-                      <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
-                      <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
-                      <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
-                      <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
-                      <th style={{ width: 60, background: "#fe6730", color: "white" }} className="border-secondary">GST %</th>
-                      <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">CGST</th>
-                      <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">SGST</th>
-                      {/* <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">IGST</th> */}
-                    </tr>
+              <tbody>
+                <tr>
+                  <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
+                  <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
+                  <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
+                  <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
+                  <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Total</th>
+                </tr>
 
-                    {updatedInvoice.table.map((item, index) => (
-                      <tr className="item-row" key={index}>
-                        <td className="item-name border-secondary">
-                          <textarea
-                            rows="2"
-                            style={{ border: "none" }}
-                            name={`table[${index}].item`}
-                            value={item.item}
-                            onChange={(e) => handleTableChange(e, index, 'item')}
-                          />
-                        </td>
-                        <td className="description border-secondary">
-                          <textarea
-                            type="text"
-                            rows="2"
-                            style={{ border: "none" }}
-                            name={`table[${index}].description`}
-                            value={item.description}
-                            onChange={(e) => handleTableChange(e, index, 'description')}
-                          />
-                        </td>
-                        <td className="border-secondary">
-                          <textarea
-                            style={{ border: "none" }}
-                            className="cost"
-                            name={`table[${index}].rate`}
-                            value={item.rate}
-                            onChange={(e) => handleTableChange(e, index, 'rate')}
-                          />
-                        </td>
-                        <td className="border-secondary">
-                          <textarea
-                            rows="2"
-                            style={{ border: "none" }}
-                            className="qty"
-                            name={`table[${index}].quantity`}
-                            value={item.quantity}
-                            onChange={(e) => handleTableChange(e, index, 'quantity')}
-                          />
-                        </td>
-                        <td className="border-secondary">
-                          <textarea
-                            rows="2"
-                            style={{ border: "none" }}
-                            className="gstPercentage"
-                            name={`table[${index}].gstPercentage`}
-                            value={item.gstPercentage}
-                            onChange={(e) => handleTableChange(e, index, 'gstPercentage')}
-                          />
-                        </td>
-                        <td className="border-secondary">
-                          <span className="cgst">₹{item.cgst}</span>
-                        </td>
-                        <td className="border-secondary">
-                          <span className="sgst">₹{item.sgst}</span>
-                        </td>
-                        {/* <td className="border-secondary">
-                          <span className="igst">₹{item.igst}</span>
-                        </td> */}
-                      </tr>
-                    ))}
-
-                    <tr>
-                      <td colSpan={4} className="blank border-secondary"></td>
-                      <td colSpan={2} className="total-line border-secondary">Amount</td>
-                      <td className="total-value border-secondary">
-                        <div id="subtotal">₹{updatedInvoice.amount}</div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td colSpan={4} className="blank border-secondary"></td>
-                      <td colSpan={2} className="total-line border-secondary">Total GST</td>
-                      <td className="total-value border-secondary"><div id="total-gst">₹{updatedInvoice.totalGst}</div></td>
-                    </tr>
-                    <tr>
-                      <td colSpan={4} className="blank border-secondary"></td>
-                      <td colSpan={2} className="total-line border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}>Total (INR)</td>
-                      <td className="total-value border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}><div id="grand-total" style={{ background: "#fe6730", color: "white", width: "max-content" }}>₹{updatedInvoice.total}</div></td>
-                    </tr>
-                  </tbody>
-                </>
-              ) : (
-                <tbody>
-                  <tr>
-                    <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Item</th>
-                    <th style={{ background: "#fe6730", color: "white" }} className="border-secondary">Description</th>
-                    <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">Rate</th>
-                    <th style={{ width: 70, background: "#fe6730", color: "white" }} className="border-secondary">Quantity</th>
-                    <th style={{ width: 60, background: "#fe6730", color: "white" }} className="border-secondary">GST %</th>
-                    {/* <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">CGST</th>
-                    <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">SGST</th> */}
-                    <th style={{ width: 100, background: "#fe6730", color: "white" }} className="border-secondary">IGST</th>
-                  </tr>
-
-                  {updatedInvoice.table.map((item, index) => (
-                    <tr className="item-row" key={index}>
-                      <td className="item-name border-secondary">
-                        <textarea
-                          rows="2"
-                          style={{ border: "none" }}
-                          name={`table[${index}].item`}
-                          value={item.item}
-                          onChange={(e) => handleTableChange(e, index, 'item')}
-                        />
-                      </td>
-                      <td className="description border-secondary">
-                        <textarea
-                          rows="2"
-                          style={{ border: "none" }}
-                          name={`table[${index}].description`}
-                          value={item.description}
-                          onChange={(e) => handleTableChange(e, index, 'description')}
-                        />
-                      </td>
-                      <td className="border-secondary">
-                        <textarea
-                          style={{ border: "none" }}
-                          className="cost"
-                          name={`table[${index}].rate`}
-                          value={item.rate}
-                          onChange={(e) => handleTableChange(e, index, 'rate')}
-                        />
-                      </td>
-                      <td className="border-secondary">
-                        <textarea
-                          rows="2"
-                          style={{ border: "none" }}
-                          className="qty"
-                          name={`table[${index}].quantity`}
-                          value={item.quantity}
-                          onChange={(e) => handleTableChange(e, index, 'quantity')}
-                        />
-                      </td>
-                      <td className="border-secondary">
-                        <textarea
-                          rows="2"
-                          style={{ border: "none" }}
-                          className="gstPercentage"
-                          name={`table[${index}].gstPercentage`}
-                          value={item.gstPercentage}
-                          onChange={(e) => handleTableChange(e, index, 'gstPercentage')}
-                        />
-                      </td>
-                      {/* <td className="border-secondary">
-                        <span className="cgst">₹{item.cgst}</span>
-                      </td>
-                      <td className="border-secondary">
-                        <span className="sgst">₹{item.sgst}</span>
-                      </td> */}
-                      <td className="border-secondary">
-                        <span className="igst">₹{item.igst}</span>
-                      </td>
-                    </tr>
-                  ))}
-
-                  <tr>
-                    <td colSpan={3} className="blank border-secondary"></td>
-                    <td colSpan={2} className="total-line border-secondary">Amount</td>
-                    <td className="total-value border-secondary">
-                      <div id="subtotal">₹{updatedInvoice.amount}</div>
+                {updatedInvoice.table.map((item, index) => (
+                  <tr key={index} className="item-row">
+                    <td className="item-name border-secondary">
+                      <textarea
+                        style={{ border: "none" }}
+                        value={item.item}
+                        onChange={(e) => handleTableChange(e, index, 'item')}
+                      />
+                    </td>
+                    <td className="description border-secondary">
+                      <textarea
+                        style={{ border: "none" }}
+                        value={item.description}
+                        onChange={(e) => handleTableChange(e, index, 'description')}
+                      />
+                    </td>
+                    <td className="border-secondary">
+                      <textarea
+                        style={{ border: "none" }}
+                        value={item.rate}
+                        onChange={(e) => handleTableChange(e, index, 'rate')}
+                      />
+                    </td>
+                    <td className="border-secondary">
+                      <textarea
+                        style={{ border: "none" }}
+                        value={item.quantity}
+                        onChange={(e) => handleTableChange(e, index, 'quantity')}
+                      />
+                    </td>
+                    <td className="border-secondary">
+                      <span>₹ {formatNumber(item.total)}</span>
                     </td>
                   </tr>
-                  <tr>
-                    <td colSpan={3} className="blank border-secondary"></td>
-                    <td colSpan={2} className="total-line border-secondary">Total GST</td>
-                    <td className="total-value border-secondary"><div id="total-gst">₹{updatedInvoice.totalGst}</div></td>
-                  </tr>
-                  <tr>
-                    <td colSpan={3} className="blank border-secondary"></td>
-                    <td colSpan={2} className="total-line border-secondary fs-6 fw-bold" style={{ background: "#fe6730", color: "white" }}>Total (INR)</td>
-                    <td className="total-value border-secondary fs-6 fw-bold"
-                      style={{ background: "#fe6730", color: "white" }}>
-                      <div id="grand-total" style={{ background: "#fe6730", color: "white", width: "max-content" }}>₹{updatedInvoice.total}</div>
-                    </td>
-                  </tr>
-                </tbody>
-              )}
+                ))}
 
-
+                <tr>
+                  <td colSpan={3} className="blank border-secondary"> </td>
+                  <td className="total-line border-secondary fs-6 fw-bold text-center" style={{ color: "#fe6730" }}>Total</td>
+                  <td className="total-value border-secondary fs-6 fw-bold" style={{ color: "#0A9400" }}>
+                    <div id="grand-total" style={{ color: "#0A9400", width: "max-content" }}>₹ {formatNumber(updatedInvoice.total)}</div>
+                  </td>
+                </tr>
+              </tbody>
             </table>
-            <div style={{ width: "45%", marginTop: "-60px" }}>
-              <div className="p-2 rounded" style={{ backgroundColor: "#f3bca7", border: "none" }}>
-                <h2 className="h5 " style={{ backgroundColor: "#f3bca7", border: "none", color: "#0a9400" }}>Bank Details</h2>
-                <table className="items" style={{ backgroundColor: "#f3bca7", border: "none", marginTop: "-1px" }}>
+
+            <div style={{ width: "45%", marginTop: "20px", position: "relative", zIndex: 1 }}>
+              <div className="p-2 rounded" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                <h2 className="h5" style={{ backgroundColor: "#F3BCA7", border: "none", color: '#0a9400' }}>Bank Details</h2>
+                <table className="items" style={{ backgroundColor: "#F3BCA7", border: "none", marginTop: "-1px" }}>
                   <tbody>
                     <tr>
-                      <td colSpan={2} className="fw-bold  p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}>Account Name</td>
-                      <td className="p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}><textarea style={{ backgroundColor: "#f3bca7", border: "none" }} rows="1" name="bankDetails.accountName" value={updatedInvoice.bankDetails.accountName} onChange={(e) => handleBankDetailsChange(e, 'accountName')} /></td>
+                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>Account Name</td>
+                      <td className="p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                        <textarea
+                          style={{ backgroundColor: "#F3BCA7", border: "none" }}
+                          rows="1"
+                          value={updatedInvoice.bankDetails.accountName}
+                          onChange={(e) => handleBankDetailsChange(e, 'accountName')}
+                        />
+                      </td>
                     </tr>
                     <tr>
-                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}>Account Number </td>
-                      <td className="p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}><textarea style={{ backgroundColor: "#f3bca7", border: "none" }} rows="1" name="bankDetails.accountNumber" value={updatedInvoice.bankDetails.accountNumber} onChange={(e) => handleBankDetailsChange(e, 'accountNumber')} /></td>
+                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>Account Number</td>
+                      <td className="p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                        <textarea
+                          style={{ backgroundColor: "#F3BCA7", border: "none" }}
+                          rows="1"
+                          value={updatedInvoice.bankDetails.accountNumber}
+                          onChange={(e) => handleBankDetailsChange(e, 'accountNumber')}
+                        />
+                      </td>
                     </tr>
                     <tr>
-                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}>IFSC</td>
-                      <td className="p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}><textarea style={{ backgroundColor: "#f3bca7", border: "none" }} rows="1" name="bankDetails.ifsc" value={updatedInvoice.bankDetails.ifsc} onChange={(e) => handleBankDetailsChange(e, 'ifsc')} /></td>
+                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>IFSC</td>
+                      <td className="p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                        <textarea
+                          style={{ backgroundColor: "#F3BCA7", border: "none" }}
+                          rows="1"
+                          value={updatedInvoice.bankDetails.ifsc}
+                          onChange={(e) => handleBankDetailsChange(e, 'ifsc')}
+                        />
+                      </td>
                     </tr>
                     <tr>
-                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}>Account Type</td>
-                      <td className="p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}><textarea style={{ backgroundColor: "#f3bca7", border: "none" }} rows="1" name="bankDetails.accountType" value={updatedInvoice.bankDetails.accountType} onChange={(e) => handleBankDetailsChange(e, 'accountType')} /></td>
+                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>Account Type</td>
+                      <td className="p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                        <textarea
+                          style={{ backgroundColor: "#F3BCA7", border: "none" }}
+                          rows="1"
+                          value={updatedInvoice.bankDetails.accountType}
+                          onChange={(e) => handleBankDetailsChange(e, 'accountType')}
+                        />
+                      </td>
                     </tr>
                     <tr>
-                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}>Bank</td>
-                      <td className="p-0" style={{ backgroundColor: "#f3bca7", border: "none" }}><textarea style={{ backgroundColor: "#f3bca7", border: "none" }} rows="1" name="bankDetails.bankName" value={updatedInvoice.bankDetails.bankName} onChange={(e) => handleBankDetailsChange(e, 'bankName')} defaultValue={"ICICI bank"} /></td>
+                      <td colSpan={2} className="fw-bold p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>Bank</td>
+                      <td className="p-0" style={{ backgroundColor: "#F3BCA7", border: "none" }}>
+                        <textarea
+                          style={{ backgroundColor: "#F3BCA7", border: "none" }}
+                          rows="1"
+                          value={updatedInvoice.bankDetails.bankName}
+                          onChange={(e) => handleBankDetailsChange(e, 'bankName')}
+                        />
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
 
-            <div style={{ clear: "both" }} />
-            <div className="footer-note mt-4 ">
-            <h6 className="mb-1" style={{color: "#0a9400", border: "none" }}>Terms and Conditions</h6>
-            <textarea
+            <div className="footer-note mt-4">
+              <h6 className="mb-1" style={{ color: "#0a9400", border: "none" }}>Terms and Conditions</h6>
+              <textarea
                 className=""
                 rows="4"
                 name="termsConditions"
