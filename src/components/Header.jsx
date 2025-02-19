@@ -290,8 +290,8 @@ const Header = () => {
                 </div>
               </div>
             </div>
-            <div className="">
               {/* Notification display */}
+            <div className="">
               {notifications.length > 0 ? (
                 <div className="notification">
                   <p>
@@ -350,6 +350,18 @@ const Header = () => {
                 </div>
               )}
             </div>
+            {/* menu toggler */}
+            <button
+              className="navbar-toggler p-0 border-0 menu-toggle order-3"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#mainHeader"
+            >
+              <span className="fa fa-bars" />
+            </button>
+            <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 ">
+            </div>
+
           </div>
 
         </nav>
