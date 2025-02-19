@@ -1668,7 +1668,7 @@ const Tasks = () => {
                                 <span className="px-3 text-break">{message.content}</span>
                                 {message.fileUrls && message.fileUrls.map((fileUrl, index) => {
                                   if (fileUrl) {
-                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
+                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl}`;
                                     const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
 
                                     if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
@@ -1752,11 +1752,11 @@ const Tasks = () => {
                         {selectedImages.map((image, index) => (
                           <div key={index} className="mb-3">
                             <img
-                              src={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                              src={`${import.meta.env.VITE_BASE_URL}${image}`}
                               alt={`Preview ${index + 1}`}
                               className="img-fluid rounded"
                               style={{ cursor: 'pointer' }}
-                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`, '_blank')}
+                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
                             />
                           </div>
                         ))}
@@ -1790,17 +1790,17 @@ const Tasks = () => {
                             <div key={index} className="col-md-4 mb-3">
                               {isImage ? (
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}${image}`}
                                   alt={`Task Image ${index + 1}`}
                                   className="img-fluid rounded"
                                   style={{ cursor: 'pointer', height: '200px', width: '100%', objectFit: 'cover' }}
-                                  onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`, '_blank')}
+                                  onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
                                 />
                               ) : isPdf ? (
                                 <div className="d-flex flex-column align-items-center">
                                   <i className="bi bi-file-pdf fs-1"></i>
                                   <a
-                                    href={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                                    href={`${import.meta.env.VITE_BASE_URL}${image}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="btn btn-sm btn-primary mt-2"
@@ -1812,7 +1812,7 @@ const Tasks = () => {
                                 <div className="d-flex flex-column align-items-center">
                                   <i className="bi bi-file-earmark fs-1"></i>
                                   <a
-                                    href={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                                    href={`${import.meta.env.VITE_BASE_URL}${image}`}
                                     download
                                     className="btn btn-sm btn-primary mt-2"
                                   >

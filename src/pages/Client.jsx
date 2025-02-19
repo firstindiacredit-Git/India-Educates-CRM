@@ -396,7 +396,7 @@ const Client = () => {
                                                                     <img
                                                                         src={
                                                                             `${import.meta.env.VITE_BASE_URL}` +
-                                                                            client.clientImage.replace('uploads/', '')
+                                                                            client.clientImage
                                                                         }
                                                                         alt=""
                                                                         className="avatar xl rounded-circle img-thumbnail shadow-sm"
@@ -530,7 +530,7 @@ const Client = () => {
                                                                     <tr key={client._id}>
                                                                         <td>
                                                                             <div className="d-flex align-items-center">
-                                                                                <img className="avatar rounded-circle me-2" src={`${import.meta.env.VITE_BASE_URL}${client.clientImage.replace('uploads/', '')}`} alt="" style={{ width: '40px', height: '40px' }} />
+                                                                                <img className="avatar rounded-circle me-2" src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`} alt="" style={{ width: '40px', height: '40px' }} />
                                                                                 <div>
                                                                                     <h6 className="mb-0">{client.clientName}</h6>
                                                                                     <small>{client.clientEmail}</small>

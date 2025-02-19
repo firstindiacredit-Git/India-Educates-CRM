@@ -556,18 +556,18 @@ const Student = () => {
                                           {student.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
                                             <a href="#" onClick={(e) => handleFileClick(
                                               e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard.replace('uploads/', '')}`,
+                                              `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`,
                                               'pdf',
                                               student.studentName
                                             )}>View</a>
                                           ) : (
                                             <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.aadhaarCard.replace('uploads/', '')}`}
+                                              src={`${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`}
                                               alt=""
                                               className="avatar sm img-thumbnail shadow-sm"
                                               onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`,
                                                 'image',
                                                 student.studentName
                                               )}
@@ -610,18 +610,18 @@ const Student = () => {
                                           {student.panCard.toLowerCase().endsWith('.pdf') ? (
                                             <a href="#" onClick={(e) => handleFileClick(
                                               e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.panCard.replace('uploads/', '')}`,
+                                              `${import.meta.env.VITE_BASE_URL}${student.panCard}`,
                                               'pdf',
                                               student.studentName
                                             )}>View</a>
                                           ) : (
                                             <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.panCard.replace('uploads/', '')}`}
+                                              src={`${import.meta.env.VITE_BASE_URL}${student.panCard}`}
                                               alt=""
                                               className="avatar sm img-thumbnail shadow-sm"
                                               onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.panCard.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${student.panCard}`,
                                                 'image',
                                                 student.studentName
                                               )}
@@ -664,18 +664,18 @@ const Student = () => {
                                           {student.resume.toLowerCase().endsWith('.pdf') ? (
                                             <a href="#" onClick={(e) => handleFileClick(
                                               e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.resume.replace('uploads/', '')}`,
+                                              `${import.meta.env.VITE_BASE_URL}${student.resume}`,
                                               'pdf',
                                               student.studentName
                                             )}><i className="bi bi-filetype-pdf"></i></a>
                                           ) : (
                                             <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.resume.replace('uploads/', '')}`}
+                                              src={`${import.meta.env.VITE_BASE_URL}${student.resume}`}
                                               alt=""
                                               className="avatar sm img-thumbnail shadow-sm"
                                               onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.resume.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${student.resume}`,
                                                 'image',
                                                 student.studentName
                                               )}
@@ -2192,12 +2192,12 @@ const Student = () => {
                             <div className="fw-bold">QR Code</div>
                             <div className="d-flex align-items-center gap-2 mt-2">
                               <img
-                                src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.bankDetails.qrCode.replace('uploads/', '')}`}
+                                src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.bankDetails.qrCode}`}
                                 alt="QR Code"
                                 style={{ width: '100px', height: '100px', objectFit: 'contain', cursor: 'pointer' }}
                                 onClick={(e) => handleFileClick(
                                   e,
-                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.bankDetails.qrCode.replace('uploads/', '')}`,
+                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.bankDetails.qrCode}`,
                                   'image',
                                   `${selectedStudent.studentName} - QR Code`
                                 )}
@@ -2287,18 +2287,18 @@ const Student = () => {
                               {selectedStudent.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
                                 <a href="#" onClick={(e) => handleFileClick(
                                   e,
-                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard.replace('uploads/', '')}`,
+                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard}`,
                                   'pdf',
                                   selectedStudent.studentName
                                 )}>View</a>
                               ) : (
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard.replace('uploads/', '')}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard}`}
                                   alt=""
                                   className="avatar sm img-thumbnail shadow-sm"
                                   onClick={(e) => handleFileClick(
                                     e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard.replace('uploads/', '')}`,
+                                    `${import.meta.env.VITE_BASE_URL}${selectedStudent.aadhaarCard}`,
                                     'image',
                                     selectedStudent.studentName
                                   )}
@@ -2336,18 +2336,18 @@ const Student = () => {
                               {selectedStudent.panCard.toLowerCase().endsWith('.pdf') ? (
                                 <a href="#" onClick={(e) => handleFileClick(
                                   e,
-                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard.replace('uploads/', '')}`,
+                                  `${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard}`,
                                   'pdf',
                                   selectedStudent.studentName
                                 )}>View</a>
                               ) : (
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard.replace('uploads/', '')}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard}`}
                                   alt=""
                                   className="avatar sm img-thumbnail shadow-sm"
                                   onClick={(e) => handleFileClick(
                                     e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard.replace('uploads/', '')}`,
+                                    `${import.meta.env.VITE_BASE_URL}${selectedStudent.panCard}`,
                                     'image',
                                     selectedStudent.studentName
                                   )}

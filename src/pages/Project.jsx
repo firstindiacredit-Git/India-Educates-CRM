@@ -1061,7 +1061,7 @@ const Project = () => {
                                           <div className="d-flex justify-content-between">
                                             {project.projectIcon && (
                                               <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${project.projectIcon.replace('uploads/', '')}`}
+                                                src={`${import.meta.env.VITE_BASE_URL}${project.projectIcon}`}
                                                 alt="Project Icon"
                                                 className="me-2 rounded-circle"
                                                 style={{
@@ -2118,11 +2118,11 @@ const Project = () => {
                       {selectedImages.map((image, index) => (
                         <div key={index} className=" mb-3">
                           <img
-                            src={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                            src={`${import.meta.env.VITE_BASE_URL}${image}`}
                             alt={`Preview ${index + 1}`}
                             className="img-fluid rounded"
                             style={{ cursor: 'pointer' }}
-                            onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`, '_blank')}
+                            onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
                           />
                         </div>
                       ))}
@@ -2151,7 +2151,7 @@ const Project = () => {
                         <div key={index} className="col-md-4">
                           <div className="card">
                             <img
-                              src={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                              src={`${import.meta.env.VITE_BASE_URL}${image}`}
                               alt={`Project Image ${index + 1}`}
                               className="card-img-top"
                               style={{
@@ -2159,7 +2159,7 @@ const Project = () => {
                                 objectFit: 'cover',
                                 cursor: 'pointer'
                               }}
-                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`, '_blank')}
+                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
                             />
                             <div className="card-body">
                               <p className="card-text text-center mb-0">Image {index + 1}</p>

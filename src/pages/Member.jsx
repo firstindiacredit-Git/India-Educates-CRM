@@ -240,7 +240,7 @@ const Member = () => {
         // Save the fetched employees
         const modifiedEmployees = response.data.map(employee => ({
           ...employee,
-          employeeImage: employee.employeeImage ? employee.employeeImage.replace('uploads/', '') : ''
+          employeeImage: employee.employeeImage ? employee.employeeImage : ''
         }));
 
         // Fetch both project and task counts for each employee
@@ -452,7 +452,7 @@ const Member = () => {
       // Save the fetched employees
       const modifiedEmployees = response.data.map(employee => ({
         ...employee,
-        employeeImage: employee.employeeImage ? employee.employeeImage.replace('uploads/', '') : ''
+        employeeImage: employee.employeeImage ? employee.employeeImage : ''
       }));
 
       // Fetch both project and task counts for each employee
@@ -674,7 +674,7 @@ const Member = () => {
   // Add this function near your other handler functions
   const handleDownload = async (fileUrl, fileName) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`);
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}${fileUrl}`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -877,18 +877,18 @@ const Member = () => {
                                             {employee.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
                                               <a href="#" onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`,
                                                 'pdf',
                                                 employee.employeeName
                                               )}>View</a>
                                             ) : (
                                               <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard.replace('uploads/', '')}`}
+                                                src={`${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`}
                                                 alt=""
                                                 className="avatar sm img-thumbnail shadow-sm"
                                                 onClick={(e) => handleFileClick(
                                                   e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard.replace('uploads/', '')}`,
+                                                  `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`,
                                                   'image',
                                                   employee.employeeName
                                                 )}
@@ -931,18 +931,18 @@ const Member = () => {
                                             {employee.panCard.toLowerCase().endsWith('.pdf') ? (
                                               <a href="#" onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.panCard.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${employee.panCard}`,
                                                 'pdf',
                                                 employee.employeeName
                                               )}>View</a>
                                             ) : (
                                               <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.panCard.replace('uploads/', '')}`}
+                                                src={`${import.meta.env.VITE_BASE_URL}${employee.panCard}`}
                                                 alt=""
                                                 className="avatar sm img-thumbnail shadow-sm"
                                                 onClick={(e) => handleFileClick(
                                                   e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.panCard.replace('uploads/', '')}`,
+                                                  `${import.meta.env.VITE_BASE_URL}${employee.panCard}`,
                                                   'image',
                                                   employee.employeeName
                                                 )}
@@ -985,18 +985,18 @@ const Member = () => {
                                             {employee.resume.toLowerCase().endsWith('.pdf') ? (
                                               <a href="#" onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.resume.replace('uploads/', '')}`,
+                                                `${import.meta.env.VITE_BASE_URL}${employee.resume}`,
                                                 'pdf',
                                                 employee.employeeName
                                               )}><i className="bi bi-filetype-pdf"></i></a>
                                             ) : (
                                               <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.resume.replace('uploads/', '')}`}
+                                                src={`${import.meta.env.VITE_BASE_URL}${employee.resume}`}
                                                 alt=""
                                                 className="avatar sm img-thumbnail shadow-sm"
                                                 onClick={(e) => handleFileClick(
                                                   e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.resume.replace('uploads/', '')}`,
+                                                  `${import.meta.env.VITE_BASE_URL}${employee.resume}`,
                                                   'image',
                                                   employee.employeeName
                                                 )}
@@ -2642,12 +2642,12 @@ const Member = () => {
                               <div className="fw-bold">QR Code</div>
                               <div className="d-flex align-items-center gap-2 mt-2">
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.bankDetails.qrCode.replace('uploads/', '')}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.bankDetails.qrCode}`}
                                   alt="QR Code"
                                   style={{ width: '100px', height: '100px', objectFit: 'contain', cursor: 'pointer' }}
                                   onClick={(e) => handleFileClick(
                                     e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.bankDetails.qrCode.replace('uploads/', '')}`,
+                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.bankDetails.qrCode}`,
                                     'image',
                                     `${selectedEmployee.employeeName} - QR Code`
                                   )}
@@ -2737,18 +2737,18 @@ const Member = () => {
                                 {selectedEmployee.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
                                   <a href="#" onClick={(e) => handleFileClick(
                                     e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard.replace('uploads/', '')}`,
+                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`,
                                     'pdf',
                                     selectedEmployee.employeeName
                                   )}>View</a>
                                 ) : (
                                   <img
-                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard.replace('uploads/', '')}`}
+                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`}
                                     alt=""
                                     className="avatar sm img-thumbnail shadow-sm"
                                     onClick={(e) => handleFileClick(
                                       e,
-                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard.replace('uploads/', '')}`,
+                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.aadhaarCard}`,
                                       'image',
                                       selectedEmployee.employeeName
                                     )}
@@ -2786,18 +2786,18 @@ const Member = () => {
                                 {selectedEmployee.panCard.toLowerCase().endsWith('.pdf') ? (
                                   <a href="#" onClick={(e) => handleFileClick(
                                     e,
-                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard.replace('uploads/', '')}`,
+                                    `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`,
                                     'pdf',
                                     selectedEmployee.employeeName
                                   )}>View</a>
                                 ) : (
                                   <img
-                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard.replace('uploads/', '')}`}
+                                    src={`${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`}
                                     alt=""
                                     className="avatar sm img-thumbnail shadow-sm"
                                     onClick={(e) => handleFileClick(
                                       e,
-                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard.replace('uploads/', '')}`,
+                                      `${import.meta.env.VITE_BASE_URL}${selectedEmployee.panCard}`,
                                       'image',
                                       selectedEmployee.employeeName
                                     )}
