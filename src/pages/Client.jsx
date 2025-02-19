@@ -394,10 +394,7 @@ const Client = () => {
                                                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
                                                                 <div className="position-relative d-inline-block">
                                                                     <img
-                                                                        src={
-                                                                            `${import.meta.env.VITE_BASE_URL}` +
-                                                                            client.clientImage
-                                                                        }
+                                                                        src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`}
                                                                         alt=""
                                                                         className="avatar xl rounded-circle img-thumbnail shadow-sm"
                                                                         style={{
