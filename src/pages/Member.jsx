@@ -17,25 +17,33 @@ const Member = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [employeeProjects, setEmployeeProjects] = useState({});
   const [employeeTasks, setEmployeeTasks] = useState({});
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState('');
 
   //CREATE EMPLOYEE
   const [formData, setFormData] = useState({
-    employeeName: "",
-    employeeImage: null,
-    employeeId: "",
-    joiningDate: "",
-    password: "",
-    emailid: "",
-    phone: "+91 ",
-    description: "",
-    bankName: "",
-    accountHolderName: "",
-    accountNumber: "",
-    ifscCode: "",
-    accountType: "",
-    upiId: "",
-    qrCode: null,
-    paymentApp: ""
+    employeeName: '',
+    employeeId: '',
+    emailid: '',
+    password: '',
+    phone: '',
+    description: '',
+    joiningDate: '',
+    // Add address fields
+    street: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    // Bank details
+    bankName: '',
+    accountHolderName: '',
+    accountNumber: '',
+    ifscCode: '',
+    accountType: '',
+    upiId: '',
+    paymentApp: ''
   });
 
   const handleChange = (e) => {
@@ -52,38 +60,43 @@ const Member = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formDataToSend = new FormData();
-
-    // Add basic fields
-    formDataToSend.append('employeeName', formData.employeeName);
-    formDataToSend.append('employeeId', formData.employeeId);
-    formDataToSend.append('emailid', formData.emailid);
-    formDataToSend.append('password', formData.password);
-    formDataToSend.append('phone', formData.phone);
-    formDataToSend.append('description', formData.description);
-    formDataToSend.append('joiningDate', formData.joiningDate);
-
-    // Add file fields - make sure these match exactly with Multer config
-    if (formData.employeeImage) {
-      formDataToSend.append('employeeImage', formData.employeeImage);
-    }
-    if (formData.qrCode) {
-      formDataToSend.append('qrCode', formData.qrCode);
-    }
-
-    // Add bank details
-    formDataToSend.append('bankName', formData.bankName || '');
-    formDataToSend.append('accountHolderName', formData.accountHolderName || '');
-    formDataToSend.append('accountNumber', formData.accountNumber || '');
-    formDataToSend.append('ifscCode', formData.ifscCode || '');
-    formDataToSend.append('accountType', formData.accountType || '');
-    formDataToSend.append('upiId', formData.upiId || '');
-    formDataToSend.append('paymentApp', formData.paymentApp || '');
-
+  const handleSubmit = async () => {
     try {
+      const formDataToSend = new FormData();
+
+      // Add basic fields
+      formDataToSend.append('employeeName', formData.employeeName);
+      formDataToSend.append('employeeId', formData.employeeId);
+      formDataToSend.append('joiningDate', formData.joiningDate);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('emailid', formData.emailid);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('description', formData.description);
+
+      // Add address fields
+      formDataToSend.append('street', formData.street || '');
+      formDataToSend.append('city', formData.city || '');
+      formDataToSend.append('state', formData.state || '');
+      formDataToSend.append('country', formData.country || '');
+      formDataToSend.append('postalCode', formData.postalCode || '');
+
+      // Add bank details
+      formDataToSend.append('bankName', formData.bankName || '');
+      formDataToSend.append('accountHolderName', formData.accountHolderName || '');
+      formDataToSend.append('accountNumber', formData.accountNumber || '');
+      formDataToSend.append('ifscCode', formData.ifscCode || '');
+      formDataToSend.append('accountType', formData.accountType || '');
+      formDataToSend.append('upiId', formData.upiId || '');
+      formDataToSend.append('paymentApp', formData.paymentApp || '');
+
+      // Add files if they exist
+      if (formData.employeeImage) {
+        formDataToSend.append('employeeImage', formData.employeeImage);
+      }
+      if (formData.qrCode) {
+        formDataToSend.append('qrCode', formData.qrCode);
+      }
+
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}api/employees`,
         formDataToSend,
@@ -93,47 +106,56 @@ const Member = () => {
           },
         }
       );
-      const newEmployee = response.data;
-      setEmployees((prevEmployee) => [newEmployee, ...prevEmployee]);
-      // Clear the form
-      setFormData({
-        employeeName: "",
-        employeeImage: null,
-        employeeId: "",
-        joiningDate: "",
-        password: "",
-        emailid: "",
-        phone: "+91 ",
-        description: "",
-        bankName: "",
-        accountHolderName: "",
-        accountNumber: "",
-        ifscCode: "",
-        accountType: "",
-        upiId: "",
-        qrCode: null,
-        paymentApp: ""
-      });
 
-      // Close the modal programmatically
-      const modalElement = document.getElementById("createemp");
-      const modal = window.bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
+      if (response.status === 201) {
+        toast.success('Employee created successfully!', {
+          style: {
+            backgroundColor: "#0d6efd",
+            color: "white",
+          },
+        });
 
-      toast.success("Employee Added Successfully!", {
-        style: {
-          backgroundColor: "#0d6efd",
-          color: "white",
-        },
-      });
-      // Reload the page after 5 seconds
-      setTimeout(() => {
-        window.location.reload();
-      }, 5000);
-      // Handle successful response
+        // Close modal
+        const modal = document.getElementById('createemp');
+        const bootstrapModal = bootstrap.Modal.getInstance(modal);
+        bootstrapModal.hide();
+
+        // Reset form
+        setFormData({
+          employeeName: '',
+          employeeImage: null,
+          employeeId: '',
+          joiningDate: '',
+          password: '',
+          emailid: '',
+          phone: '+91',
+          description: '',
+          street: '',
+          city: '',
+          state: '',
+          country: '',
+          postalCode: '',
+          bankName: '',
+          accountHolderName: '',
+          accountNumber: '',
+          ifscCode: '',
+          accountType: '',
+          upiId: '',
+          qrCode: null,
+          paymentApp: ''
+        });
+
+        // Refresh employee list
+        await fetchEmployees();
+
+        // Optional: Reload page after 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
+      }
     } catch (error) {
-      console.error("Error:", error);
-      // Handle error
+      console.error('Error creating employee:', error);
+      toast.error(error.response?.data?.message || 'Failed to create employee');
     }
   };
 
@@ -173,7 +195,6 @@ const Member = () => {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}api/employees`
         );
-
         let lastOldId = 1;
         response.data.forEach((d) => {
           // Add null check and ensure employeeId exists and has the expected format
@@ -185,7 +206,7 @@ const Member = () => {
           }
         });
 
-        const newId = `PF00${lastOldId + 1}`;
+        const newId = `#IE00${lastOldId + 1}`;
         setFormData((prevFormData) => ({
           ...prevFormData,
           employeeId: newId,
@@ -225,6 +246,65 @@ const Member = () => {
     fetchData();
   }, []);
 
+  // Add useEffect for fetching countries
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch('https://api.countrystatecity.in/v1/countries', {
+          headers: {
+            'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
+          }
+        });
+        const data = await response.json();
+        setCountries(data);
+      } catch (error) {
+        console.error('Error fetching countries:', error);
+      }
+    };
+    fetchCountries();
+  }, []);
+
+  // Add useEffect for fetching states when country changes
+  useEffect(() => {
+    const fetchStates = async () => {
+      if (selectedCountry) {
+        try {
+          const response = await fetch(`https://api.countrystatecity.in/v1/countries/${selectedCountry}/states`, {
+            headers: {
+              'X-CSCAPI-KEY': 'eUNnUGVIam1VVXVqOFdKWWtzc0I1REM5cFVnZWtaTEEyM1l5ZE1JMw=='
+            }
+          });
+          const data = await response.json();
+          setStates(data);
+        } catch (error) {
+          console.error('Error fetching states:', error);
+        }
+      } else {
+        setStates([]);
+      }
+    };
+    fetchStates();
+  }, [selectedCountry]);
+
+  // Add country change handler
+  const handleCountryChange = (e) => {
+    const countryCode = e.target.value;
+    setSelectedCountry(countryCode);
+    setFormData(prev => ({
+      ...prev,
+      country: countries.find(c => c.iso2 === countryCode)?.name || '',
+      state: '' // Reset state when country changes
+    }));
+  };
+
+  // Add state change handler
+  const handleStateChange = (e) => {
+    const stateName = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      state: stateName
+    }));
+  };
 
   //DELETE EMPLOYEE
   const [deletableId, setDeletableId] = useState("");
@@ -269,6 +349,11 @@ const Member = () => {
     emailid: "",
     phone: "+91",
     description: "",
+    street: "",
+    city: "",
+    state: "",
+    country: "",
+    postalCode: "",
     bankName: "",
     accountHolderName: "",
     accountNumber: "",
@@ -310,6 +395,11 @@ const Member = () => {
           emailid: data.emailid,
           phone: data.phone,
           description: data.description,
+          street: data.address?.street || '',
+          city: data.address?.city || '',
+          state: data.address?.state || '',
+          country: data.address?.country || '',
+          postalCode: data.address?.postalCode || '',
           bankName: data.bankDetails?.bankName || '',
           accountHolderName: data.bankDetails?.accountHolderName || '',
           accountNumber: data.bankDetails?.accountNumber || '',
@@ -765,168 +855,6 @@ const Member = () => {
                                   </p>
                                 </div>
 
-                                {/* <div className="mt-2 text-start border-top pt-2">
-                                  <div className="row border-bottom pb-2 mb-2">
-                                    <div className="col-md-6 d-flex align-items-center">
-                                      <strong>Aadhaar -</strong>
-                                    </div>
-                                    <div className="col-md-6">
-                                      {employee.aadhaarCard ? (
-                                        <div className="row align-items-center g-2">
-                                          <div className="col-6">
-                                            {employee.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
-                                              <a href="#" onClick={(e) => handleFileClick(
-                                                e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`,
-                                                'pdf',
-                                                employee.employeeName
-                                              )}>View</a>
-                                            ) : (
-                                              <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`}
-                                                alt=""
-                                                className="avatar sm img-thumbnail shadow-sm"
-                                                onClick={(e) => handleFileClick(
-                                                  e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.aadhaarCard}`,
-                                                  'image',
-                                                  employee.employeeName
-                                                )}
-                                                style={{ cursor: 'pointer' }}
-                                              />
-                                            )}
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-download text-primary"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDownload(employee.aadhaarCard, `${employee.employeeName}_aadhaar${employee.aadhaarCard.substr(employee.aadhaarCard.lastIndexOf('.'))}`)}
-                                              title="Download Aadhaar Card"
-                                            ></i>
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-trash text-danger"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDocumentDelete(employee._id, 'aadhaarCard')}
-                                              title="Delete Aadhaar Card"
-                                            ></i>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <i className="bi bi-x-lg text-danger"></i>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="row border-bottom pb-2 mb-2">
-                                    <div className="col-md-6 d-flex align-items-center">
-                                      <strong>Pan -</strong>
-                                    </div>
-                                    <div className="col-md-6">
-                                      {employee.panCard ? (
-                                        <div className="row align-items-center g-2">
-                                          <div className="col-6">
-                                            {employee.panCard.toLowerCase().endsWith('.pdf') ? (
-                                              <a href="#" onClick={(e) => handleFileClick(
-                                                e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.panCard}`,
-                                                'pdf',
-                                                employee.employeeName
-                                              )}>View</a>
-                                            ) : (
-                                              <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.panCard}`}
-                                                alt=""
-                                                className="avatar sm img-thumbnail shadow-sm"
-                                                onClick={(e) => handleFileClick(
-                                                  e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.panCard}`,
-                                                  'image',
-                                                  employee.employeeName
-                                                )}
-                                                style={{ cursor: 'pointer' }}
-                                              />
-                                            )}
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-download text-primary"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDownload(employee.panCard, `${employee.employeeName}_pan${employee.panCard.substr(employee.panCard.lastIndexOf('.'))}`)}
-                                              title="Download Pan Card"
-                                            ></i>
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-trash text-danger"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDocumentDelete(employee._id, 'panCard')}
-                                              title="Delete Pan Card"
-                                            ></i>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <i className="bi bi-x-lg text-danger"></i>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="row border-bottom pb-2 mb-2">
-                                    <div className="col-md-6 d-flex align-items-center">
-                                      <strong>Resume -</strong>
-                                    </div>
-                                    <div className="col-md-6">
-                                      {employee.resume ? (
-                                        <div className="row align-items-center g-2">
-                                          <div className="col-6">
-                                            {employee.resume.toLowerCase().endsWith('.pdf') ? (
-                                              <a href="#" onClick={(e) => handleFileClick(
-                                                e,
-                                                `${import.meta.env.VITE_BASE_URL}${employee.resume}`,
-                                                'pdf',
-                                                employee.employeeName
-                                              )}><i className="bi bi-filetype-pdf"></i></a>
-                                            ) : (
-                                              <img
-                                                src={`${import.meta.env.VITE_BASE_URL}${employee.resume}`}
-                                                alt=""
-                                                className="avatar sm img-thumbnail shadow-sm"
-                                                onClick={(e) => handleFileClick(
-                                                  e,
-                                                  `${import.meta.env.VITE_BASE_URL}${employee.resume}`,
-                                                  'image',
-                                                  employee.employeeName
-                                                )}
-                                                style={{ cursor: 'pointer' }}
-                                              />
-                                            )}
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-download text-primary"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDownload(employee.resume, `${employee.employeeName}_resume${employee.resume.substr(employee.resume.lastIndexOf('.'))}`)}
-                                              title="Download Resume"
-                                            ></i>
-                                          </div>
-                                          <div className="col-3 text-center">
-                                            <i
-                                              className="bi bi-trash text-danger"
-                                              style={{ cursor: 'pointer' }}
-                                              onClick={() => handleDocumentDelete(employee._id, 'resume')}
-                                              title="Delete Resume"
-                                            ></i>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <i className="bi bi-x-lg text-danger"></i>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                </div> */}
-
                               </div>
 
                               <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
@@ -981,8 +909,8 @@ const Member = () => {
                                       {date}/{month}/{year}
                                     </span>
                                     <span className="fw-bold small-11 mb-0 mt-1">
-                                    <i className="bi bi-person-vcard-fill text-success fs-6 me-2" />
-                                    {employee.employeeId}
+                                      <i className="bi bi-person-vcard-fill text-success fs-6 me-2" />
+                                      {employee.employeeId}
                                     </span>
                                   </div>
                                 </div>
@@ -1021,15 +949,26 @@ const Member = () => {
                                 </div>
 
                                 {/* bank details */}
-                                <button
-                                  className="btn btn-sm btn-outline-primary mt-2"
-                                  data-bs-toggle="modal"
-                                  data-bs-target="#bankDetailsModal"
-                                  onClick={() => setSelectedEmployee(employee)}
-                                >
-                                  <i className="bi bi-bank me-2"></i>
-                                  View Bank Details
-                                </button>
+                                <div className="d-flex justify-content-between mt-2 gap-2">
+                                  <button
+                                    className="btn btn-sm btn-outline-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#bankDetailsModal"
+                                    onClick={() => setSelectedEmployee(employee)}
+                                  >
+                                    <i className="bi bi-bank me-2"></i>
+                                    Bank
+                                  </button>
+                                  <button
+                                    className="btn btn-sm btn-outline-success"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#addressDetailsModal"
+                                    onClick={() => setSelectedEmployee(employee)}
+                                  >
+                                    <i className="bi bi-geo-alt me-2"></i>
+                                    Address
+                                  </button>
+                                </div>
 
                                 {/* social links */}
                                 <div className="social-links mt-3">
@@ -1199,19 +1138,19 @@ const Member = () => {
                                           >
                                             <i className="icofont-ui-delete text-danger"></i>
                                           </button>
+
                                         </div>
                                         <div className="mt-2">
                                           <div className="btn-group" role="group">
-                                            {/* DOCUMENTS */}
+                                            {/* LOCATION */}
                                             <button
                                               className="btn btn-sm btn-outline-secondary"
                                               data-bs-toggle="modal"
-                                              data-bs-target="#viewDocumentsModal"
+                                              data-bs-target="#addressDetailsModal"
                                               onClick={() => setSelectedEmployee(employee)}
-                                              title="Click to View Documents of Employee"
+                                              title="Click to View Address Details of Employee"
                                             >
-                                              <i className="bi bi-file-earmark-text"></i>
-
+                                              <i className="bi bi-geo-alt"></i>
                                             </button>
                                             {/* BANK DETAILS */}
                                             <button
@@ -1389,6 +1328,86 @@ const Member = () => {
                               value={employeeData.phone}
                               onChange={updateChange}
                             />
+                          </div>
+                        </div>
+                        <div className="mb-3">
+                          <label className="form-label">Address Details</label>
+                          <div className="row g-3">
+                            <div className="col-md-12">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-house"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Street Address"
+                                  name="street"
+                                  value={employeeData.street || ''}
+                                  onChange={updateChange}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-globe"></i></span>
+                                <select
+                                  className="form-select"
+                                  value={selectedCountry}
+                                  onChange={handleCountryChange}
+                                >
+                                  <option value="">Select Country</option>
+                                  {countries.map(country => (
+                                    <option key={country.iso2} value={country.iso2}>
+                                      {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-geo"></i></span>
+                                <select
+                                  className="form-select"
+                                  name="state"
+                                  value={employeeData.state || ''}
+                                  onChange={updateChange}
+                                  disabled={!selectedCountry}
+                                >
+                                  <option value="">Select State</option>
+                                  {states.map(state => (
+                                    <option key={state.iso2} value={state.name}>
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-building"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="City"
+                                  name="city"
+                                  value={employeeData.city || ''}
+                                  onChange={updateChange}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-mailbox"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Postal Code"
+                                  name="postalCode"
+                                  value={employeeData.postalCode || ''}
+                                  onChange={updateChange}
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div className="mb-3">
@@ -1618,7 +1637,6 @@ const Member = () => {
                               name="employeeId"
                               value={formData.employeeId}
                               onChange={handleChange}
-                              disabled
                             />
                           </div>
                           <div className="col-sm-6">
@@ -1694,7 +1712,86 @@ const Member = () => {
                             />
                           </div>
                         </div>
-
+                        <div className="mb-3">
+                          <label className="form-label">Address Details</label>
+                          <div className="row g-3">
+                            <div className="col-md-12">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-house"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Street Address"
+                                  name="street"
+                                  value={formData.street}
+                                  onChange={handleChange}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-globe"></i></span>
+                                <select
+                                  className="form-select"
+                                  value={selectedCountry}
+                                  onChange={handleCountryChange}
+                                >
+                                  <option value="">Select Country</option>
+                                  {countries.map(country => (
+                                    <option key={country.iso2} value={country.iso2}>
+                                      {country.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-geo"></i></span>
+                                <select
+                                  className="form-select"
+                                  name="state"
+                                  value={formData.state}
+                                  onChange={handleStateChange}
+                                  disabled={!selectedCountry}
+                                >
+                                  <option value="">Select State</option>
+                                  {states.map(state => (
+                                    <option key={state.iso2} value={state.name}>
+                                      {state.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-building"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="City"
+                                  name="city"
+                                  value={formData.city}
+                                  onChange={handleChange}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="input-group mb-3">
+                                <span className="input-group-text"><i className="bi bi-mailbox"></i></span>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  placeholder="Postal Code"
+                                  name="postalCode"
+                                  value={formData.postalCode}
+                                  onChange={handleChange}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                         <div className="mb-3">
                           <label className="form-label">Bank Details</label>
                           <div className="row g-3">
@@ -2150,6 +2247,63 @@ const Member = () => {
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Add this modal for Address Details */}
+            <div className="modal fade" id="addressDetailsModal" tabIndex="-1" aria-hidden="true">
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title fw-bold">Address Details</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div className="modal-body">
+                    {selectedEmployee && (
+                      <div className="address-details">
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-house-fill text-primary me-2"></i>
+                            <strong>Street Address:</strong>
+                          </div>
+                          <p className="ms-4">{selectedEmployee.address?.street || 'Not provided'}</p>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-building text-primary me-2"></i>
+                            <strong>City:</strong>
+                          </div>
+                          <p className="ms-4">{selectedEmployee.address?.city || 'Not provided'}</p>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-geo-alt-fill text-primary me-2"></i>
+                            <strong>State:</strong>
+                          </div>
+                          <p className="ms-4">{selectedEmployee.address?.state || 'Not provided'}</p>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-globe text-primary me-2"></i>
+                            <strong>Country:</strong>
+                          </div>
+                          <p className="ms-4">{selectedEmployee.address?.country || 'Not provided'}</p>
+                        </div>
+
+                        <div className="mb-3">
+                          <div className="d-flex align-items-center mb-2">
+                            <i className="bi bi-mailbox text-primary me-2"></i>
+                            <strong>Postal Code:</strong>
+                          </div>
+                          <p className="ms-4">{selectedEmployee.address?.postalCode || 'Not provided'}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
