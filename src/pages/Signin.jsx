@@ -60,6 +60,7 @@ const Signin = () => {
       let tokenKey;
       let userKey;
       let redirectPath;
+      let requestData = { ...form };
 
       // Determine endpoint and storage keys based on role
       switch (form.role) {
@@ -81,6 +82,11 @@ const Signin = () => {
           tokenKey = 'client_token';
           userKey = 'client_user';
           redirectPath = '/client-dashboard';
+          // Map form fields to match backend expectations
+          requestData = {
+            clientEmail: form.email,
+            clientPassword: form.password
+          };
           break;
         case 'student':
           endpoint = 'studentlogin';
@@ -96,7 +102,7 @@ const Signin = () => {
 
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}api/${endpoint}`,
-        form
+        requestData
       );
       
       const { token, user } = response.data;

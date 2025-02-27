@@ -93,10 +93,10 @@ function AppContent() {
           <Route path='/signup' element={<Signup />}></Route>
           {/* <Route path='/employeesignup' element={<EmployeeSinup />}></Route> */}
           <Route path='/' element={<Signin />}></Route>
-          {/* <Route path='/employeesignin' element={<EmployeeSinin />}></Route> */}
-          {/* <Route path='/clientsignin' element={<ClientSignin />}></Route> */}
-          {/* <Route path='/studentsignin' element={<StudentSinin />}></Route> */}
-          {/* <Route path='/studentsignup' element={<StudentSinup />}></Route> */}
+          <Route path='/employeesignin' element={<EmployeeSinin />}></Route>
+          <Route path='/clientsignin' element={<ClientSignin />}></Route>
+          <Route path='/studentsignin' element={<StudentSinin />}></Route>
+          <Route path='/studentsignup' element={<StudentSinup />}></Route>
 
           <Route path='/project-dashboard' element={<ProjectDashboard />}></Route>
           <Route path='/employee-dashboard' element={<EmployeeDashboard />}></Route>
