@@ -17,21 +17,23 @@ const Client = () => {
     // Create a client
     const [formData, setFormData] = useState({
         clientName: '',
-        businessName: '',
         clientEmail: '',
         clientPassword: '',
         clientPhone: '',
         clientAddress: '',
-        clientGst: '',
+        clientDL: null,
+        clientPassport: null,
+        clientAgentID: null,
+        clientGovtID: null,
         clientImage: null, // Initialize clientImage state to null
-        linkedin: '',
-        instagram: '',
-        youtube: '',
-        facebook: '',
-        pinterest: '',
-        github: '',
-        website: '',
-        other: '',
+        accountNumber: '',
+        accountType: '',
+        accountHolderName: '',
+        ifscCode: '',
+        bankName: '',
+        upiId: '',
+        qrCode: '',
+        paymentApp: '',
     });
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +41,7 @@ const Client = () => {
     const handleImageChange = (e) => {
         setFormData({
             ...formData,
-            clientImage: e.target.files[0], // Store the selected file in clientImage state
+            [e.target.name]: e.target.files[0], // Store the selected file in the appropriate state field
         });
     };
     const handleSubmit = async (e) => {
@@ -47,48 +49,53 @@ const Client = () => {
         try {
             const formDataToSend = new FormData();
             formDataToSend.append('clientName', formData.clientName);
-            formDataToSend.append('businessName', formData.businessName);
             formDataToSend.append('clientEmail', formData.clientEmail);
             formDataToSend.append('clientPassword', formData.clientPassword);
             formDataToSend.append('clientPhone', formData.clientPhone);
             formDataToSend.append('clientAddress', formData.clientAddress);
-            formDataToSend.append('clientGst', formData.clientGst);
-            formDataToSend.append('clientImage', formData.clientImage); // Append the image file to the form data
-            formDataToSend.append('linkedin', formData.linkedin);
-            formDataToSend.append('instagram', formData.instagram);
-            formDataToSend.append('youtube', formData.youtube);
-            formDataToSend.append('facebook', formData.facebook);
-            formDataToSend.append('pinterest', formData.pinterest);
-            formDataToSend.append('github', formData.github);
-            formDataToSend.append('website', formData.website);
-            formDataToSend.append('other', formData.other);
+            formDataToSend.append('clientImage', formData.clientImage);
+            formDataToSend.append('accountNumber', formData.accountNumber);
+            formDataToSend.append('accountType', formData.accountType);
+            formDataToSend.append('accountHolderName', formData.accountHolderName);
+            formDataToSend.append('ifscCode', formData.ifscCode);
+            formDataToSend.append('bankName', formData.bankName);
+            formDataToSend.append('upiId', formData.upiId);
+            formDataToSend.append('qrCode', formData.qrCode);
+            formDataToSend.append('paymentApp', formData.paymentApp);
+
+            // Append document images if they exist
+            if (formData.clientDL) formDataToSend.append('clientDL', formData.clientDL);
+            if (formData.clientPassport) formDataToSend.append('clientPassport', formData.clientPassport);
+            if (formData.clientAgentID) formDataToSend.append('clientAgentID', formData.clientAgentID);
+            if (formData.clientGovtID) formDataToSend.append('clientGovtID', formData.clientGovtID);
+
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/clients`, formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            // console.log('Phone Number:', formData.clientPhone);
-
             const newClient = response.data;
             setClients((prevClient) => [newClient, ...prevClient]);
             setFormData({
                 clientName: '',
-                businessName: '',
                 clientEmail: '',
                 clientPassword: '',
                 clientPhone: '',
                 clientAddress: '',
-                clientGst: '',
-                clientImage: null, // Reset the clientImage state to null
-                linkedin: '',
-                instagram: '',
-                youtube: '',
-                facebook: '',
-                pinterest: '',
-                github: '',
-                website: '',
-                other: '',
+                clientDL: null,
+                clientPassport: null,
+                clientAgentID: null,
+                clientGovtID: null,
+                clientImage: null,
+                accountNumber: '',
+                accountType: '',
+                accountHolderName: '',
+                ifscCode: '',
+                bankName: '',
+                upiId: '',
+                qrCode: '',
+                paymentApp: '',
             });
             // Close the modal programmatically
             const modalElement = document.getElementById("createproject");
@@ -105,9 +112,6 @@ const Client = () => {
             setTimeout(() => {
                 window.location.reload();
             }, 5000);
-
-            // console.log('Client created:', response.data);
-            // Optionally, you can redirect the user to another page or show a success message
         } catch (error) {
             console.error('Error creating client:', error);
             // Handle error, show error message to the user, etc.
@@ -150,21 +154,23 @@ const Client = () => {
     //Update a Client
     const [clientData, setClientData] = useState({
         clientName: '',
-        businessName: '',
         clientEmail: '',
         clientPassword: '',
         clientPhone: '',
         clientAddress: '',
-        clientGst: '',
+        clientDL: null,
+        clientPassport: null,
+        clientAgentID: null,
+        clientGovtID: null,
         clientImage: null,
-        linkedin: '',
-        instagram: '',
-        youtube: '',
-        facebook: '',
-        pinterest: '',
-        github: '',
-        website: '',
-        other: ''
+        accountNumber: '',
+        accountType: '',
+        accountHolderName: '',
+        ifscCode: '',
+        bankName: '',
+        upiId: '',
+        qrCode: '',
+        paymentApp: ''
     });
     const [toEdit, setToEdit] = useState("");
 
@@ -177,21 +183,23 @@ const Client = () => {
 
                 setClientData({
                     clientName: response.data.clientName,
-                    businessName: response.data.businessName,
                     clientEmail: response.data.clientEmail,
                     clientPassword: response.data.clientPassword,
                     clientPhone: response.data.clientPhone,
                     clientAddress: response.data.clientAddress,
-                    clientGst: response.data.clientGst,
+                    clientDL: response.data.clientDL,
+                    clientPassport: response.data.clientPassport,
+                    clientAgentID: response.data.clientAgentID,
+                    clientGovtID: response.data.clientGovtID,
                     clientImage: response.data.clientImage,
-                    linkedin: response.data.socialLinks?.linkedin || '',
-                    instagram: response.data.socialLinks?.instagram || '',
-                    youtube: response.data.socialLinks?.youtube || '',
-                    facebook: response.data.socialLinks?.facebook || '',
-                    pinterest: response.data.socialLinks?.pinterest || '',
-                    github: response.data.socialLinks?.github || '',
-                    website: response.data.socialLinks?.website || '',
-                    other: response.data.socialLinks?.other || ''
+                    accountNumber: response.data.bankDetails?.accountNumber || '',
+                    accountType: response.data.bankDetails?.accountType || '',
+                    accountHolderName: response.data.bankDetails?.accountHolderName || '',
+                    ifscCode: response.data.bankDetails?.ifscCode || '',
+                    bankName: response.data.bankDetails?.bankName || '',
+                    upiId: response.data.bankDetails?.upiId || '',
+                    qrCode: response.data.bankDetails?.qrCode || '',
+                    paymentApp: response.data.bankDetails?.paymentApp || ''
                 });
             } catch (error) {
                 console.error('Error fetching client data:', error);
@@ -444,7 +452,7 @@ const Client = () => {
                                                             </div>
                                                             <div className="teacher-info border-start ps-xl-4 ps-md-3 ps-sm-4 ps-4 w-100">
                                                                 <h6 className="mb-0 mt-2 fw-bold d-block fs-6">
-                                                                    {client.businessName}
+                                                                    {client.clientName}
                                                                 </h6>
                                                                 <span className="py-1 fw-bold small-11 mb-0 mt-1 text-muted">
                                                                     Phone No. - {client.clientPhone}
@@ -452,51 +460,18 @@ const Client = () => {
                                                                 <div className="video-setting-icon mt-3 pt-3 border-top">
                                                                     <p>Email - {client.clientEmail}</p>
                                                                     <p>Address - {client.clientAddress}</p>
-                                                                    <p>GST No. - {client.clientGst}</p>
-                                                                    <div className="social-links mt-3">
-                                                                        <h6 className="mb-2">Social Links:</h6>
-                                                                        <div className="d-flex flex-wrap gap-2">
-                                                                            {client.socialLinks?.linkedin && (
-                                                                                <a href={client.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                                                                                    <i className="bi bi-linkedin"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.instagram && (
-                                                                                <a href={client.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger">
-                                                                                    <i className="bi bi-instagram"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.youtube && (
-                                                                                <a href={client.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger">
-                                                                                    <i className="bi bi-youtube"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.facebook && (
-                                                                                <a href={client.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                                                                                    <i className="bi bi-facebook"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.pinterest && (
-                                                                                <a href={client.socialLinks.pinterest} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger">
-                                                                                    <i className="bi bi-pinterest"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.github && (
-                                                                                <a href={client.socialLinks.github} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-dark">
-                                                                                    <i className="bi bi-github"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.website && (
-                                                                                <a href={client.socialLinks.website} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-info">
-                                                                                    <i className="bi bi-globe"></i>
-                                                                                </a>
-                                                                            )}
-                                                                            {client.socialLinks?.other && (
-                                                                                <a href={client.socialLinks.other} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-secondary">
-                                                                                    <i className="bi bi-link-45deg"></i>
-                                                                                </a>
-                                                                            )}
-                                                                        </div>
+                                                                    {client.clientDL && <p>DL - {client.clientDL}</p>}
+                                                                    {client.clientPassport && <p>Passport - {client.clientPassport}</p>}
+                                                                    {client.clientAgentID && <p>Agent ID - {client.clientAgentID}</p>}
+                                                                    <div className="bank-details mt-3">
+                                                                        <h6 className="mb-2">Bank Details:</h6>
+                                                                        {client.bankDetails?.accountNumber && <p>Account Number: {client.bankDetails.accountNumber}</p>}
+                                                                        {client.bankDetails?.accountType && <p>Account Type: {client.bankDetails.accountType}</p>}
+                                                                        {client.bankDetails?.accountHolderName && <p>Account Holder: {client.bankDetails.accountHolderName}</p>}
+                                                                        {client.bankDetails?.ifscCode && <p>IFSC Code: {client.bankDetails.ifscCode}</p>}
+                                                                        {client.bankDetails?.bankName && <p>Bank Name: {client.bankDetails.bankName}</p>}
+                                                                        {client.bankDetails?.upiId && <p>UPI ID: {client.bankDetails.upiId}</p>}
+                                                                        {client.bankDetails?.paymentApp && <p>Payment App: {client.bankDetails.paymentApp}</p>}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -515,10 +490,7 @@ const Client = () => {
                                                             <thead>
                                                                 <tr>
                                                                     <th>Member</th>
-                                                                    <th>Business Name</th>
-                                                                    <th>Contact</th>
-                                                                    <th>Address</th>
-                                                                    <th>Social Links</th>
+                                                                    <th>Bank Details</th>
                                                                     <th>Actions</th>
                                                                 </tr>
                                                             </thead>
@@ -534,35 +506,11 @@ const Client = () => {
                                                                                 </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td>{client.businessName}</td>
                                                                         <td>
-                                                                            <div>{client.clientPhone}</div>
-                                                                            <small>{client.clientGst}</small>
-                                                                        </td>
-                                                                        <td>{client.clientAddress}</td>
-                                                                        <td>
-                                                                            <div className="d-flex gap-2">
-                                                                                {client.socialLinks?.linkedin && (
-                                                                                    <a href={client.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                                                                                        <i className="bi bi-linkedin"></i>
-                                                                                    </a>
-                                                                                )}
-                                                                                {client.socialLinks?.instagram && (
-                                                                                    <a href={client.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger">
-                                                                                        <i className="bi bi-instagram"></i>
-                                                                                    </a>
-                                                                                )}
-                                                                                {client.socialLinks?.youtube && (
-                                                                                    <a href={client.socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-danger">
-                                                                                        <i className="bi bi-youtube"></i>
-                                                                                    </a>
-                                                                                )}
-                                                                                {client.socialLinks?.facebook && (
-                                                                                    <a href={client.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline-primary">
-                                                                                        <i className="bi bi-facebook"></i>
-                                                                                    </a>
-                                                                                )}
-                                                                                {/* Add more social links as needed */}
+                                                                            <div>
+                                                                                {client.bankDetails?.accountNumber && <div>Acc: {client.bankDetails.accountNumber}</div>}
+                                                                                {client.bankDetails?.bankName && <div>Bank: {client.bankDetails.bankName}</div>}
+                                                                                {client.bankDetails?.upiId && <div>UPI: {client.bankDetails.upiId}</div>}
                                                                             </div>
                                                                         </td>
                                                                         <td>
@@ -626,18 +574,6 @@ const Client = () => {
                                             />
                                         </div>
                                         <div className="mb-3">
-                                            <label htmlFor="exampleFormControlInput977" className="form-label">
-                                                Business Name <span className="text-danger">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="exampleFormControlInput977"
-                                                placeholder="Business Name"
-                                                name="businessName" value={formData.businessName} onChange={handleChange}
-                                            />
-                                        </div>
-                                        <div className="mb-3">
                                             <label htmlFor="formFileMultipleoneone" className="form-label">
                                                 Profile Image
                                             </label>
@@ -649,10 +585,61 @@ const Client = () => {
                                                 onChange={handleImageChange}
                                             />
                                         </div>
+                                        {/* Client Documents images */}
+                                        <div className="row g-3 mb-3">
+                                            <div className="col-md-6">
+                                                <label htmlFor="clientDL" className="form-label">
+                                                    Driving License
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientDL"
+                                                    name="clientDL"
+                                                    onChange={handleImageChange}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="clientPassport" className="form-label">
+                                                    Passport
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientPassport"
+                                                    name="clientPassport"
+                                                    onChange={handleImageChange}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="clientAgentID" className="form-label">
+                                                    Agent ID
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientAgentID"
+                                                    name="clientAgentID"
+                                                    onChange={handleImageChange}
+                                                />
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label htmlFor="clientGovtID" className="form-label">
+                                                    Government ID
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientGovtID"
+                                                    name="clientGovtID"
+                                                    onChange={handleImageChange}
+                                                />
+                                            </div>
+                                        </div>
+
                                         <div className="deadline-form">
                                             <form>
                                                 <div className="row g-3 mb-3">
-
                                                     <div className="col">
                                                         <label
                                                             htmlFor="exampleFormControlInput477"
@@ -730,126 +717,110 @@ const Client = () => {
                                                     name="clientPhone" value={formData.clientPhone} onChange={handleChange}
                                                 />
                                             </div>
-
-                                            <div className="col">
-                                                <label
-                                                    htmlFor="exampleFormControlInput277"
-                                                    className="form-label"
-                                                >
-                                                    GST No.
-                                                </label>
-                                                <input
-                                                    type="gst"
-                                                    className="form-control"
-                                                    id="exampleFormControlInput277"
-                                                    placeholder="GST No."
-                                                    name="clientGst" value={formData.clientGst} onChange={handleChange}
-                                                />
-                                            </div>
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label">Social Media & Website Links</label>
+                                            <label className="form-label">Bank Details</label>
                                             <div className="row g-3">
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-linkedin"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-bank"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="LinkedIn URL"
-                                                            name="linkedin"
-                                                            value={formData.linkedin || ''}
+                                                            placeholder="Account Number"
+                                                            name="accountNumber"
+                                                            value={formData.accountNumber || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-instagram"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-credit-card"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Instagram URL"
-                                                            name="instagram"
-                                                            value={formData.instagram || ''}
+                                                            placeholder="Account Type"
+                                                            name="accountType"
+                                                            value={formData.accountType || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-youtube"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-person"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="YouTube URL"
-                                                            name="youtube"
-                                                            value={formData.youtube || ''}
+                                                            placeholder="Account Holder Name"
+                                                            name="accountHolderName"
+                                                            value={formData.accountHolderName || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-facebook"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-upc"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Facebook URL"
-                                                            name="facebook"
-                                                            value={formData.facebook || ''}
+                                                            placeholder="IFSC Code"
+                                                            name="ifscCode"
+                                                            value={formData.ifscCode || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-pinterest"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-building"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Pinterest URL"
-                                                            name="pinterest"
-                                                            value={formData.pinterest || ''}
+                                                            placeholder="Bank Name"
+                                                            name="bankName"
+                                                            value={formData.bankName || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-github"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-phone"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="GitHub URL"
-                                                            name="github"
-                                                            value={formData.github || ''}
+                                                            placeholder="UPI ID"
+                                                            name="upiId"
+                                                            value={formData.upiId || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-globe"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-qr-code"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Website URL"
-                                                            name="website"
-                                                            value={formData.website || ''}
+                                                            placeholder="QR Code"
+                                                            name="qrCode"
+                                                            value={formData.qrCode || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-link-45deg"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-wallet2"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Other URL"
-                                                            name="other"
-                                                            value={formData.other || ''}
+                                                            placeholder="Payment App"
+                                                            name="paymentApp"
+                                                            value={formData.paymentApp || ''}
                                                             onChange={handleChange}
                                                         />
                                                     </div>
@@ -897,18 +868,6 @@ const Client = () => {
                                                 placeholder="Client Name"
                                                 name="clientName"
                                                 value={clientData.clientName}
-                                                onChange={updateChange}
-                                            />
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="exampleFormControlInput977" className="form-label">Business Name</label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                id="exampleFormControlInput977"
-                                                placeholder="Business Name"
-                                                name="businessName"
-                                                value={clientData.businessName}
                                                 onChange={updateChange}
                                             />
                                         </div>
@@ -988,122 +947,110 @@ const Client = () => {
                                                     onChange={updateChange}
                                                 />
                                             </div>
-                                            <div className="col">
-                                                <label htmlFor="exampleFormControlInput277" className="form-label">GST No.</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="exampleFormControlInput277"
-                                                    placeholder="GST No."
-                                                    name="clientGst"
-                                                    value={clientData.clientGst}
-                                                    onChange={updateChange}
-                                                />
-                                            </div>
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label">Social Media & Website Links</label>
+                                            <label className="form-label">Bank Details</label>
                                             <div className="row g-3">
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-linkedin"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-bank"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="LinkedIn URL"
-                                                            name="linkedin"
-                                                            value={clientData.linkedin || ''}
+                                                            placeholder="Account Number"
+                                                            name="accountNumber"
+                                                            value={clientData.accountNumber || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-instagram"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-credit-card"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Instagram URL"
-                                                            name="instagram"
-                                                            value={clientData.instagram || ''}
+                                                            placeholder="Account Type"
+                                                            name="accountType"
+                                                            value={clientData.accountType || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-youtube"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-person"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="YouTube URL"
-                                                            name="youtube"
-                                                            value={clientData.youtube || ''}
+                                                            placeholder="Account Holder Name"
+                                                            name="accountHolderName"
+                                                            value={clientData.accountHolderName || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-facebook"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-upc"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Facebook URL"
-                                                            name="facebook"
-                                                            value={clientData.facebook || ''}
+                                                            placeholder="IFSC Code"
+                                                            name="ifscCode"
+                                                            value={clientData.ifscCode || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-pinterest"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-building"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Pinterest URL"
-                                                            name="pinterest"
-                                                            value={clientData.pinterest || ''}
+                                                            placeholder="Bank Name"
+                                                            name="bankName"
+                                                            value={clientData.bankName || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-github"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-phone"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="GitHub URL"
-                                                            name="github"
-                                                            value={clientData.github || ''}
+                                                            placeholder="UPI ID"
+                                                            name="upiId"
+                                                            value={clientData.upiId || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-globe"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-qr-code"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Website URL"
-                                                            name="website"
-                                                            value={clientData.website || ''}
+                                                            placeholder="QR Code"
+                                                            name="qrCode"
+                                                            value={clientData.qrCode || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
                                                     <div className="input-group mb-3">
-                                                        <span className="input-group-text"><i className="bi bi-link-45deg"></i></span>
+                                                        <span className="input-group-text"><i className="bi bi-wallet2"></i></span>
                                                         <input
-                                                            type="url"
+                                                            type="text"
                                                             className="form-control"
-                                                            placeholder="Other URL"
-                                                            name="other"
-                                                            value={clientData.other || ''}
+                                                            placeholder="Payment App"
+                                                            name="paymentApp"
+                                                            value={clientData.paymentApp || ''}
                                                             onChange={updateChange}
                                                         />
                                                     </div>
