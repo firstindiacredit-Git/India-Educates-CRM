@@ -1552,7 +1552,7 @@ const Client = () => {
                                                                     className="btn btn-sm btn-outline-primary"
                                                                     onClick={(e) => handleFileClick(
                                                                         e,
-                                                                        `${import.meta.env.VITE_BASE_URL}/uploads/${selectedClient.clientDL}`,
+                                                                        `${import.meta.env.VITE_BASE_URL}${selectedClient.clientDL}`,
                                                                         'image',
                                                                         `${selectedClient.clientName} - Driving License`
                                                                     )}
@@ -1585,7 +1585,7 @@ const Client = () => {
                                                                     className="btn btn-sm btn-outline-primary"
                                                                     onClick={(e) => handleFileClick(
                                                                         e,
-                                                                        `${import.meta.env.VITE_BASE_URL}/uploads/${selectedClient.clientPassport}`,
+                                                                        `${import.meta.env.VITE_BASE_URL}${selectedClient.clientPassport}`,
                                                                         'image',
                                                                         `${selectedClient.clientName} - Passport`
                                                                     )}
@@ -1618,7 +1618,7 @@ const Client = () => {
                                                                     className="btn btn-sm btn-outline-primary"
                                                                     onClick={(e) => handleFileClick(
                                                                         e,
-                                                                        `${import.meta.env.VITE_BASE_URL}/uploads/${selectedClient.clientAgentID}`,
+                                                                        `${import.meta.env.VITE_BASE_URL}${selectedClient.clientAgentID}`,
                                                                         'image',
                                                                         `${selectedClient.clientName} - Agent ID`
                                                                     )}
@@ -1651,7 +1651,7 @@ const Client = () => {
                                                                     className="btn btn-sm btn-outline-primary"
                                                                     onClick={(e) => handleFileClick(
                                                                         e,
-                                                                        `${import.meta.env.VITE_BASE_URL}/uploads/${selectedClient.clientGovtID}`,
+                                                                        `${import.meta.env.VITE_BASE_URL}${selectedClient.clientGovtID}`,
                                                                         'image',
                                                                         `${selectedClient.clientName} - Government ID`
                                                                     )}
