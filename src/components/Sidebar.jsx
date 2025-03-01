@@ -411,6 +411,25 @@ const Sidebar = () => {
               </ul>
             </li>
 
+            <li className="collapsed">
+              <a
+                className={`m-link ${textColorClass}`}
+                data-bs-toggle="collapse"
+                data-bs-target="#more-Components"
+                href="#"
+              >
+                <i className={`icofont-listine-dots ${textColorClass}`} /> <span>More</span>{" "}
+                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+              </a>
+              <ul className="sub-menu collapse" id="more-Components">
+                <li>
+                  <Link className="ms-link" to="/iccr-scholarship">
+                    <span>ICCR Scholarship</span>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+
             {/* <li className="collapsed">
                 <a
                   className="m-link"
