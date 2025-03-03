@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./Loading.css"
 import { useNavigate } from "react-router-dom";
 import FloatingMenu from '../Chats/FloatingMenu'
+// import { XIcon } from '@heroicons/react/outline';
 
 
 const Student = () => {
@@ -83,6 +84,17 @@ const Student = () => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [selectedImageDetails, setSelectedImageDetails] = useState({ url: '', name: '' });
   const [selectedStudent, setSelectedStudent] = useState(null);
+
+  // Add new state variables
+  const [showLoanModal, setShowLoanModal] = useState(false);
+  const [selectedStudentForLoan, setSelectedStudentForLoan] = useState(null);
+  const [loanData, setLoanData] = useState({
+    amount: '',
+    description: '',
+    dueDate: '',
+    interestRate: 0
+  });
+  const [studentLoans, setStudentLoans] = useState([]);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -403,6 +415,55 @@ const Student = () => {
   // Add this function to handle student click
   const handleStudentClick = (student) => {
     navigate('/student-profile', { state: { studentId: student._id } });
+  };
+
+  // Add a separate button/function for opening loan modal
+  const handleLoanButtonClick = (student, e) => {
+    e.stopPropagation(); // Prevent triggering handleStudentClick
+    handleLoanModalOpen(student);
+  };
+
+  // Add new handlers
+  const handleLoanModalOpen = (student) => {
+    setSelectedStudentForLoan(student);
+    fetchStudentLoans(student._id);
+    setShowLoanModal(true);
+  };
+
+  const handleLoanChange = (e) => {
+    setLoanData({
+      ...loanData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const fetchStudentLoans = async (studentId) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/student/${studentId}/loans`);
+      setStudentLoans(response.data.loans || []); // Add fallback to empty array
+    } catch (error) {
+      toast.error('Error fetching loans');
+      setStudentLoans([]); // Set to empty array on error
+    }
+  };
+
+  const handleLoanSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/student/${selectedStudentForLoan._id}/loan`,
+        loanData
+      );
+      fetchStudentLoans(selectedStudentForLoan._id);
+      setLoanData({
+        amount: '',
+        description: '',
+        dueDate: '',
+        interestRate: 0
+      });
+    } catch (error) {
+      toast.error('Error adding loan');
+    }
   };
 
   return (
@@ -771,6 +832,7 @@ const Student = () => {
                               </div>
 
                               {/* bank details */}
+                              <div className="d-flex justify-content-between">
                               <button
                                 className="btn btn-sm btn-outline-primary mt-2"
                                 data-bs-toggle="modal"
@@ -778,8 +840,18 @@ const Student = () => {
                                 onClick={() => setSelectedStudent(student)}
                               >
                                 <i className="bi bi-bank me-2"></i>
-                                View Bank Details
+                                Banks
                               </button>
+                              <button
+                                className="btn btn-sm btn-outline-success mt-2"
+                                data-bs-toggle="modal"
+                                data-bs-target="#loansModal"
+                                onClick={(e) => handleLoanButtonClick(student, e)}
+                              >
+                                  <i className="bi bi-credit-card me-2"></i>
+                                  Loans
+                                </button>
+                              </div>
 
                               {/* social links */}
                               <div className="social-links mt-3">
@@ -2223,6 +2295,8 @@ const Student = () => {
             </div>
           </div>
 
+          
+
           {/* View Documents Modal */}
           <div className="modal fade" id="viewDocumentsModal" tabIndex={-1} aria-hidden="true" style={{ zIndex: 9998 }}>
             <div className="modal-dialog modal-dialog-centered">
@@ -2386,6 +2460,140 @@ const Student = () => {
             </div>
           </div>
 
+          {/* Loan Modal */}
+          {showLoanModal && (
+            <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <div className="modal-dialog modal-lg modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header bg-primary text-white">
+                    <h5 className="modal-title">
+                      Loans - {selectedStudentForLoan?.studentName}
+                    </h5>
+                    <button
+                      type="button"
+                      className="btn-close btn-close-white"
+                      onClick={() => setShowLoanModal(false)}
+                    />
+                  </div>
+                  
+                  <div className="modal-body">
+                    {/* Add New Loan Form */}
+                    <form onSubmit={handleLoanSubmit} className="mb-4">
+                      <div className="row g-3">
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              type="number"
+                              className="form-control"
+                              id="amount"
+                              name="amount"
+                              value={loanData.amount}
+                              onChange={handleLoanChange}
+                              required
+                            />
+                            <label htmlFor="amount">Amount</label>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="description"
+                              name="description"
+                              value={loanData.description}
+                              onChange={handleLoanChange}
+                              required
+                            />
+                            <label htmlFor="description">Description</label>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              type="date"
+                              className="form-control"
+                              id="dueDate"
+                              name="dueDate"
+                              value={loanData.dueDate}
+                              onChange={handleLoanChange}
+                              required
+                            />
+                            <label htmlFor="dueDate">Due Date</label>
+                          </div>
+                        </div>
+                        <div className="col-md-6">
+                          <div className="form-floating">
+                            <input
+                              type="number"
+                              className="form-control"
+                              id="interestRate"
+                              name="interestRate"
+                              value={loanData.interestRate}
+                              onChange={handleLoanChange}
+                              step="0.01"
+                            />
+                            <label htmlFor="interestRate">Interest Rate (%)</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-end mt-3">
+                        <button type="submit" className="btn btn-primary">
+                          <i className="bi bi-plus-circle me-2"></i>Add Loan
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Existing Loans List */}
+                    <h5 className="border-bottom pb-2 mb-3">Existing Loans</h5>
+                    <div className="table-responsive">
+                      <table className="table table-hover table-bordered">
+                        <thead className="table-primary">
+                          <tr>
+                            <th>Sr.No</th>
+                            <th>Student Name</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                            <th>Remaining</th>
+                            <th>Description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {studentLoans && studentLoans.map((loan, index) => (
+                            <tr key={loan._id}>
+                              <td>{index + 1}</td>
+                              <td>{selectedStudentForLoan?.studentName}</td>
+                              <td>₹{loan.amount}</td>
+                              <td>
+                                <span className={`badge ${
+                                  loan.status === 'PAID' ? 'bg-success' :
+                                  loan.status === 'PARTIALLY_PAID' ? 'bg-warning' :
+                                  'bg-danger'
+                                }`}>
+                                  {loan.status}
+                                </span>
+                              </td>
+                              <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
+                              <td>₹{loan.remainingAmount}</td>
+                              <td>{loan.description}</td>
+                            </tr>
+                          ))}
+                          {(!studentLoans || studentLoans.length === 0) && (
+                            <tr>
+                              <td colSpan="5" className="text-center text-muted">
+                                No loans found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       </div>
       <ToastContainer />
