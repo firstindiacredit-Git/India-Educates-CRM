@@ -2,12 +2,31 @@ import React, { useEffect, useState, useRef } from "react";
 
 // Export the utility function
 export function isLightColor(color) {
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substr(0, 2), 16);
-    const g = parseInt(hex.substr(2, 2), 16);
-    const b = parseInt(hex.substr(4, 2), 16);
-    const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return brightness > 128;
+    // Check if color is undefined or null
+    if (!color) return false;
+    
+    try {
+        // Remove the hash if it exists
+        const hex = color.replace('#', '');
+        
+        // Convert to RGB
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Check if any RGB values are NaN (invalid hex)
+        if (isNaN(r) || isNaN(g) || isNaN(b)) return false;
+        
+        // Calculate brightness using the formula (0.299*R + 0.587*G + 0.114*B)
+        const brightness = (r * 0.299 + g * 0.587 + b * 0.114);
+        
+        // Return true if the color is light (brightness > 128)
+        return brightness > 128;
+    } catch (error) {
+        // If any error occurs during processing, return false
+        console.warn("Error processing color in isLightColor:", error);
+        return false;
+    }
 }
 
 const colorOptions = {

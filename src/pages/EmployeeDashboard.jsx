@@ -480,7 +480,7 @@ const EmployeeDashboard = () => {
         if (colorResponse.data) {
           setNotepadColor(colorResponse.data.notepadColor);
           setTodoColor(colorResponse.data.todoColor);
-          setExcelSheetColors(colorResponse.data.excelSheetColors);
+          setExcelSheetColors(Array.isArray(colorResponse.data.excelSheetColors) ? colorResponse.data.excelSheetColors : []);
         }
 
         // Fetch Excel Sheet data with employeeId
@@ -2461,11 +2461,11 @@ const EmployeeDashboard = () => {
 
 
                       {/* Excel Sheet */}
-                      <div className="card shadow-lg mb-5" style={{ backgroundColor: excelSheetColors[0] || '#d4edda' }}>
+                      <div className="card shadow-lg mb-5" style={{ backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[0]) || '#d4edda' }}>
                         <div className="card-body">
                           <div className="d-flex justify-content-between align-items-center mb-3">
                             {/* Excel Sheet Heading */}
-                            <h5 className="card-title text-center flex-grow-1" style={{ color: isLightColor(excelSheetColors[0] || '#d4edda') ? '#000' : '#fff' }}>
+                            <h5 className="card-title text-center flex-grow-1" style={{ color: isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[0]) || '#d4edda') ? '#000' : '#fff' }}>
                               Excel Sheet
                             </h5>
                           </div>
@@ -2507,7 +2507,7 @@ const EmployeeDashboard = () => {
                                             fontSize: '1.1rem',
                                             fontWeight: 'bold',
                                             width: 'auto',
-                                            color: isLightColor(excelSheetColors[tableIndex] || '#d4edda') ? '#000' : '#fff'
+                                            color: isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda') ? '#000' : '#fff'
                                           }}
                                         />
 
@@ -2518,25 +2518,25 @@ const EmployeeDashboard = () => {
                                         overflowX: 'auto',
                                         msOverflowStyle: 'none',
                                         scrollbarWidth: 'none',
-                                        backgroundColor: excelSheetColors[tableIndex] || '#d4edda',
+                                        backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda',
                                         padding: '15px',
                                         borderRadius: '8px'
                                       }}>
                                         <table className="table table-bordered" style={{
                                           minWidth: '100%',
                                           width: 'max-content',
-                                          backgroundColor: excelSheetColors[tableIndex] || '#d4edda' // Also apply to table
+                                          backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda' // Also apply to table
                                         }}>
-                                          <thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: excelSheetColors[tableIndex] || '#d4edda' }}>
+                                          <thead style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda' }}>
                                             <tr >
-                                              <th style={{ width: '30px', backgroundColor: excelSheetColors[tableIndex] || '#d4edda' }}></th>
+                                              <th style={{ width: '30px', backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda' }}></th>
                                               {Array(table.cols).fill().map((_, colIndex) => (
                                                 <th key={colIndex} className="text-center" style={{
-                                                  backgroundColor: excelSheetColors[tableIndex] || '#d4edda', // Apply to column headers
+                                                  backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda', // Apply to column headers
                                                   padding: '2px',
                                                   fontSize: '12px',
                                                   width: '80px',
-                                                  color: isLightColor(excelSheetColors[tableIndex] || '#d4edda') ? '#000' : '#fff'  // Add this line
+                                                  color: isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda') ? '#000' : '#fff'  // Add this line
                                                 }}>
                                                   {getColumnLabel(colIndex)}
                                                   <button
@@ -2554,7 +2554,7 @@ const EmployeeDashboard = () => {
                                             {Array(table.rows).fill().map((_, rowIndex) => (
                                               <tr key={rowIndex}>
                                                 <td className="text-center" style={{
-                                                  backgroundColor: excelSheetColors[tableIndex] || '#d4edda', // Apply to row headers
+                                                  backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda', // Apply to row headers
                                                   padding: '2px',
                                                   fontSize: '12px'
                                                 }}>
@@ -2575,7 +2575,7 @@ const EmployeeDashboard = () => {
                                                       width: columnWidths[`${tableIndex}-${colIndex}`] || '80px',
                                                       maxWidth: 'none',
                                                       position: 'relative',
-                                                      backgroundColor: excelSheetColors[tableIndex] || '#d4edda', // Apply to cell
+                                                      backgroundColor: (Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda', // Apply to cell
                                                     }}
                                                   >
                                                     <div
@@ -2607,7 +2607,7 @@ const EmployeeDashboard = () => {
                                                           resize: 'none',
                                                           overflow: 'hidden',
                                                           fontSize: '12px',
-                                                          color: isValidUrl(table.data[rowIndex][colIndex]) ? '#0d6efd' : (isLightColor(excelSheetColors[tableIndex] || '#d4edda') ? '#000' : '#fff'),
+                                                          color: isValidUrl(table.data[rowIndex][colIndex]) ? '#0d6efd' : (isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda') ? '#000' : '#fff'),
                                                           textDecoration: isValidUrl(table.data[rowIndex][colIndex]) ? 'underline' : 'none',
                                                           backgroundColor: isCellSelected(tableIndex, rowIndex, colIndex) ? 'rgba(0, 123, 255, 0.1)' : 'transparent',
                                                         }}
@@ -2701,7 +2701,7 @@ const EmployeeDashboard = () => {
                                           {activeColorPicker.type === 'excel' &&
                                             activeColorPicker.tableIndex === tableIndex && (
                                               <CustomColorPicker
-                                                color={excelSheetColors[tableIndex] || '#d4edda'}
+                                                color={(Array.isArray(excelSheetColors) && excelSheetColors[tableIndex]) || '#d4edda'}
                                                 onChange={(color) => updateColors('excel', color, tableIndex)}
                                                 onClose={() => setActiveColorPicker({ type: null, tableIndex: null })}
                                               />
@@ -3107,12 +3107,12 @@ const EmployeeDashboard = () => {
         {`
             .table-bordered td, 
             .table-bordered th {
-              border-color: ${isLightColor(excelSheetColors[0] || '#d4edda') ? '#dee2e6' : '#ffffff33'} !important;
+              border-color: ${isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[0]) || '#d4edda') ? '#dee2e6' : '#ffffff33'} !important;
             }
             
             .cell-input {
               background-color: transparent !important;
-              color: ${isLightColor(excelSheetColors[0] || '#d4edda') ? '#000' : '#fff'} !important;
+              color: ${isLightColor((Array.isArray(excelSheetColors) && excelSheetColors[0]) || '#d4edda') ? '#000' : '#fff'} !important;
             }
           `}
       </style>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../employeeCompt/EmployeeSidebar";
 import Header from "../employeeCompt/EmployeeHeader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import io from 'socket.io-client';
 import { ToastContainer, toast } from 'react-toastify';
@@ -12,6 +12,8 @@ import FloatingMenu from '../Chats/FloatingMenu'
 const Project = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [viewMode, setViewMode] = useState("list");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [employees, setEmployees] = useState([]);
 
@@ -35,9 +37,9 @@ const Project = () => {
   const [loginUserId, setLoginUserId] = useState([]);
   // console.log(selectProject);
   useEffect(() => {
-    const Token = localStorage.getItem('emp_user_id') ? localStorage.getItem('emp_user_id') : navigate.state.employeeId
+    const Token = localStorage.getItem('emp_user_id') ? localStorage.getItem('emp_user_id') : (location.state && location.state.employeeId);
     const UserDetails = JSON.parse(localStorage.getItem("emp_user"));
-    setLoginUserId(UserDetails._id);
+    setLoginUserId(UserDetails?._id || '');
     // console.log(UserDetails);
 
     async function fetchData() {
@@ -376,7 +378,6 @@ const Project = () => {
               tabIndex={-1} 
               aria-labelledby="addUserLabel" 
               aria-hidden="true"
-              onHide={() => setIsChatModalOpen(false)}
             >
               <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
@@ -389,7 +390,6 @@ const Project = () => {
                       className="btn-close" 
                       data-bs-dismiss="modal" 
                       aria-label="Close"
-                      onClick={() => setIsChatModalOpen(false)}
                     ></button>
                   </div>
                   <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
