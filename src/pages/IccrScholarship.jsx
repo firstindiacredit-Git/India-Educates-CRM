@@ -236,7 +236,7 @@ const IccrScholarship = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Search forms..."
+                                    placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />

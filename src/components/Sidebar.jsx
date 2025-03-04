@@ -428,6 +428,13 @@ const Sidebar = () => {
                   </Link>
                 </li>
               </ul>
+              <ul className="sub-menu collapse" id="more-Components">
+                <li>
+                  <Link className="ms-link" to="/credit-line">
+                    <span>Credits Line</span>
+                  </Link>
+                </li>
+              </ul>
             </li>
 
             {/* <li className="collapsed">

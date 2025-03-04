@@ -96,6 +96,12 @@ const Student = () => {
   });
   const [studentLoans, setStudentLoans] = useState([]);
 
+  // Add these state variables at the top of your component with other state declarations
+  const [editLoanData, setEditLoanData] = useState({});
+  const [isEditingLoan, setIsEditingLoan] = useState(false);
+  const [selectedLoanId, setSelectedLoanId] = useState(null);
+  const [showDeleteLoanModal, setShowDeleteLoanModal] = useState(false);
+
   // Handle form input changes
   const handleChange = (e) => {
     setFormData({
@@ -463,6 +469,69 @@ const Student = () => {
       });
     } catch (error) {
       toast.error('Error adding loan');
+    }
+  };
+
+  const handleLoanEditClick = (loan) => {
+    setEditLoanData({
+      amount: loan.amount,
+      description: loan.description,
+      dueDate: loan.dueDate.split('T')[0], // Format date for input
+      interestRate: loan.interestRate || 0,
+      remainingAmount: loan.remainingAmount,
+      status: loan.status, // Add status
+    });
+    setSelectedLoanId(loan._id);
+    setIsEditingLoan(true);
+  };
+
+  const handleLoanEditChange = (e) => {
+    setEditLoanData({
+      ...editLoanData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleLoanEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}api/student/${selectedStudentForLoan._id}/loan/${selectedLoanId}`,
+        editLoanData
+      );
+      
+      // toast.success("Loan updated successfully");
+      // Refresh loans list
+      fetchStudentLoans(selectedStudentForLoan._id);
+      // Reset edit mode
+      setIsEditingLoan(false);
+      setSelectedLoanId(null);
+    } catch (error) {
+      console.error("Error updating loan:", error);
+      toast.error("Failed to update loan");
+    }
+  };
+
+  const handleLoanDeleteClick = (loanId) => {
+    setSelectedLoanId(loanId);
+    setShowDeleteLoanModal(true);
+  };
+
+  const handleLoanDelete = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_BASE_URL}api/student/${selectedStudentForLoan._id}/loan/${selectedLoanId}`
+      );
+      
+      // toast.success("Loan deleted successfully");
+      // Refresh loans list
+      fetchStudentLoans(selectedStudentForLoan._id);
+      // Close modal
+      setShowDeleteLoanModal(false);
+      setSelectedLoanId(null);
+    } catch (error) {
+      console.error("Error deleting loan:", error);
+      toast.error("Failed to delete loan");
     }
   };
 
@@ -849,7 +918,7 @@ const Student = () => {
                                 onClick={(e) => handleLoanButtonClick(student, e)}
                               >
                                   <i className="bi bi-credit-card me-2"></i>
-                                  Loans
+                                  Credit Line
                                 </button>
                               </div>
 
@@ -2467,7 +2536,7 @@ const Student = () => {
                 <div className="modal-content">
                   <div className="modal-header bg-primary text-white">
                     <h5 className="modal-title">
-                      Loans - {selectedStudentForLoan?.studentName}
+                      {selectedStudentForLoan?.studentName}'s Credit Line
                     </h5>
                     <button
                       type="button"
@@ -2539,24 +2608,133 @@ const Student = () => {
                       </div>
                       <div className="text-end mt-3">
                         <button type="submit" className="btn btn-primary">
-                          <i className="bi bi-plus-circle me-2"></i>Add Loan
+                          <i className="bi bi-plus-circle me-2"></i>Add Credit
                         </button>
                       </div>
                     </form>
 
                     {/* Existing Loans List */}
-                    <h5 className="border-bottom pb-2 mb-3">Existing Loans</h5>
-                    <div className="table-responsive">
+                    <h5 className="border-bottom pb-2 mb-3">Existing Credits Line</h5>
+                    
+                    {isEditingLoan && (
+                      <form onSubmit={handleLoanEditSubmit} className="mb-4 p-3 border rounded bg-light">
+                        <h6 className="mb-3">Edit Loan</h6>
+                        <div className="row g-3">
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="edit-amount"
+                                name="amount"
+                                value={editLoanData.amount}
+                                onChange={handleLoanEditChange}
+                                required
+                              />
+                              <label htmlFor="edit-amount">Amount</label>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="edit-remainingAmount"
+                                name="remainingAmount"
+                                value={editLoanData.remainingAmount}
+                                onChange={handleLoanEditChange}
+                                required
+                              />
+                              <label htmlFor="edit-remainingAmount">Remaining Amount</label>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <select
+                                className="form-select"
+                                id="edit-status"
+                                name="status"
+                                value={editLoanData.status}
+                                onChange={handleLoanEditChange}
+                                required
+                              >
+                                <option value="PENDING">PENDING</option>
+                                <option value="PARTIALLY_PAID">PARTIALLY PAID</option>
+                                <option value="PAID">PAID</option>
+                              </select>
+                              <label htmlFor="edit-status">Status</label>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="edit-description"
+                                name="description"
+                                value={editLoanData.description}
+                                onChange={handleLoanEditChange}
+                                required
+                              />
+                              <label htmlFor="edit-description">Description</label>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="edit-dueDate"
+                                name="dueDate"
+                                value={editLoanData.dueDate}
+                                onChange={handleLoanEditChange}
+                                required
+                              />
+                              <label htmlFor="edit-dueDate">Due Date</label>
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="form-floating">
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="edit-interestRate"
+                                name="interestRate"
+                                value={editLoanData.interestRate}
+                                onChange={handleLoanEditChange}
+                                step="0.01"
+                              />
+                              <label htmlFor="edit-interestRate">Interest Rate (%)</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-end mt-3">
+                          <button 
+                            type="button" 
+                            className="btn btn-secondary me-2"
+                            onClick={() => setIsEditingLoan(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button type="submit" className="btn btn-success">
+                            <i className="bi bi-check-circle me-2"></i>Update Loan
+                          </button>
+                        </div>
+                      </form>
+                    )}
+                    
+                    <div className="table-responsive" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                       <table className="table table-hover table-bordered">
-                        <thead className="table-primary">
+                        <thead className="table-primary sticky-top">
                           <tr>
                             <th>Sr.No</th>
                             <th>Student Name</th>
                             <th>Amount</th>
-                            <th>Status</th>
-                            <th>Due Date</th>
                             <th>Remaining</th>
                             <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -2564,9 +2742,12 @@ const Student = () => {
                             <tr key={loan._id}>
                               <td>{index + 1}</td>
                               <td>{selectedStudentForLoan?.studentName}</td>
-                              <td>₹{loan.amount}</td>
+                              <td className="text-success text-bold">₹{loan.amount}</td>
+                              <td className="text-danger text-bold">₹{loan.remainingAmount}</td>
+                              <td>{loan.description}</td>
+                              <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
                               <td>
-                                <span className={`badge ${
+                              <span className={`badge ${
                                   loan.status === 'PAID' ? 'bg-success' :
                                   loan.status === 'PARTIALLY_PAID' ? 'bg-warning' :
                                   'bg-danger'
@@ -2574,9 +2755,22 @@ const Student = () => {
                                   {loan.status}
                                 </span>
                               </td>
-                              <td>{new Date(loan.dueDate).toLocaleDateString()}</td>
-                              <td>₹{loan.remainingAmount}</td>
-                              <td>{loan.description}</td>
+                              <td>
+                                <div className="btn-group" role="group">
+                                  <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => handleLoanEditClick(loan)}
+                                  >
+                                    <i className="icofont-edit text-success"></i>
+                                  </button>
+                                  <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={() => handleLoanDeleteClick(loan._id)}
+                                  >
+                                    <i className="icofont-ui-delete text-danger"></i>
+                                  </button>
+                                </div>
+                              </td>
                             </tr>
                           ))}
                           {(!studentLoans || studentLoans.length === 0) && (
@@ -2589,6 +2783,43 @@ const Student = () => {
                         </tbody>
                       </table>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Loan Confirmation Modal */}
+          {showDeleteLoanModal && (
+            <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header bg-danger text-white">
+                    <h5 className="modal-title">Confirm Delete</h5>
+                    <button
+                      type="button"
+                      className="btn-close btn-close-white"
+                      onClick={() => setShowDeleteLoanModal(false)}
+                    />
+                  </div>
+                  <div className="modal-body">
+                    <p>Are you sure you want to delete this loan? This action cannot be undone.</p>
+                  </div>
+                  <div className="modal-footer">
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowDeleteLoanModal(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handleLoanDelete}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
