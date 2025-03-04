@@ -381,23 +381,28 @@ const EmployeeDashboard = () => {
     // console.log(currentEmployeeId + "currentEmployeeId")
     const fetchData = async () => {
       try {
-        // const token = localStorage.getItem('emp_token')
-        const token = localStorage.getItem('emp_user_id') ? localStorage.getItem('emp_user_id') : navigate.state.employeeId
+        // Get user details from localStorage
+        const userDetails = JSON.parse(localStorage.getItem('emp_user'));
+        const userId = userDetails?._id || localStorage.getItem('emp_user_id');
+        
+        // console.log('Using user ID for API calls:', userId); 
+        
         const [projectsResponse, tasksResponse, taskStatusResponse] = await Promise.all([
           axios.post(`${import.meta.env.VITE_BASE_URL}api/totalAssigneeProjects`, {
-            // headers: { Authorization: `Bearer ${token}` }
-            _id: token
+            _id: userId
           }),
           axios.post(`${import.meta.env.VITE_BASE_URL}api/totalAssigneeTasks`, {
-            // headers: { Authorization: `Bearer ${token}` }
-            _id: token
+            _id: userId
           }),
           axios.post(`${import.meta.env.VITE_BASE_URL}api/author`, {
-            // headers: { Authorization: token }
-            _id: token
+            _id: userId
           })
         ])
-        // console.log(projectsResponse.data.totalProjects + "projectsResponse")
+        
+        // console.log('Projects Response:', projectsResponse.data);
+        // console.log('Tasks Response:', tasksResponse.data);
+        // console.log('Task Status Response:', taskStatusResponse.data);
+        
         setTotalProjects(projectsResponse.data.totalProjects)
         setTotalTasks(tasksResponse.data.totalTasks)
         setTaskStatusCount(taskStatusResponse.data.taskStatusCount)

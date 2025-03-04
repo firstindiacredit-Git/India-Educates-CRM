@@ -255,10 +255,10 @@ const ClientProject = () => {
                             <thead>
                               <tr>
                                 <th>Project Name</th>
-                                <th>Client Name</th>
+                                <th>Team Members</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Members</th>
+                                <th>Associates</th>
                                 <th>Progress</th>
                                 <th>Add Message</th>
                               </tr>
@@ -352,8 +352,8 @@ const ClientProject = () => {
                               <p>End Date: {getFormattedDate(project.projectEndDate)}</p>
                               <p>Project Progress: {project.progress}%</p>
 
-                              <p>Members: {project.taskAssignPerson.map((name) => name.employeeName + ", ")}</p>
-                              <p>Members: {project.clientAssignPerson.map((name) => name.clientName + ", ")}</p>
+                              <p>Associates: {project.taskAssignPerson.map((name) => name.employeeName + ", ")}</p>
+                              <p>Team Members: {project.clientAssignPerson.map((name) => name.clientName + ", ")}</p>
                               <button
                                 className="btn btn-link"
                                 onClick={() => handleOpenProjectImages(project)}

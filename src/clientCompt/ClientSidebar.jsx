@@ -25,7 +25,7 @@ const ClientSidebar = () => {
                     <ul className="menu-list flex-grow-1 mt-3">
                         <li>
                             <Link className="ms-link" to="/client-dashboard">
-                                <i className="icofont-home fs-5" /> <span className='fs-6'>Associate Dashboard</span>
+                                <i className="icofont-home fs-5" /> <span className='fs-6'>Team Dashboard</span>
                             </Link>
                         </li>
                         {/* <li className="collapsed">

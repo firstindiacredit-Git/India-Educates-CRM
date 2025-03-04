@@ -248,10 +248,10 @@ const Project = () => {
                             <thead>
                               <tr>
                                 <th>Project Name</th>
-                                <th>Associates Name</th>
+                                <th>Team Name</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
-                                <th>Members</th>
+                                <th>Associates</th>
                                 <th>Progress</th>
                                 <th>Add Message</th>
                               </tr>
@@ -345,7 +345,7 @@ const Project = () => {
                               </figcaption>
                               <p>Start Date: {getFormattedDate(project.projectStartDate)}</p>
                               <p>End Date: {getFormattedDate(project.projectEndDate)}</p>
-                              <p>Members: {project.taskAssignPerson.map((name) => name.employeeName + ", ")}</p>
+                              <p>Associates: {project.taskAssignPerson.map((name) => name.employeeName + ", ")}</p>
                               <button
                                 className="bi bi-chat-left-dots btn outline-secondary text-primary position-relative"
                                 data-bs-toggle="modal"
