@@ -47,7 +47,7 @@ const Project = () => {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/employee-projects`, {
           _id: Token,
         });
-        console.log(response.data);
+        // console.log(response.data);
         setProjects(response.data);
       } catch (error) {
         console.error("Error fetching projects:", error);

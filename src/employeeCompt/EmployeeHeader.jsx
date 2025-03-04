@@ -289,7 +289,7 @@ const Header = () => {
                   <p className="mb-0 text-end line-height-sm ">
                     <span className="font-weight-bold">{employeeName}</span>
                   </p>
-                  <small>Agent Profile</small>
+                  <small>Associates Profile</small>
                 </div>
                 <a
                   className="nav-link dropdown-toggle pulse p-0"
@@ -507,7 +507,7 @@ const Header = () => {
                       id="createprojectlLabel"
                     >
                       {" "}
-                      Edit Agent
+                      Edit Associates
                     </h5>
                     <button
                       type="button"
@@ -522,13 +522,13 @@ const Header = () => {
                         htmlFor="exampleFormControlInput877"
                         className="form-label"
                       >
-                        Agent Name
+                        Associates Name
                       </label>
                       <input
                         type="text"
                         className="form-control"
                         id="exampleFormControlInput877"
-                        placeholder="Agent Name"
+                        placeholder="Associates Name"
                         name="employeeName"
                         value={employeeData.employeeName}
                         onChange={handleChange}
@@ -539,7 +539,7 @@ const Header = () => {
                         htmlFor="formFileMultipleoneone"
                         className="form-label"
                       >
-                        Agent Profile
+                        Associates Profile
                       </label>
                       <input
                         className="form-control"
@@ -588,13 +588,13 @@ const Header = () => {
                               htmlFor="exampleFormControlInput1778"
                               className="form-label"
                             >
-                              Agent ID
+                              Associates ID
                             </label>
                             <input
                               type="text"
                               className="form-control"
                               id="exampleFormControlInput1778"
-                              placeholder="Agent ID"
+                              placeholder="Associates ID"
                               name="employeeId"
                               value={employeeData.employeeId}
                             />
