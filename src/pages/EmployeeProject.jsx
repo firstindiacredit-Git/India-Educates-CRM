@@ -45,7 +45,7 @@ const Project = () => {
     async function fetchData() {
       try {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/employee-projects`, {
-          _id: Token,
+          _id: UserDetails?._id || Token,
         });
         // console.log(response.data);
         setProjects(response.data);

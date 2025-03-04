@@ -47,10 +47,13 @@ const Tasks = () => {
     const fetchTasks = async () => {
       try {
         const token = localStorage.getItem('emp_token');
-        const token1 = localStorage.getItem('emp_user_id');
+        const userDetails = JSON.parse(localStorage.getItem('emp_user'));
+        const userId = userDetails?._id || localStorage.getItem('emp_user_id');
+        
+        // console.log('Sending user ID to API:', userId);
+        
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/author`, {
-          // headers: { Authorization: token }
-          _id: token1
+          _id: userId
         });
 
         // console.log('API response:', response.data);
