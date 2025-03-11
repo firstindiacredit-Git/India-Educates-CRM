@@ -121,47 +121,65 @@ const Student = () => {
   // Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
     try {
-      const formDataToSend = new FormData();
+      const formDataObj = new FormData();
       
-      // Append all form fields to FormData
-      Object.keys(formData).forEach(key => {
-        if (key === 'studentImage' || key === 'resume' || key === 'aadhaarCard' || key === 'qrCode') {
-          if (formData[key]) {
-            formDataToSend.append(key, formData[key]);
-          }
-        } else {
-          formDataToSend.append(key, formData[key]);
+      // Add all form fields to formData
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] !== null && formData[key] !== undefined) {
+          formDataObj.append(key, formData[key]);
         }
       });
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/students`, {
-        method: 'POST',
-        body: formDataToSend,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}api/students`,
+        formDataObj,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        // Handle success (e.g., show notification, reset form, etc.)
-        fetchStudents(); // Refresh the students list
-        const modal = document.getElementById('createemp');
-        const modalInstance = bootstrap.Modal.getInstance(modal);
-        modalInstance.hide();
-        toast.success('Student added successfully');
-        // Reload the page after 5 seconds
+      if (response.status === 201) {
+        toast.success('Student Added Successfully');
+        fetchStudents();
+        setFormData({
+          studentName: "",
+          studentImage: null,
+          resume: null,
+          aadhaarCard: null,
+          emailid: "",
+          password: "",
+          phone: "+91 ",
+          course: "",
+          batch: "",
+          description: "",
+          linkedin: "",
+          instagram: "",
+          youtube: "",
+          facebook: "",
+          github: "",
+          website: "",
+          other: "",
+          bankName: "",
+          accountHolderName: "",
+          accountNumber: "",
+          ifscCode: "",
+          accountType: "",
+          upiId: "",
+          qrCode: null,
+          paymentApp: ""
+        });
+        setSelectedImageDetails({});
+        document.getElementById('studentForm').reset();
+        //reload 5 seconds
         setTimeout(() => {
           window.location.reload();
         }, 5000);
-      } else {
-        // Handle error
-        console.error('Failed to create student');
       }
     } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+      toast.error(error.response?.data?.message || 'Error adding student');
     }
   };
 
@@ -170,6 +188,7 @@ const Student = () => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/students`);
       setStudents(response.data);
+      console.log(response.data); 
     } catch (error) {
       console.error('Error fetching students:', error);
     }
@@ -253,70 +272,44 @@ const Student = () => {
     try {
       const formData = new FormData();
       
-      // Format the date properly before appending
-      const formattedDate = studentData.joiningDate ? new Date(studentData.joiningDate).toISOString().split('T')[0] : '';
-      
-      // Ensure batch is a string, even if it comes as an array
-      const formattedBatch = typeof studentData.batch === 'string' ? 
-        studentData.batch : 
-        (Array.isArray(studentData.batch) ? studentData.batch.join(', ') : '');
-      
-      // Append basic fields with proper formatting
-      formData.append("studentName", studentData.studentName || '');
-      formData.append("studentId", studentData.studentId || ''); // Add this line
-      formData.append("joiningDate", formattedDate);
-      formData.append("emailid", studentData.emailid || '');
-      formData.append("password", studentData.password || '');
-      formData.append("phone", studentData.phone || '');
-      formData.append("description", studentData.description || '');
-      formData.append("course", studentData.course || '');
-      formData.append("batch", formattedBatch);
-
-      // Handle file fields
-      if (studentData.studentImage instanceof File) {
-        formData.append("studentImage", studentData.studentImage);
-      }
-      if (studentData.resume instanceof File) {
-        formData.append("resume", studentData.resume);
-      }
-      if (studentData.aadhaarCard instanceof File) {
-        formData.append("aadhaarCard", studentData.aadhaarCard);
-      }
-      if (studentData.qrCode instanceof File) {
-        formData.append("qrCode", studentData.qrCode);
-      }
-
-      // Handle social links and bank details
-      Object.entries(studentData.socialLinks || {}).forEach(([key, value]) => {
-        formData.append(key, value || '');
+      // Add all form fields to formData
+      Object.keys(studentData).forEach((key) => {
+        formData.append(key, studentData[key]);
       });
 
-      Object.entries(studentData.bankDetails || {}).forEach(([key, value]) => {
-        formData.append(key, value || '');
-      });
+      // Add files if they were changed
+      if (studentData.studentImage) {
+        formData.append('studentImage', studentData.studentImage);
+      }
+      if (studentData.aadhaarCard) {
+        formData.append('aadhaarCard', studentData.aadhaarCard);
+      }
+      if (studentData.qrCode) {
+        formData.append('qrCode', studentData.qrCode);
+      }
 
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/students/${studentData._id}`, {
-        method: 'PUT',
-        body: formData
-      });
+      const response = await axios.put(
+        `${import.meta.env.VITE_BASE_URL}api/students/${studentData._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
-      if (response.ok) {
-        fetchStudents(); // Refresh the students list
-        const modal = document.getElementById('editemp');
-        const modalInstance = bootstrap.Modal.getInstance(modal);
-        modalInstance.hide();
-        toast.success('Student updated successfully');
-        // Reload the page after 5 seconds
+      if (response.status === 200) {
+        toast.success('Student Updated Successfully');
+        fetchStudents();
+        setStudentData({});
+        setSelectedImageDetails({});
+        //reload 5 seconds
         setTimeout(() => {
           window.location.reload();
         }, 5000);
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || 'Failed to update student');
       }
     } catch (error) {
-      console.error('Error updating student:', error);
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      toast.error(error.response?.data?.message || 'Error updating student');
     }
   };
 
@@ -335,6 +328,10 @@ const Student = () => {
         const modal = document.getElementById('deleteproject');
         const modalInstance = bootstrap.Modal.getInstance(modal);
         modalInstance.hide();
+        //reload 5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
       } else {
         toast.error('Failed to delete student');
       }
@@ -637,7 +634,7 @@ const Student = () => {
                             <div className="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w-75">
                               <div className="position-relative d-inline-block">
                                 <img
-                                  src={`${import.meta.env.VITE_BASE_URL}/uploads/${student.studentImage}`}
+                                  src={`${import.meta.env.VITE_BASE_URL}${student.studentImage}`}
                                   alt=""
                                   className="avatar xl rounded-circle img-thumbnail shadow-sm"
                                   style={{
@@ -674,10 +671,10 @@ const Student = () => {
                               </div>
 
                               <div className="mt-2 text-start border-top pt-2">
-                                {/* Aadhaar Card Row */}
+                                {/* Student ID Card Row */}
                                 <div className="row border-bottom pb-2 mb-2">
                                   <div className="col-md-6 d-flex align-items-center">
-                                    <strong>Aadhaar -</strong>
+                                    <strong>Student ID -</strong>
                                   </div>
                                   <div className="col-md-6">
                                     {student.aadhaarCard ? (
@@ -686,18 +683,18 @@ const Student = () => {
                                           {student.aadhaarCard.toLowerCase().endsWith('.pdf') ? (
                                             <a href="#" onClick={(e) => handleFileClick(
                                               e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`,
+                                              `${import.meta.env.VITE_BASE_URL}${student.studentIdImage}`,
                                               'pdf',
                                               student.studentName
                                             )}>View</a>
                                           ) : (
                                             <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`}
+                                              src={`${import.meta.env.VITE_BASE_URL}${student.studentIdImage}`}
                                               alt=""
                                               className="avatar sm img-thumbnail shadow-sm"
                                               onClick={(e) => handleFileClick(
                                                 e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.aadhaarCard}`,
+                                                `${import.meta.env.VITE_BASE_URL}${student.studentIdImage}`,
                                                 'image',
                                                 student.studentName
                                               )}
@@ -709,124 +706,16 @@ const Student = () => {
                                           <i
                                             className="bi bi-download text-primary"
                                             style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDownload(student.aadhaarCard, `${student.studentName}_aadhaar${student.aadhaarCard.substr(student.aadhaarCard.lastIndexOf('.'))}`)}
-                                            title="Download Aadhaar Card"
+                                            onClick={() => handleDownload(student.studentIdImage, `${student.studentName}_studentId${student.studentIdImage.substr(student.studentIdImage.lastIndexOf('.'))}`)}
+                                            title="Download Student ID Card"
                                           ></i>
                                         </div>
                                         <div className="col-3 text-center">
                                           <i
                                             className="bi bi-trash text-danger"
                                             style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDocumentDelete(student._id, 'aadhaarCard')}
-                                            title="Delete Aadhaar Card"
-                                          ></i>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <i className="bi bi-x-lg text-danger"></i>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* PAN Card Row */}
-                                <div className="row border-bottom pb-2 mb-2">
-                                  <div className="col-md-6 d-flex align-items-center">
-                                    <strong>Pan -</strong>
-                                  </div>
-                                  <div className="col-md-6">
-                                    {student.panCard ? (
-                                      <div className="row align-items-center g-2">
-                                        <div className="col-6">
-                                          {student.panCard.toLowerCase().endsWith('.pdf') ? (
-                                            <a href="#" onClick={(e) => handleFileClick(
-                                              e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.panCard}`,
-                                              'pdf',
-                                              student.studentName
-                                            )}>View</a>
-                                          ) : (
-                                            <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.panCard}`}
-                                              alt=""
-                                              className="avatar sm img-thumbnail shadow-sm"
-                                              onClick={(e) => handleFileClick(
-                                                e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.panCard}`,
-                                                'image',
-                                                student.studentName
-                                              )}
-                                              style={{ cursor: 'pointer' }}
-                                            />
-                                          )}
-                                        </div>
-                                        <div className="col-3 text-center">
-                                          <i
-                                            className="bi bi-download text-primary"
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDownload(student.panCard, `${student.studentName}_pan${student.panCard.substr(student.panCard.lastIndexOf('.'))}`)}
-                                            title="Download Pan Card"
-                                          ></i>
-                                        </div>
-                                        <div className="col-3 text-center">
-                                          <i
-                                            className="bi bi-trash text-danger"
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDocumentDelete(student._id, 'panCard')}
-                                            title="Delete Pan Card"
-                                          ></i>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <i className="bi bi-x-lg text-danger"></i>
-                                    )}
-                                  </div>
-                                </div>
-
-                                {/* Resume Row */}
-                                <div className="row border-bottom pb-2 mb-2">
-                                  <div className="col-md-6 d-flex align-items-center">
-                                    <strong>Resume -</strong>
-                                  </div>
-                                  <div className="col-md-6">
-                                    {student.resume ? (
-                                      <div className="row align-items-center g-2">
-                                        <div className="col-6">
-                                          {student.resume.toLowerCase().endsWith('.pdf') ? (
-                                            <a href="#" onClick={(e) => handleFileClick(
-                                              e,
-                                              `${import.meta.env.VITE_BASE_URL}${student.resume}`,
-                                              'pdf',
-                                              student.studentName
-                                            )}><i className="bi bi-filetype-pdf"></i></a>
-                                          ) : (
-                                            <img
-                                              src={`${import.meta.env.VITE_BASE_URL}${student.resume}`}
-                                              alt=""
-                                              className="avatar sm img-thumbnail shadow-sm"
-                                              onClick={(e) => handleFileClick(
-                                                e,
-                                                `${import.meta.env.VITE_BASE_URL}${student.resume}`,
-                                                'image',
-                                                student.studentName
-                                              )}
-                                              style={{ cursor: 'pointer' }}
-                                            />
-                                          )}
-                                        </div>
-                                        <div className="col-3 text-center">
-                                          <i
-                                            className="bi bi-download text-primary"
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDownload(student.resume, `${student.studentName}_resume${student.resume.substr(student.resume.lastIndexOf('.'))}`)}
-                                            title="Download Resume"
-                                          ></i>
-                                        </div>
-                                        <div className="col-3 text-center">
-                                          <i
-                                            className="bi bi-trash text-danger"
-                                            style={{ cursor: 'pointer' }}
-                                            onClick={() => handleDocumentDelete(student._id, 'resume')}
-                                            title="Delete Resume"
+                                            onClick={() => handleDocumentDelete(student._id, 'studentIdImage')}
+                                            title="Delete Student ID Card"
                                           ></i>
                                         </div>
                                       </div>
@@ -1633,7 +1522,7 @@ const Student = () => {
                       htmlFor="formFileMultipleoneone"
                       className="form-label"
                     >
-                      Student Image <span className="text-danger">*</span>
+                      Student Image
                     </label>
                     <input
                       className="form-control"
@@ -1645,46 +1534,16 @@ const Student = () => {
                   </div>
                   <div className="mb-3">
                     <label
-                      htmlFor="resumeUpload"
+                      htmlFor="studentIdImage"
                       className="form-label"
                     >
-                      Resume
+                      Student ID Image
                     </label>
                     <input
                       className="form-control"
                       type="file"
-                      id="resumeUpload"
-                      name="resume"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label
-                      htmlFor="aadhaarUpload"
-                      className="form-label"
-                    >
-                      Aadhaar Card
-                    </label>
-                    <input
-                      className="form-control"
-                      type="file"
-                      id="aadhaarUpload"
-                      name="aadhaarCard"
-                      onChange={handleFileChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label
-                      htmlFor="panUpload"
-                      className="form-label"
-                    >
-                      PAN Card
-                    </label>
-                    <input
-                      className="form-control"
-                      type="file"
-                      id="panUpload"
-                      name="panCard"
+                        id="studentIdImage"
+                      name="studentIdImage"
                       onChange={handleFileChange}
                     />
                   </div>
@@ -1696,7 +1555,7 @@ const Student = () => {
                             htmlFor="exampleFormControlInput1778"
                             className="form-label"
                           >
-                            Student ID <span className="text-danger">*</span>
+                            Student ID 
                           </label>
                           <input
                             type="text"
@@ -1714,7 +1573,7 @@ const Student = () => {
                             htmlFor="exampleFormControlInput2778"
                             className="form-label"
                           >
-                            Joining Date
+                            Admission Date <span className="text-danger">*</span>
                           </label>
                           <input
                             type="date"
@@ -1782,6 +1641,36 @@ const Student = () => {
                             onChange={handleChange}
                           />
                         </div>
+                        <div className="col">
+                          <label
+                            htmlFor="exampleFormControlInput777"
+                            className="form-label"
+                          >
+                            Alternate Phone
+                          </label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="exampleFormControlInput777"
+                            placeholder="Alternate Phone"
+                            name="alternatePhone"
+                            value={formData.alternatePhone}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="row g-3 mb-3">
+                        <div className="col">
+                          <label className="form-label">University</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Enter university"
+                            name="university"
+                            value={formData.university}
+                            onChange={handleChange}
+                          />
+                        </div>
                       </div>
                       <div className="row g-3 mb-3">
                         <div className="col">
@@ -1805,102 +1694,6 @@ const Student = () => {
                             value={formData.batch}
                             onChange={handleChange}
                           />
-                        </div>
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Social Media & Website Links</label>
-                        <div className="row g-3">
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-linkedin"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="LinkedIn Profile URL"
-                                name="linkedin"
-                                value={formData.linkedin}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-instagram"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="Instagram Profile URL"
-                                name="instagram"
-                                value={formData.instagram}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-youtube"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="YouTube Channel URL"
-                                name="youtube"
-                                value={formData.youtube}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-facebook"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="Facebook Profile URL"
-                                name="facebook"
-                                value={formData.facebook}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-github"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="GitHub Profile URL"
-                                name="github"
-                                value={formData.github}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-globe"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="Personal Website URL"
-                                name="website"
-                                value={formData.website}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-group mb-3">
-                              <span className="input-group-text"><i className="bi bi-link-45deg"></i></span>
-                              <input
-                                type="url"
-                                className="form-control"
-                                placeholder="Other URL"
-                                name="other"
-                                value={formData.other}
-                                onChange={handleChange}
-                              />
-                            </div>
-                          </div>
                         </div>
                       </div>
 
