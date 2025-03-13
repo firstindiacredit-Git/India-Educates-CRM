@@ -95,10 +95,22 @@ import axios from 'axios';
 
 const FloatingMenu = ({ userType }) => {
     const navigate = useNavigate();
+    
     const [notificationCount, setNotificationCount] = useState(0);
-    const currentUser = JSON.parse(localStorage.getItem('user')) ||
-        JSON.parse(localStorage.getItem('emp_user')) ||
-        JSON.parse(localStorage.getItem('client_user'));
+    
+    // Fix the JSON parsing error by checking if items exist before parsing
+    const currentUser = (() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) return JSON.parse(userStr);
+        
+        const empUserStr = localStorage.getItem('emp_user');
+        if (empUserStr) return JSON.parse(empUserStr);
+        
+        const clientUserStr = localStorage.getItem('client_user');
+        if (clientUserStr) return JSON.parse(clientUserStr);
+        
+        return null;
+    })();
 
     const getChatRoute = () => {
         switch (userType) {
@@ -115,6 +127,8 @@ const FloatingMenu = ({ userType }) => {
 
     // Fetch notifications count
     const fetchNotifications = async () => {
+        if (!currentUser || !currentUser._id) return; // Skip if no user is found or no _id exists
+        
         try {
             const response = await axios.get(
                 `${import.meta.env.VITE_BASE_URL}api/notifications/${currentUser._id}`

@@ -1348,9 +1348,9 @@ const Project = () => {
                                       <span className="fw-bold fs-5">{index + 1}. </span>
 
                                       <div className="d-flex flex-grow-1 justify-content-center">
-                                        {/* {project.projectIcon && (
+                                        {project.projectIcon && (
                                           <img
-                                            src={`${import.meta.env.VITE_BASE_URL}${project.projectIcon.replace('uploads/', '')}`}
+                                            src={`${import.meta.env.VITE_BASE_URL}${project.projectIcon}`}
                                             alt="Project Icon"
                                             className="me-2 rounded-circle"
                                             style={{
@@ -1366,7 +1366,7 @@ const Project = () => {
                                               modal.show();
                                             }}
                                           />
-                                        )} */}
+                                        )}
                                         <h5 className="card-title text-capitalize fw-bold text-center mb-0 text-truncate"
                                           style={{ maxWidth: '200px' }}
                                           title={project.projectName}>
