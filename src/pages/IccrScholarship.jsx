@@ -9,6 +9,7 @@ import axios from 'axios';
 import FloatingMenu from '../Chats/FloatingMenu'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Modal, Button, Spinner, Badge, Tabs, Tab, Row, Col } from 'react-bootstrap';
 
 const IccrScholarship = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -26,6 +27,11 @@ const IccrScholarship = () => {
     const [formDetailLoading, setFormDetailLoading] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [formToDelete, setFormToDelete] = useState(null);
+    const [iccr2Data, setIccr2Data] = useState([]);
+    const [showIccr2Details, setShowIccr2Details] = useState(false);
+    const [showIccr2Modal, setShowIccr2Modal] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState(null);
+    const [viewDetailLoading, setViewDetailLoading] = useState(false);
 
     useEffect(() => {
         const handleResize = () => {
@@ -193,6 +199,55 @@ const IccrScholarship = () => {
         }
     };
 
+    // Function to fetch ICCR2 data
+    const fetchIccr2Data = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get('http://localhost:5000/api/iccr');
+            setIccr2Data(response.data.data);
+            setShowIccr2Modal(true);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching ICCR2 data:', error);
+            setLoading(false);
+            alert('Failed to fetch ICCR2 data. Please try again.');
+        }
+    };
+
+    // Function to fetch single application details
+    const fetchApplicationDetails = async (id) => {
+        try {
+            setViewDetailLoading(true);
+            const response = await axios.get(`http://localhost:5000/api/iccr/${id}`);
+            setSelectedApplication(response.data.data);
+            setViewDetailLoading(false);
+        } catch (error) {
+            console.error('Error fetching application details:', error);
+            setViewDetailLoading(false);
+            alert('Failed to fetch application details. Please try again.');
+        }
+    };
+
+    // Update the button click handler
+    const handleIccr2ButtonClick = () => {
+        fetchIccr2Data();
+    };
+
+    // Handle view details click
+    const handleViewDetailsClick = (id) => {
+        fetchApplicationDetails(id);
+    };
+
+    // Close application details modal
+    const handleCloseDetails = () => {
+        setSelectedApplication(null);
+    };
+
+    // Close ICCR2 modal
+    const handleCloseIccr2Modal = () => {
+        setShowIccr2Modal(false);
+    };
+
     return (
         <div id="mytask-layout">
             <Sidebar />
@@ -232,6 +287,19 @@ const IccrScholarship = () => {
                                 <i className={`bi ${viewMode === 'grid' ? 'bi-list-task' : 'bi-grid-3x3-gap-fill'}`}></i>
                             </button>
 
+                            <button 
+                                className="btn btn-outline-primary me-3 mb-3"
+                                onClick={handleIccr2ButtonClick}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                                        Loading...
+                                    </>
+                                ) : 'ICCR Form 2'}
+                            </button>
+
                             <div className="input-group mb-3" style={{ width: '250px' }}>
                                 <input
                                     type="text"
@@ -260,7 +328,7 @@ const IccrScholarship = () => {
                                     // List View
                                     <div className="card">
                                         <div className="card-header">
-                                            <h5 className="card-title">ICCR Form Submissions</h5>
+                                            <h5 className="card-title">ICCR Form 1 Submissions</h5>
                                         </div>
                                         <div className="card-body">
                                             <div className="table-responsive">
@@ -422,6 +490,62 @@ const IccrScholarship = () => {
                                 </div>
                             </>
                         )}
+
+                        {/* Add a section to display ICCR2 data */}
+                        {showIccr2Details && (
+                            <div className="mt-4">
+                                <h3>ICCR Form 2 Applications</h3>
+                                {iccr2Data.length > 0 ? (
+                                    <div className="table-responsive">
+                                        <table className="table table-striped table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Course Level</th>
+                                                    <th>Course Stream</th>
+                                                    <th>Status</th>
+                                                    <th>Date Applied</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {iccr2Data.map((application) => (
+                                                    <tr key={application._id}>
+                                                        <td>{application.fullName}</td>
+                                                        <td>{application.email}</td>
+                                                        <td>{application.levelOfCourse}</td>
+                                                        <td>{application.courseMainStream}</td>
+                                                        <td>
+                                                            <span className={`badge ${
+                                                                application.status === 'Approved' ? 'bg-success' :
+                                                                application.status === 'Rejected' ? 'bg-danger' :
+                                                                application.status === 'Under Review' ? 'bg-warning' : 'bg-secondary'
+                                                            }`}>
+                                                                {application.status}
+                                                            </span>
+                                                        </td>
+                                                        <td>{new Date(application.createdAt).toLocaleDateString()}</td>
+                                                        <td>
+                                                            <button 
+                                                                className="btn btn-sm btn-primary me-2"
+                                                                
+                                                            >
+                                                                View Details
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="alert alert-info">
+                                        No ICCR Form 2 applications found.
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -552,6 +676,586 @@ const IccrScholarship = () => {
                     </div>
                 </div>
             </div>
+
+            {/* ICCR2 Applications Modal */}
+            <Modal 
+                show={showIccr2Modal} 
+                onHide={handleCloseIccr2Modal}
+                size="xl"
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>ICCR Form 2 Applications</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {iccr2Data.length > 0 ? (
+                        <div className="table-responsive">
+                            <table className="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Course Level</th>
+                                        <th>Course Stream</th>
+                                        <th>Status</th>
+                                        <th>Date Applied</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {iccr2Data.map((application) => (
+                                        <tr key={application._id}>
+                                            <td>{application.fullName}</td>
+                                            <td>{application.email}</td>
+                                            <td>{application.levelOfCourse}</td>
+                                            <td>{application.courseMainStream}</td>
+                                            <td>
+                                                <Badge bg={
+                                                    application.status === 'Approved' ? 'success' :
+                                                    application.status === 'Rejected' ? 'danger' :
+                                                    application.status === 'Under Review' ? 'warning' : 'secondary'
+                                                }>
+                                                    {application.status}
+                                                </Badge>
+                                            </td>
+                                            <td>{new Date(application.createdAt).toLocaleDateString()}</td>
+                                            <td>
+                                                <Button 
+                                                    variant="primary" 
+                                                    size="sm"
+                                                    onClick={() => handleViewDetailsClick(application._id)}
+                                                >
+                                                    View Details
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        <div className="alert alert-info">
+                            No ICCR Form 2 applications found.
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseIccr2Modal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            
+            {/* Application Details Modal */}
+            <Modal 
+                show={selectedApplication !== null} 
+                onHide={handleCloseDetails}
+                size="xl"
+                centered
+                dialogClassName="modal-90w"
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        Application Details
+                        {selectedApplication && (
+                            <Badge 
+                                bg={
+                                    selectedApplication.status === 'Approved' ? 'success' :
+                                    selectedApplication.status === 'Rejected' ? 'danger' :
+                                    selectedApplication.status === 'Under Review' ? 'warning' : 'secondary'
+                                }
+                                className="ms-3"
+                            >
+                                {selectedApplication?.status}
+                            </Badge>
+                        )}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {viewDetailLoading ? (
+                        <div className="text-center py-5">
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                            <p className="mt-3">Loading application details...</p>
+                        </div>
+                    ) : selectedApplication ? (
+                        <Tabs defaultActiveKey="personal" className="mb-4">
+                            <Tab eventKey="personal" title="Personal Information">
+                                <Row className="mb-3">
+                                    <Col md={3}>
+                                        <div className="text-center mb-3">
+                                            {selectedApplication.studentPhoto ? (
+                                                <img 
+                                                    src={`http://localhost:5000/${selectedApplication.studentPhoto.replace(/\\/g, '/')}`} 
+                                                    alt="Student" 
+                                                    className="img-thumbnail" 
+                                                    style={{ maxWidth: '150px', maxHeight: '150px' }}
+                                                />
+                                            ) : (
+                                                <div className="border p-3 text-center">No Photo</div>
+                                            )}
+                                        </div>
+                                    </Col>
+                                    <Col md={9}>
+                                        <Row>
+                                            <Col md={6}>
+                                                <p><strong>Full Name:</strong> {selectedApplication.fullName}</p>
+                                                <p><strong>Gender:</strong> {selectedApplication.gender}</p>
+                                                <p><strong>Date of Birth:</strong> {selectedApplication.dateOfBirth ? new Date(selectedApplication.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
+                                                <p><strong>Place of Birth:</strong> {selectedApplication.placeOfBirth}</p>
+                                            </Col>
+                                            <Col md={6}>
+                                                <p><strong>Email:</strong> {selectedApplication.email}</p>
+                                                <p><strong>Mobile:</strong> {selectedApplication.mobileNumber}</p>
+                                                <p><strong>WhatsApp:</strong> {selectedApplication.whatsappNumber || 'N/A'}</p>
+                                                <p><strong>Country:</strong> {selectedApplication.addressCountry}</p>
+                                            </Col>
+                                        </Row>
+                                    </Col>
+                                </Row>
+                                
+                                <h5 className="mt-4">Passport Details</h5>
+                                <Row>
+                                    <Col md={3}>
+                                        <p><strong>Passport No:</strong> {selectedApplication.passport}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Issue Place:</strong> {selectedApplication.passportCountry}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Issue Date:</strong> {selectedApplication.passportIssueDate ? new Date(selectedApplication.passportIssueDate).toLocaleDateString() : 'N/A'}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Expiry Date:</strong> {selectedApplication.passportExpiryDate ? new Date(selectedApplication.passportExpiryDate).toLocaleDateString() : 'N/A'}</p>
+                                    </Col>
+                                </Row>
+                                
+                                <h5 className="mt-4">Address</h5>
+                                <Row>
+                                    <Col md={12}>
+                                        <p><strong>Address:</strong> {selectedApplication.addressLine}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>City:</strong> {selectedApplication.city}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>State:</strong> {selectedApplication.state}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Country:</strong> {selectedApplication.addressCountry}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Zipcode:</strong> {selectedApplication.zipcode}</p>
+                                    </Col>
+                                </Row>
+                                
+                                <h5 className="mt-4">Parent Information</h5>
+                                <Row>
+                                    <Col md={6}>
+                                        <p><strong>Father's Name:</strong> {selectedApplication.fatherName}</p>
+                                        <p><strong>Father's Phone:</strong> {selectedApplication.fatherPhone}</p>
+                                        <p><strong>Father's Email:</strong> {selectedApplication.fatherEmail}</p>
+                                    </Col>
+                                    <Col md={6}>
+                                        <p><strong>Mother's Name:</strong> {selectedApplication.motherName}</p>
+                                        <p><strong>Mother's Phone:</strong> {selectedApplication.motherPhone}</p>
+                                        <p><strong>Mother's Email:</strong> {selectedApplication.motherEmail}</p>
+                                    </Col>
+                                </Row>
+                            </Tab>
+                            
+                            <Tab eventKey="education" title="Education">
+                                <h5>English Proficiency</h5>
+                                <Row className="mb-4">
+                                    <Col md={3}>
+                                        <p><strong>English Proficiency:</strong> {selectedApplication.englishProficiency1}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Level:</strong> {selectedApplication.tillWhatLevel1}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>Score:</strong> {selectedApplication.score1}</p>
+                                    </Col>
+                                    <Col md={3}>
+                                        <p><strong>TOEFL/IELTS/Duolingo:</strong> {selectedApplication.englishProficiency2}</p>
+                                    </Col>
+                                    {selectedApplication.toeflScore && (
+                                        <Col md={3}>
+                                            <p><strong>TOEFL Score:</strong> {selectedApplication.toeflScore}</p>
+                                        </Col>
+                                    )}
+                                    {selectedApplication.ieltsScore && (
+                                        <Col md={3}>
+                                            <p><strong>IELTS Score:</strong> {selectedApplication.ieltsScore}</p>
+                                        </Col>
+                                    )}
+                                    {selectedApplication.duolingoScore && (
+                                        <Col md={3}>
+                                            <p><strong>Duolingo Score:</strong> {selectedApplication.duolingoScore}</p>
+                                        </Col>
+                                    )}
+                                </Row>
+                                
+                                <h5>Previous Education</h5>
+                                {selectedApplication.previousEducations && selectedApplication.previousEducations.length > 0 ? (
+                                    <div className="table-responsive">
+                                        <table className="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Degree/Certificate</th>
+                                                    <th>Country</th>
+                                                    <th>Board/University</th>
+                                                    <th>School/College</th>
+                                                    <th>Subjects</th>
+                                                    <th>Year</th>
+                                                    <th>Percentage/Grade</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {selectedApplication.previousEducations.map((edu, index) => (
+                                                    <tr key={index}>
+                                                        <td>{edu.degree}</td>
+                                                        <td>{edu.country}</td>
+                                                        <td>{edu.board}</td>
+                                                        <td>{edu.school}</td>
+                                                        <td>{edu.subject}</td>
+                                                        <td>{edu.year}</td>
+                                                        <td>{edu.percentage}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p>No previous education details available</p>
+                                )}
+                                
+                                <h5 className="mt-4">Course Information</h5>
+                                <Row>
+                                    <Col md={4}>
+                                        <p><strong>Academic Year:</strong> {selectedApplication.academicYear}</p>
+                                    </Col>
+                                    <Col md={4}>
+                                        <p><strong>Level of Course:</strong> {selectedApplication.levelOfCourse}</p>
+                                    </Col>
+                                    <Col md={4}>
+                                        <p><strong>Course Main Stream:</strong> {selectedApplication.courseMainStream}</p>
+                                    </Col>
+                                </Row>
+                                
+                                {selectedApplication.essay && (
+                                    <div className="mt-4">
+                                        <h5>Essay</h5>
+                                        <div className="border p-3 bg-light">
+                                            {selectedApplication.essay}
+                                        </div>
+                                    </div>
+                                )}
+                            </Tab>
+                            
+                            <Tab eventKey="preferences" title="University Preferences">
+                                {selectedApplication.universityPreferences && selectedApplication.universityPreferences.length > 0 ? (
+                                    <div className="table-responsive">
+                                        <table className="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Preference</th>
+                                                    <th>University</th>
+                                                    <th>Course</th>
+                                                    <th>Subject</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {selectedApplication.universityPreferences.map((pref, index) => (
+                                                    <tr key={index}>
+                                                        <td>{pref.preference}</td>
+                                                        <td>{pref.university}</td>
+                                                        <td>{pref.course}</td>
+                                                        <td>{pref.subject}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p>No university preferences available</p>
+                                )}
+                            </Tab>
+                            
+                            <Tab eventKey="references" title="References & Contacts">
+                                <h5>References</h5>
+                                {selectedApplication.references && selectedApplication.references.length > 0 ? (
+                                    <div className="table-responsive mb-4">
+                                        <table className="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Occupation</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                    <th>Address</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {selectedApplication.references.map((ref, index) => (
+                                                    <tr key={index}>
+                                                        <td>{ref.name}</td>
+                                                        <td>{ref.occupation}</td>
+                                                        <td>{ref.email}</td>
+                                                        <td>{ref.phone}</td>
+                                                        <td>{ref.address}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p>No references available</p>
+                                )}
+                                
+                                <h5 className="mt-4">Indian Contacts</h5>
+                                {selectedApplication.indianContacts && selectedApplication.indianContacts.length > 0 ? (
+                                    <div className="table-responsive">
+                                        <table className="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Relationship</th>
+                                                    <th>Occupation</th>
+                                                    <th>Telephone</th>
+                                                    <th>Email</th>
+                                                    <th>Address</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {selectedApplication.indianContacts.map((contact, index) => (
+                                                    <tr key={index}>
+                                                        <td>{contact.contactName}</td>
+                                                        <td>{contact.relationship}</td>
+                                                        <td>{contact.occupation}</td>
+                                                        <td>{contact.telephone}</td>
+                                                        <td>{contact.email}</td>
+                                                        <td>{contact.address}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p>No Indian contacts available</p>
+                                )}
+                            </Tab>
+                            
+                            <Tab eventKey="additional" title="Additional Information">
+                                <Row>
+                                    <Col md={6}>
+                                        <p><strong>Travelled to India:</strong> {selectedApplication.travelledInIndia}</p>
+                                        <p><strong>Previous ICCR Scholarship:</strong> {selectedApplication.previousICCRScholarship}</p>
+                                        <p><strong>Indian Resident:</strong> {selectedApplication.residenceInIndia}</p>
+                                    </Col>
+                                    <Col md={6}>
+                                        <p><strong>Married to Indian:</strong> {selectedApplication.marriedToIndian}</p>
+                                        <p><strong>International Driving License:</strong> {selectedApplication.internationalDrivingLicense}</p>
+                                        <p><strong>Other Information:</strong> {selectedApplication.otherInformation || 'N/A'}</p>
+                                    </Col>
+                                </Row>
+                                
+                                <Row className="mt-4">
+                                    <Col md={6}>
+                                        <p><strong>Declaration Date:</strong> {selectedApplication.dateOfApplication ? new Date(selectedApplication.dateOfApplication).toLocaleDateString() : 'N/A'}</p>
+                                    </Col>
+                                    <Col md={6}>
+                                        <p><strong>Declaration Place:</strong> {selectedApplication.placeOfApplication}</p>
+                                    </Col>
+                                </Row>
+                                
+                                {selectedApplication.signature && (
+                                    <div className="mt-4">
+                                        <h5>Signature</h5>
+                                        <img 
+                                            src={`http://localhost:5000/${selectedApplication.signature.replace(/\\/g, '/')}`} 
+                                            alt="Signature" 
+                                            className="img-thumbnail" 
+                                            style={{ maxWidth: '300px' }}
+                                        />
+                                    </div>
+                                )}
+                            </Tab>
+                            
+                            <Tab eventKey="documents" title="Documents">
+                                <Row className="mt-3">
+                                    {selectedApplication.permanentUniqueId && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Permanent Unique ID</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.permanentUniqueId.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.passportCopy && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Passport Copy</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.passportCopy.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.gradeXMarksheet && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Grade X Marksheet</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.gradeXMarksheet.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.gradeXIIMarksheet && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Grade XII Marksheet</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.gradeXIIMarksheet.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.medicalFitnessCertificate && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Medical Fitness Certificate</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.medicalFitnessCertificate.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.englishTranslationOfDocuments && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">English Translation of Documents</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.englishTranslationOfDocuments.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.englishAsSubjectDocument && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">English as Subject Document</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.englishAsSubjectDocument.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                    
+                                    {selectedApplication.anyOtherDocument && (
+                                        <Col md={4} className="mb-4">
+                                            <div className="card">
+                                                <div className="card-header">Other Document</div>
+                                                <div className="card-body text-center">
+                                                    <a 
+                                                        href={`http://localhost:5000/${selectedApplication.anyOtherDocument.replace(/\\/g, '/')}`} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="btn btn-primary"
+                                                    >
+                                                        View Document
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    )}
+                                </Row>
+                            </Tab>
+                        </Tabs>
+                    ) : (
+                        <div className="alert alert-danger">
+                            Failed to load application details.
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    {selectedApplication && (
+                        <>
+                            <Button variant="success" className="me-2">
+                                Approve
+                            </Button>
+                            <Button variant="danger" className="me-2">
+                                Reject
+                            </Button>
+                            <Button variant="warning" className="me-2">
+                                Mark as Under Review
+                            </Button>
+                        </>
+                    )}
+                    <Button variant="secondary" onClick={handleCloseDetails}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             <ToastContainer />
             <FloatingMenu userType="admin" isMobile={isMobile} />
