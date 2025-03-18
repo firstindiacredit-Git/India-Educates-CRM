@@ -203,7 +203,7 @@ const IccrScholarship = () => {
     const fetchIccr2Data = async () => {
         try {
             setLoading(true);
-            const response = await axios.get('http://localhost:5000/api/iccr');
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/iccr`);
             setIccr2Data(response.data.data);
             setShowIccr2Modal(true);
             setLoading(false);
@@ -218,7 +218,7 @@ const IccrScholarship = () => {
     const fetchApplicationDetails = async (id) => {
         try {
             setViewDetailLoading(true);
-            const response = await axios.get(`http://localhost:5000/api/iccr/${id}`);
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/iccr/${id}`);
             setSelectedApplication(response.data.data);
             setViewDetailLoading(false);
         } catch (error) {
@@ -787,7 +787,7 @@ const IccrScholarship = () => {
                                         <div className="text-center mb-3">
                                             {selectedApplication.studentPhoto ? (
                                                 <img 
-                                                    src={`http://localhost:5000/${selectedApplication.studentPhoto.replace(/\\/g, '/')}`} 
+                                                    src={`${import.meta.env.VITE_BASE_URL}${selectedApplication.studentPhoto.replace(/\\/g, '/')}`} 
                                                     alt="Student" 
                                                     className="img-thumbnail" 
                                                     style={{ maxWidth: '150px', maxHeight: '150px' }}
@@ -1074,7 +1074,7 @@ const IccrScholarship = () => {
                                     <div className="mt-4">
                                         <h5>Signature</h5>
                                         <img 
-                                            src={`http://localhost:5000/${selectedApplication.signature.replace(/\\/g, '/')}`} 
+                                            src={`${import.meta.env.VITE_BASE_URL}${selectedApplication.signature.replace(/\\/g, '/')}`} 
                                             alt="Signature" 
                                             className="img-thumbnail" 
                                             style={{ maxWidth: '300px' }}
@@ -1091,7 +1091,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Permanent Unique ID</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.permanentUniqueId.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.permanentUniqueId.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1109,7 +1109,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Passport Copy</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.passportCopy.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.passportCopy.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1127,7 +1127,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Grade X Marksheet</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.gradeXMarksheet.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.gradeXMarksheet.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1145,7 +1145,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Grade XII Marksheet</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.gradeXIIMarksheet.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.gradeXIIMarksheet.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1163,7 +1163,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Medical Fitness Certificate</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.medicalFitnessCertificate.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.medicalFitnessCertificate.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1181,7 +1181,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">English Translation of Documents</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.englishTranslationOfDocuments.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.englishTranslationOfDocuments.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1199,7 +1199,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">English as Subject Document</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.englishAsSubjectDocument.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.englishAsSubjectDocument.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
@@ -1217,7 +1217,7 @@ const IccrScholarship = () => {
                                                 <div className="card-header">Other Document</div>
                                                 <div className="card-body text-center">
                                                     <a 
-                                                        href={`http://localhost:5000/${selectedApplication.anyOtherDocument.replace(/\\/g, '/')}`} 
+                                                        href={`${import.meta.env.VITE_BASE_URL}${selectedApplication.anyOtherDocument.replace(/\\/g, '/')}`} 
                                                         target="_blank" 
                                                         rel="noreferrer"
                                                         className="btn btn-primary"
