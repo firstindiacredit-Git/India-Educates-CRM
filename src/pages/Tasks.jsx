@@ -47,6 +47,10 @@ const Tasks = () => {
     }));
   };
 
+  const [clients, setClients] = useState([]);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [assignType, setAssignType] = useState('employee'); // 'employee' or 'client'
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,10 +69,17 @@ const Tasks = () => {
         }
       }
 
-      // Append multiple assignees if selected
+      if (assignType === 'employee') {
+        // Append multiple employee assignees if selected
       selectedEmployees.forEach((employee) => {
         formDataToSend.append("taskAssignPerson", employee.value);
       });
+      } else {
+        // Append client assignee
+        if (selectedClient) {
+          formDataToSend.append("clientAssignPerson", selectedClient.value);
+        }
+      }
 
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}api/tasks`,
@@ -94,6 +105,9 @@ const Tasks = () => {
         taskImages: null,
         description: "",
       });
+      
+      setSelectedEmployees([]);
+      setSelectedClient(null);
 
       // Close the modal programmatically
       const modalElement = document.getElementById("createtask");
@@ -154,10 +168,11 @@ const Tasks = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [tasksResponse, projectsResponse, employeesResponse] = await Promise.all([
+      const [tasksResponse, projectsResponse, employeesResponse, clientsResponse] = await Promise.all([
         axios.get(`${import.meta.env.VITE_BASE_URL}api/tasks`),
         axios.get(`${import.meta.env.VITE_BASE_URL}api/projects`),
-        axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`)
+        axios.get(`${import.meta.env.VITE_BASE_URL}api/employees`),
+        axios.get(`${import.meta.env.VITE_BASE_URL}api/clients`)
       ]);
 
       const formattedTasks = tasksResponse.data.map(task => ({
@@ -175,13 +190,14 @@ const Tasks = () => {
       }
       if (filteredEmployeeName) {
         filteredTasks = filteredTasks.filter(task =>
-          task.taskAssignPerson.employeeName === filteredEmployeeName
+          task.taskAssignPerson?.employeeName === filteredEmployeeName
         );
       }
 
       setTasks(filteredTasks);
       setProjects(projectsResponse.data);
       setEmployees(employeesResponse.data);
+      setClients(clientsResponse.data);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -285,18 +301,34 @@ const Tasks = () => {
         taskEndDate: parseDate(taskToUpdate.taskEndDate)?.toISOString() || new Date().toISOString()
       };
 
-      // Remove taskAssignPerson before sending
+      // Remove taskAssignPerson and clientAssignPerson before sending
       delete formattedTask.taskAssignPerson;
+      delete formattedTask.clientAssignPerson;
 
       // Append formatted data to FormData
       for (const key in formattedTask) {
-        formDataToSend.append(key, formattedTask[key]);
+        if (key !== 'taskAssignPerson' && key !== 'clientAssignPerson') {
+          formDataToSend.append(key, formattedTask[key]);
+        }
       }
 
-      // Append selected employees
-      selectedEmployees.forEach((obj) => {
-        formDataToSend.append("taskAssignPerson", obj.value);
-      });
+      // Determine if we're updating an employee or client task
+      // If the task currently has a client assigned, keep using client assignment
+      // If it has an employee assigned, keep using employee assignment
+      if (taskToUpdate.clientAssignPerson) {
+        if (selectedClient) {
+          formDataToSend.append("clientAssignPerson", selectedClient.value);
+        } else {
+          formDataToSend.append("clientAssignPerson", taskToUpdate.clientAssignPerson._id);
+        }
+      } else {
+        // Default to using employee assignment
+        if (selectedEmployees.length > 0) {
+          formDataToSend.append("taskAssignPerson", selectedEmployees[0].value);
+        } else if (taskToUpdate.taskAssignPerson) {
+          formDataToSend.append("taskAssignPerson", taskToUpdate.taskAssignPerson._id);
+        }
+      }
 
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}api/tasks/${taskId}`,
@@ -309,15 +341,19 @@ const Tasks = () => {
       );
       const updatedTask = response.data;
       console.log(updatedTask);
+      
+      // Update task in state
       setTasks((prevState) =>
         prevState.map((task) => (task._id === taskId ? updatedTask : task))
       );
+      
       toast.success("Task Updated Successfully!", {
         style: {
           backgroundColor: "#0d6efd",
           color: "white",
         },
       });
+      
       setTimeout(() => {
         window.location.reload();
       }, 5000);
@@ -642,8 +678,19 @@ const Tasks = () => {
     modal.show();
   };
 
-  // Add these modals just before the closing div of your return statement
+  // Add this to your useEffect or create a new one
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}api/clients`);
+        setClients(response.data);
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    };
 
+    fetchClients();
+  }, []);
 
   return (
     <>
@@ -866,7 +913,20 @@ const Tasks = () => {
                                       />
                                     </td>
                                     <td style={{ backgroundColor }}>
-                                      {task.taskAssignPerson && task.taskAssignPerson.employeeName ? task.taskAssignPerson.employeeName : 'Unassigned'}
+                                      {task.taskAssignPerson && task.taskAssignPerson.employeeName 
+                                        ? (
+                                          <>
+                                            {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
+                                          </>
+                                        ) 
+                                        : task.clientAssignPerson && task.clientAssignPerson.clientName 
+                                          ? (
+                                            <>
+                                              {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
+                                            </>
+                                          ) 
+                                          : 'Unassigned'
+                                      }
                                       <p className="text-muted">By:-{task.assignedBy}</p>
                                     </td>
                                     <td style={{ backgroundColor }}>
@@ -1012,7 +1072,20 @@ const Tasks = () => {
                                       {/* Task Details */}
                                       <div className="mb-3">
                                         <p className="mb-1 fw-semibold text-primary">
-                                          Assigned to: {task.taskAssignPerson && task.taskAssignPerson.employeeName ? task.taskAssignPerson.employeeName : 'Unassigned'}
+                                          {task.taskAssignPerson && task.taskAssignPerson.employeeName 
+                                            ? (
+                                              <>
+                                                {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
+                                              </>
+                                            ) 
+                                            : task.clientAssignPerson && task.clientAssignPerson.clientName 
+                                              ? (
+                                                <>
+                                                  {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
+                                                </>
+                                              ) 
+                                              : 'Unassigned'
+                                          }
                                         </p>
                                         <p className="mb-2 fw-semibold" style={{ color: "green" }}>
                                           By: {task.assignedBy}
@@ -1285,6 +1358,39 @@ const Tasks = () => {
                         </form>
                       </div>
                       <div className="row g-3 mb-3">
+                        <div className="col-sm-12 mb-3">
+                          <label className="form-label">Assign Task To</label>
+                          <div className="form-check form-check-inline ms-3">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="assignType" 
+                              id="assignEmployee" 
+                              value="employee" 
+                              checked={assignType === 'employee'} 
+                              onChange={() => setAssignType('employee')}
+                            />
+                            <label className="form-check-label" htmlFor="assignEmployee">
+                              Employee
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline">
+                            <input 
+                              className="form-check-input" 
+                              type="radio" 
+                              name="assignType" 
+                              id="assignClient" 
+                              value="client" 
+                              checked={assignType === 'client'} 
+                              onChange={() => setAssignType('client')}
+                            />
+                            <label className="form-check-label" htmlFor="assignClient">
+                              Client
+                            </label>
+                          </div>
+                        </div>
+                        
+                        {assignType === 'employee' ? (
                         <div className="col-sm">
                           <label className="form-label">
                             Task Assign Person <span className="text-danger">*</span>
@@ -1304,6 +1410,30 @@ const Tasks = () => {
                             </select>
                           </div>
                         </div>
+                        ) : (
+                          <div className="col-sm">
+                            <label className="form-label">
+                              Task Assign Client <span className="text-danger">*</span>
+                            </label>
+                            <div>
+                              <select
+                                className="form-select"
+                                value={selectedClient?.value || ""}
+                                onChange={(e) => setSelectedClient({ 
+                                  label: e.target.options[e.target.selectedIndex].text, 
+                                  value: e.target.value 
+                                })}
+                              >
+                                <option value="" disabled>Select Client</option>
+                                {clients.map((client) => (
+                                  <option key={client._id} value={client._id}>
+                                    {client.clientName}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="row g-3 mb-3">
                         <div className="col-sm">
@@ -1675,155 +1805,22 @@ const Tasks = () => {
                                       return (
                                         <div key={index} className="px-3">
                                           <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
-                                            <img src={cleanFileUrl} alt={`Attachment ${index + 1}`} style={{ maxWidth: '5rem', cursor: 'pointer' }} />
+                                            <img src={cleanFileUrl} alt={`Attachment ${index + 1}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
                                           </a>
-                                        </div>
-                                      );
-                                    } else if (fileExtension === 'pdf') {
-                                      return (
-                                        <div key={index} className="px-3">
-                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">PDF File</a>
-                                        </div>
-                                      );
-                                    } else {
-                                      return (
-                                        <div key={index} className="px-3">
-                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">Download File</a>
                                         </div>
                                       );
                                     }
                                   }
-                                  return null;
                                 })}
                               </div>
-                              <p className="text-muted" style={{ marginTop: "-0.5rem", marginLeft: "1rem" }}>{new Date(message.createdAt).toLocaleString()}</p>
                             </div>
                           </li>
                         ))}
                       </ul>
-
-                      {/* Message Submission Form */}
-                      <form onSubmit={handleSubmitMessage}>
-                        <div className="mb-3">
-                          <label htmlFor="currentMessage" className="form-label">Add Message</label>
-                          <textarea
-                            className="form-control"
-                            id="currentMessage"
-                            name="message"
-                            rows="3"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            required
-                            ref={messageInputRef}
-                          />
                         </div>
-                        <div className="mb-3">
-                          <label htmlFor="fileUpload" className="form-label">Upload Files</label>
-                          <input
-                            type="file"
-                            className="form-control"
-                            id="fileUpload"
-                            onChange={handleFileChange}
-                            multiple
-                          />
-                        </div>
-                        <button type="submit" className="btn btn-dark">Submit</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Image Preview Modal */}
-              <div className="modal fade" id="imagePreviewModal" tabIndex={-1} aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered modal-sm">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title">{selectedImageTitle}</h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <div className="">
-                        {selectedImages.map((image, index) => (
-                          <div key={index} className="mb-3">
-                            <img
-                              src={`${import.meta.env.VITE_BASE_URL}${image}`}
-                              alt={`Preview ${index + 1}`}
-                              className="img-fluid rounded"
-                              style={{ cursor: 'pointer' }}
-                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Task Images Modal */}
-              <div className="modal fade" id="taskImagesModal" tabIndex={-1} aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered modal-lg">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title">{selectedTaskName} - Images</h5>
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      />
-                    </div>
-                    <div className="modal-body">
-                      <div className="row">
-                        {selectedTaskImages && selectedTaskImages.map((image, index) => {
-                          const fileExtension = image.split('.').pop().toLowerCase();
-                          const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension);
-                          const isPdf = fileExtension === 'pdf';
-
-                          return (
-                            <div key={index} className="col-md-4 mb-3">
-                              {isImage ? (
-                                <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${image}`}
-                                  alt={`Task Image ${index + 1}`}
-                                  className="img-fluid rounded"
-                                  style={{ cursor: 'pointer', height: '200px', width: '100%', objectFit: 'cover' }}
-                                  onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
-                                />
-                              ) : isPdf ? (
-                                <div className="d-flex flex-column align-items-center">
-                                  <i className="bi bi-file-pdf fs-1"></i>
-                                  <a
-                                    href={`${import.meta.env.VITE_BASE_URL}${image}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-sm btn-primary mt-2"
-                                  >
-                                    View PDF
-                                  </a>
-                                </div>
-                              ) : (
-                                <div className="d-flex flex-column align-items-center">
-                                  <i className="bi bi-file-earmark fs-1"></i>
-                                  <a
-                                    href={`${import.meta.env.VITE_BASE_URL}${image}`}
-                                    download
-                                    className="btn btn-sm btn-primary mt-2"
-                                  >
-                                    Download File
-                                  </a>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                    <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" className="btn btn-primary">Send Message</button>
                     </div>
                   </div>
                 </div>
@@ -1831,9 +1828,7 @@ const Tasks = () => {
             </>
           </>
         </div>
-        <ToastContainer />
-        <FloatingMenu userType="admin" isMobile={isMobile} />
-      </div >
+      </div>
     </>
   );
 };

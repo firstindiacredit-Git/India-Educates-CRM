@@ -276,7 +276,7 @@ const ClientProject = () => {
                                 return (
                                   <tr key={project.id}>
                                     <td>
-                                      <Link to="">{project.projectName}</Link>
+                                      <Link to="/client-tasks">{project.projectName}</Link>
                                       <button
                                         className="btn btn-link"
                                         onClick={() => handleOpenProjectImages(project)}

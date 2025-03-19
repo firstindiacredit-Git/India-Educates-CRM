@@ -1,4 +1,7 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
+
+
 import Signup from './pages/Signup'
 import EmployeeSinup from './pages/EmployeeSinup'
 import Signin from './pages/Signin'
@@ -6,8 +9,6 @@ import EmployeeSinin from './pages/EmployeeSinin'
 import ClientSignin from './pages/ClientSignin'
 import StudentSinin from './pages/StudentSinin'
 import StudentSinup from './pages/StudentSinup'
-
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import ProjectDashboard from './pages/ProjectDashboard'
 import EmployeeDashboard from './pages/EmployeeDashboard'
@@ -18,6 +19,7 @@ import EmployeeProject from './pages/EmployeeProject'
 import ClientProject from './pages/ClientProject';
 import Tasks from './pages/Tasks'
 import EmployeeTasks from './pages/EmployeeTask'
+import ClientTask from './pages/ClientTask'
 import Images from './pages/Image'
 import Client from './pages/Client'
 import Calander from './pages/Calander'
@@ -110,6 +112,7 @@ function AppContent() {
           <Route path='/client-projects' element={<ClientProject />}></Route>
           <Route path='/tasks' element={<Tasks />}></Route>
           <Route path='/employee-tasks' element={<EmployeeTasks />}></Route>
+          <Route path='/client-tasks' element={<ClientTask />}></Route>
           <Route path='/images' element={<Images />}></Route>
           <Route path='/clients' element={<Client />}></Route>
           <Route path='/calander' element={<Calander />}></Route>

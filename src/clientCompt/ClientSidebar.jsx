@@ -66,11 +66,11 @@ const ClientSidebar = () => {
                                         <span>Projects</span>
                                     </Link>
                                 </li>
-                                {/* <li>
-                                    <Link className="ms-link" to="/tasks">
+                                <li>
+                                    <Link className="ms-link" to="/client-tasks">
                                         <span>Tasks</span>
                                     </Link>
-                                </li> */}
+                                </li>
                             </ul>
                         </li>
 
