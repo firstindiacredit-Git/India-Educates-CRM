@@ -241,7 +241,7 @@ const CreditLines = () => {
                                                     {currentItems.map((loan, index) => (
                                                     <tr key={loan._id}>
                                                             <td>{indexOfFirstItem + index + 1}</td>
-                                                        <td>{loan.studentImage ? <img src={`${import.meta.env.VITE_BASE_URL}${loan.studentImage}`} alt="Student" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : 'N/A'} {loan.studentName}</td>
+                                                        <td>{loan.studentImage ? <img src={`${import.meta.env.VITE_BASE_URL}uploads/${loan.studentImage}`} alt="Student" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : 'N/A'} {loan.studentName}</td>
                                                         <td className="text-success">₹{loan.amount}</td>
                                                         <td className="text-danger">₹{loan.remainingAmount}</td>
                                                         <td>{loan.description}</td>
@@ -288,8 +288,9 @@ const CreditLines = () => {
                                                         <div className="d-flex justify-content-between">
                                                             <span className="fw-bold fs-5">{indexOfFirstItem + index + 1}. </span>
                                                             <h5 className="card-title text-capitalize fw-bold">
-                                                                {loan.studentName}
+                                                                {loan.studentImage ? <img src={`${import.meta.env.VITE_BASE_URL}uploads/${loan.studentImage}`} alt="Student" style={{ width: '30px', height: '30px', borderRadius: '50%' }} /> : 'N/A'} {loan.studentName}
                                                             </h5>
+                                                            <div></div>
                                                         </div>
                                                         <div className="mt-3">
                                                             <div><span className="fw-semibold">Amount: </span>₹{loan.amount}</div>

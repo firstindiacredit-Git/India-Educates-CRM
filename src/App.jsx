@@ -82,7 +82,7 @@ import ClientChat from './Chats/ClientChat';
 import StudentProfile from './pages/members/StudentProfile';
 import IccrScholarship from './pages/IccrScholarship';
 import CreditLines from './pages/CreditLines';
-
+import WebMail from './pages/webmail';
 
 
 function AppContent() {
@@ -171,6 +171,7 @@ function AppContent() {
           <Route path="/student-profile" element={<StudentProfile />} />
           <Route path="/iccr-scholarship" element={<IccrScholarship />} />
           <Route path="/credit-line" element={<CreditLines />} />
+          <Route path="/web-mail" element={<WebMail />} />
 
 
 

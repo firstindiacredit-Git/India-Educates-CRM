@@ -193,7 +193,7 @@ const ClientHeader = () => {
                 >
                   <img
                     className="avatar lg rounded-circle img-thumbnail"
-                    src={`${import.meta.env.VITE_BASE_URL}` + image.replace('uploads/', '')}
+                    src={`${import.meta.env.VITE_BASE_URL}` + "uploads/" + image}
                     alt="profile"
                   />
                 </a>
@@ -203,11 +203,11 @@ const ClientHeader = () => {
                       <div className="d-flex py-1">
                         <img
                           className="avatar rounded-circle"
-                          src={`${import.meta.env.VITE_BASE_URL}` + image.replace('uploads/', '')}
+                          src={`${import.meta.env.VITE_BASE_URL}`+"uploads/" + image}
                           alt="profile"
                         />
                         <div className="flex-fill ms-3">
-                          <p className="mb-0">
+                          <p className="mb-0">  
                             <span className="font-weight-bold">
                               {clientName}
                             </span>

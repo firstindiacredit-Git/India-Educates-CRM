@@ -411,6 +411,25 @@ const Sidebar = () => {
               </ul>
             </li>
 
+            {/* <li className="collapsed">
+              <a
+                className={`m-link ${textColorClass}`}
+                data-bs-toggle="collapse"
+                data-bs-target="#mailbox-Components"
+                href="#"
+              >
+                <i className={`icofont-mail ${textColorClass}`} /> <span>MailBox</span>{" "}
+                <span className={`arrow icofont-dotted-down ms-auto text-end fs-5 ${textColorClass}`} />
+              </a>
+              <ul className="sub-menu collapse" id="mailbox-Components">
+                <li>
+                  <Link className="ms-link" to="/web-mail">
+                    <span>Web Mail</span>
+                  </Link>
+                </li>
+              </ul>
+            </li> */}
+
             <li className="collapsed">
               <a
                 className={`m-link ${textColorClass}`}

@@ -1717,7 +1717,7 @@ const EmployeeDashboard = () => {
                             <div className="profile-image-container me-3">
                               <img
                                 className="avatar rounded-circle border border-2 border-primary p-1"
-                                src={`${import.meta.env.VITE_BASE_URL}${image.replace('uploads/', '')}`}
+                                src={`${import.meta.env.VITE_BASE_URL}${image}`}
                                 alt="profile"
                                 style={{
                                   transition: 'all 0.3s ease-in-out',
