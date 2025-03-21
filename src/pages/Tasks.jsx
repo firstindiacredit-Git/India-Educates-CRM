@@ -71,9 +71,9 @@ const Tasks = () => {
 
       if (assignType === 'employee') {
         // Append multiple employee assignees if selected
-      selectedEmployees.forEach((employee) => {
-        formDataToSend.append("taskAssignPerson", employee.value);
-      });
+        selectedEmployees.forEach((employee) => {
+          formDataToSend.append("taskAssignPerson", employee.value);
+        });
       } else {
         // Append client assignee
         if (selectedClient) {
@@ -105,7 +105,7 @@ const Tasks = () => {
         taskImages: null,
         description: "",
       });
-      
+
       setSelectedEmployees([]);
       setSelectedClient(null);
 
@@ -341,19 +341,19 @@ const Tasks = () => {
       );
       const updatedTask = response.data;
       console.log(updatedTask);
-      
+
       // Update task in state
       setTasks((prevState) =>
         prevState.map((task) => (task._id === taskId ? updatedTask : task))
       );
-      
+
       toast.success("Task Updated Successfully!", {
         style: {
           backgroundColor: "#0d6efd",
           color: "white",
         },
       });
-      
+
       setTimeout(() => {
         window.location.reload();
       }, 5000);
@@ -913,18 +913,18 @@ const Tasks = () => {
                                       />
                                     </td>
                                     <td style={{ backgroundColor }}>
-                                      {task.taskAssignPerson && task.taskAssignPerson.employeeName 
+                                      {task.taskAssignPerson && task.taskAssignPerson.employeeName
                                         ? (
                                           <>
                                             {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
                                           </>
-                                        ) 
-                                        : task.clientAssignPerson && task.clientAssignPerson.clientName 
+                                        )
+                                        : task.clientAssignPerson && task.clientAssignPerson.clientName
                                           ? (
                                             <>
                                               {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
                                             </>
-                                          ) 
+                                          )
                                           : 'Unassigned'
                                       }
                                       <p className="text-muted">By:-{task.assignedBy}</p>
@@ -1015,7 +1015,7 @@ const Tasks = () => {
 
                             return (
                               <div key={task._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
-                                <div className="card task-card" style={{ 
+                                <div className="card task-card" style={{
                                   backgroundColor,
                                   height: '100%',
                                   minHeight: '400px', // Set minimum height
@@ -1062,28 +1062,28 @@ const Tasks = () => {
                                         name="description"
                                         value={task.description}
                                         onChange={(e) => taskHandleChange(e, task._id)}
-                                        style={{ 
-                                          resize: 'none', 
+                                        style={{
+                                          resize: 'none',
                                           backgroundColor: 'transparent',
                                           height: '90px' // Fixed height for description
                                         }}
                                       />
-                                      
+
                                       {/* Task Details */}
                                       <div className="mb-3">
                                         <p className="mb-1 fw-semibold text-primary">
-                                          {task.taskAssignPerson && task.taskAssignPerson.employeeName 
+                                          {task.taskAssignPerson && task.taskAssignPerson.employeeName
                                             ? (
                                               <>
                                                 {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
                                               </>
-                                            ) 
-                                            : task.clientAssignPerson && task.clientAssignPerson.clientName 
+                                            )
+                                            : task.clientAssignPerson && task.clientAssignPerson.clientName
                                               ? (
                                                 <>
                                                   {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
                                                 </>
-                                              ) 
+                                              )
                                               : 'Unassigned'
                                           }
                                         </p>
@@ -1141,7 +1141,7 @@ const Tasks = () => {
                                           )}
                                         </button>
                                       </div>
-                                      
+
                                       <div className="d-flex justify-content-between gap-2">
                                         <button
                                           onClick={() => taskHandleSubmit(task._id)}
@@ -1361,13 +1361,13 @@ const Tasks = () => {
                         <div className="col-sm-12 mb-3">
                           <label className="form-label">Assign Task To</label>
                           <div className="form-check form-check-inline ms-3">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="assignType" 
-                              id="assignEmployee" 
-                              value="employee" 
-                              checked={assignType === 'employee'} 
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="assignType"
+                              id="assignEmployee"
+                              value="employee"
+                              checked={assignType === 'employee'}
                               onChange={() => setAssignType('employee')}
                             />
                             <label className="form-check-label" htmlFor="assignEmployee">
@@ -1375,13 +1375,13 @@ const Tasks = () => {
                             </label>
                           </div>
                           <div className="form-check form-check-inline">
-                            <input 
-                              className="form-check-input" 
-                              type="radio" 
-                              name="assignType" 
-                              id="assignClient" 
-                              value="client" 
-                              checked={assignType === 'client'} 
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="assignType"
+                              id="assignClient"
+                              value="client"
+                              checked={assignType === 'client'}
                               onChange={() => setAssignType('client')}
                             />
                             <label className="form-check-label" htmlFor="assignClient">
@@ -1389,27 +1389,27 @@ const Tasks = () => {
                             </label>
                           </div>
                         </div>
-                        
+
                         {assignType === 'employee' ? (
-                        <div className="col-sm">
-                          <label className="form-label">
-                            Task Assign Person <span className="text-danger">*</span>
-                          </label>
-                          <div>
-                            <select
-                              className="form-select"
-                              value={selectedEmployees[0]?.value || ""}
-                              onChange={(e) => setSelectedEmployees([{ label: e.target.options[e.target.selectedIndex].text, value: e.target.value }])}
-                            >
-                              <option value="" disabled>Select Associates</option>
-                              {assignEmployee.map((employee) => (
-                                <option key={employee.value} value={employee.value}>
-                                  {employee.label}
-                                </option>
-                              ))}
-                            </select>
+                          <div className="col-sm">
+                            <label className="form-label">
+                              Task Assign Person <span className="text-danger">*</span>
+                            </label>
+                            <div>
+                              <select
+                                className="form-select"
+                                value={selectedEmployees[0]?.value || ""}
+                                onChange={(e) => setSelectedEmployees([{ label: e.target.options[e.target.selectedIndex].text, value: e.target.value }])}
+                              >
+                                <option value="" disabled>Select Associates</option>
+                                {assignEmployee.map((employee) => (
+                                  <option key={employee.value} value={employee.value}>
+                                    {employee.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
-                        </div>
                         ) : (
                           <div className="col-sm">
                             <label className="form-label">
@@ -1419,9 +1419,9 @@ const Tasks = () => {
                               <select
                                 className="form-select"
                                 value={selectedClient?.value || ""}
-                                onChange={(e) => setSelectedClient({ 
-                                  label: e.target.options[e.target.selectedIndex].text, 
-                                  value: e.target.value 
+                                onChange={(e) => setSelectedClient({
+                                  label: e.target.options[e.target.selectedIndex].text,
+                                  value: e.target.value
                                 })}
                               >
                                 <option value="" disabled>Select Client</option>
@@ -1784,7 +1784,7 @@ const Tasks = () => {
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                   <div className="modal-content">
                     <div className="modal-header">
-                      <h5 className="modal-title" id="taskMessageLabel">{selectTask.projectName} - Task Messages</h5>
+                      <h5 className="modal-title" id="taskMessageLabel">{selectTask.projectName} - Task Work</h5>
                       <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }} ref={messageContainerRef}>
@@ -1798,7 +1798,7 @@ const Tasks = () => {
                                 <span className="px-3 text-break">{message.content}</span>
                                 {message.fileUrls && message.fileUrls.map((fileUrl, index) => {
                                   if (fileUrl) {
-                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl}`;
+                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
                                     const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
 
                                     if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
@@ -1817,10 +1817,34 @@ const Tasks = () => {
                           </li>
                         ))}
                       </ul>
-                        </div>
+                    </div>
                     <div className="modal-footer">
-                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" className="btn btn-primary">Send Message</button>
+                      <form onSubmit={handleSubmitMessage} className="w-100">
+                        <div className="mb-3">
+                          <label htmlFor="currentMessage" className="form-label">Add Message</label>
+                          <textarea
+                            className="form-control"
+                            id="currentMessage"
+                            name="message"
+                            rows="3"
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            required
+                            ref={messageInputRef}
+                          />
+                        </div>
+                        <div className="mb-3">
+                          <label htmlFor="fileUpload" className="form-label">Upload Files</label>
+                          <input
+                            type="file"
+                            className="form-control"
+                            id="fileUpload"
+                            onChange={handleFileChange}
+                            multiple
+                          />
+                        </div>
+                        <button type="submit" className="btn btn-primary">Send</button>
+                      </form>
                     </div>
                   </div>
                 </div>

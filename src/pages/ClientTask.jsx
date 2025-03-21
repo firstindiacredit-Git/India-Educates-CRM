@@ -25,15 +25,17 @@ const ClientTask = () => {
   const [tasksPerPage, setTasksPerPage] = useState(10);
   const messageInputRef = useRef(null);
   const [socket, setSocket] = useState(null);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [showExcelSheet, setShowExcelSheet] = useState(false);
+  const [showExcelModal, setShowExcelModal] = useState(false);
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const userDetails = JSON.parse(localStorage.getItem('client_user'));
         const userId = userDetails?._id || localStorage.getItem('client_user_id');
-        
+
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/client`, {
           _id: userId
         });
@@ -44,7 +46,7 @@ const ClientTask = () => {
         const sortedTasks = tasksData.sort((a, b) => {
           const dateA = new Date(a.taskDate);
           const dateB = new Date(b.taskDate);
-          return dateB - dateA; 
+          return dateB - dateA;
         });
 
         setTasks(sortedTasks);
@@ -293,7 +295,26 @@ const ClientTask = () => {
   useEffect(() => {
     localStorage.setItem('clientTaskNotifications', JSON.stringify(notifications));
   }, [notifications]);
-  
+
+  // Add this after the other useEffect hooks
+  useEffect(() => {
+    // Initialize modal functionality
+    const handleExcelModalOpen = () => {
+      if (showExcelModal) {
+        const excelModal = new bootstrap.Modal(document.getElementById('excelSheetModal'));
+        excelModal.show();
+        
+        // Reset the state when modal is hidden
+        const modalElement = document.getElementById('excelSheetModal');
+        modalElement.addEventListener('hidden.bs.modal', () => {
+          setShowExcelModal(false);
+        });
+      }
+    };
+    
+    handleExcelModalOpen();
+  }, [showExcelModal]);
+
   return (
     <>
       <div id="mytask-layout">
@@ -310,27 +331,27 @@ const ClientTask = () => {
                   <div className="border-0 mb-4">
                     <div className="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap mb-3">
                       <h3 className="fw-bold mb-0">Task Management</h3>
-                        <div>
-                          <div className="d-flex">
+                      <div>
+                        <div className="d-flex">
                           {viewMode === 'row' ? (
-                              <button
-                                className="btn btn-outline-primary"
-                                onClick={() => setViewMode('list')}
-                                title="Switch to List View"
-                              >
-                                <i className="bi bi-list-task"></i>
-                              </button>
-                            ) : (
-                              <button
-                                className="btn btn-outline-primary"
+                            <button
+                              className="btn btn-outline-primary"
+                              onClick={() => setViewMode('list')}
+                              title="Switch to List View"
+                            >
+                              <i className="bi bi-list-task"></i>
+                            </button>
+                          ) : (
+                            <button
+                              className="btn btn-outline-primary"
                               onClick={() => setViewMode('row')}
-                                title="Switch to Grid View"
-                              >
-                                <i className="bi bi-grid-3x3-gap-fill"></i>
-                              </button>
-                            )}
-                          </div>
+                              title="Switch to Grid View"
+                            >
+                              <i className="bi bi-grid-3x3-gap-fill"></i>
+                            </button>
+                          )}
                         </div>
+                      </div>
                     </div>
 
                     <div className="col-auto d-flex justify-content-between gap-5">
@@ -660,16 +681,16 @@ const ClientTask = () => {
           </>
         </div>
         <FloatingMenu userType="client" isMobile={isMobile} />
-            </div>
+      </div>
 
-            {/* Message Modal */}
+      {/* Message Modal */}
       <div className="modal fade" id="taskMessages" tabIndex="-1" aria-labelledby="taskMessagesLabel" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div className="modal-content">
-                  <div className="modal-header">
-              <h5 className="modal-title" id="taskMessagesLabel">Task Messages</h5>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
+        <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+          <div className="modal-content" style={{width: "50rem"}}>
+            <div className="modal-header">
+              <h5 className="modal-title" id="taskMessagesLabel">Add your Work</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
             <div className="modal-body">
               <div ref={messageContainerRef} style={{ height: '300px', overflowY: 'auto' }}>
                 {messages.map((message, index) => (
@@ -678,68 +699,183 @@ const ClientTask = () => {
                     {message.content}
                     <span className="px-3 text-muted">{new Date(message.createdAt).toLocaleString()}</span>
                     {message.fileUrls && message.fileUrls.map((fileUrl, fileIndex) => {
-                                if (fileUrl) {
-                                  const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
-                                  const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
+                      if (fileUrl) {
+                        const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
+                        const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
 
-                                  if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                                    return (
+                        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                          return (
                             <div key={fileIndex} className="px-3">
-                                        <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
+                              <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
                                 <img src={cleanFileUrl} alt={`Attachment ${fileIndex + 1}`} style={{ maxWidth: '5rem', cursor: 'pointer' }} />
-                                        </a>
-                                      </div>
-                                    );
-                                  } else if (fileExtension === 'pdf') {
-                                    return (
-                            <div key={fileIndex} className="px-3">
-                                        <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">PDF File</a>
-                                      </div>
-                                    );
-                                  } else {
-                                    return (
-                            <div key={fileIndex} className="px-3">
-                                        <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">Download File</a>
-                                      </div>
-                                    );
-                                  }
-                                }
-                                return null;
-                              })}
+                              </a>
                             </div>
+                          );
+                        } else if (fileExtension === 'pdf') {
+                          return (
+                            <div key={fileIndex} className="px-3">
+                              <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">PDF File</a>
+                            </div>
+                          );
+                        } else {
+                          return (
+                            <div key={fileIndex} className="px-3">
+                              <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">Download File</a>
+                            </div>
+                          );
+                        }
+                      }
+                      return null;
+                    })}
+                  </div>
                 ))}
               </div>
-                          </div>
+            </div>
             <div className="modal-footer">
               <form onSubmit={handleSendMessage} className="w-100">
-                      <div className="mb-3">
-                        <label htmlFor="currentMessage" className="form-label">Add Message</label>
-                        <textarea
-                          className="form-control"
-                          id="currentMessage"
-                          name="message"
-                          rows="3"
-                          value={content}
-                          onChange={(e) => setContent(e.target.value)}
-                          required
-                          ref={messageInputRef}
-                        />
-                      </div>
-                      <div className="mb-3">
-                        <label htmlFor="fileUpload" className="form-label">Upload Files</label>
+                <div className="border rounded p-3 mb-3 bg-light">
+                  <div className="row g-2 align-items-center">
+                    {/* File Upload */}
+                    <div className="col-md-6">
+                      <div className="input-group input-group-sm">
+                        <span className="input-group-text bg-white">
+                          <i className="bi bi-paperclip"></i>
+                        </span>
                         <input
                           type="file"
-                          className="form-control"
+                          className="form-control form-control-sm"
                           id="fileUpload"
-                    onChange={handleFileChange}
+                          onChange={handleFileChange}
                           multiple
                         />
                       </div>
-                <button type="submit" className="btn btn-primary">Send</button>
-                    </form>
+                    </div>
+                    
+                    {/* Excel Button */}
+                    <div className="col-md-6 text-md-end">
+                      <button 
+                        type="button" 
+                        className="btn btn-sm btn-outline-success w-100"
+                        onClick={() => setShowExcelModal(true)}
+                      >
+                        <i className="bi bi-file-earmark-excel"></i> Excel Sheet
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Message Input */}
+                <div className="input-group mb-2">
+                  <span className="input-group-text bg-white">
+                    <i className="bi bi-chat-dots"></i>
+                  </span>
+                  <textarea
+                    className="form-control"
+                    id="currentMessage"
+                    name="message"
+                    rows="1"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    required
+                    ref={messageInputRef}
+                    placeholder="Type your message..."
+                    style={{ resize: 'none' }}
+                  />
+                  <button type="submit" className="btn btn-primary">
+                    <i className="bi bi-send-fill"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Excel Sheet Modal */}
+      <div className="modal fade" id="excelSheetModal" tabIndex="-1" aria-labelledby="excelSheetModalLabel" aria-hidden="true">
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="excelSheetModalLabel">Excel Sheet Creator</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="card-title text-center flex-grow-1 m-0">
+                      Simple Excel Sheet
+                    </h6>
+                  </div>
+                  
+                  <div className="table-responsive mb-3">
+                    <table className="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th style={{ width: '30px', backgroundColor: '#f8f9fa' }}></th>
+                          {['A', 'B', 'C', 'D', 'E', 'F'].map((col) => (
+                            <th key={col} className="text-center" style={{ backgroundColor: '#f8f9fa', padding: '2px', width: '80px' }}>
+                              {col}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[1, 2, 3, 4, 5, 6].map((row) => (
+                          <tr key={row}>
+                            <td className="text-center" style={{ backgroundColor: '#f8f9fa', padding: '2px', fontSize: '12px' }}>
+                              {row}
+                            </td>
+                            {['A', 'B', 'C', 'D', 'E', 'F'].map((col) => (
+                              <td key={col} style={{ padding: '0' }}>
+                                <textarea
+                                  className="form-control"
+                                  style={{
+                                    width: '100%',
+                                    height: '22px',
+                                    padding: '1px 2px',
+                                    border: 'none',
+                                    background: 'transparent',
+                                    resize: 'none',
+                                    overflow: 'hidden',
+                                    fontSize: '12px'
+                                  }}
+                                />
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  
+                  <div className="d-flex justify-content-between">
+                    <div>
+                      <button type="button" className="btn btn-sm btn-secondary me-1">
+                        <i className="bi bi-plus-circle me-1"></i>Row
+                      </button>
+                      <button type="button" className="btn btn-sm btn-secondary">
+                        <i className="bi bi-plus-circle me-1"></i>Column
+                      </button>
+                    </div>
+                    <div>
+                      <button type="button" className="btn btn-sm btn-dark me-1">
+                        <i className="bi bi-download me-1"></i>Download
+                      </button>
+                      <button type="button" className="btn btn-sm btn-danger">
+                        <i className="bi bi-trash me-1"></i>Clear
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Save and Insert</button>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );
