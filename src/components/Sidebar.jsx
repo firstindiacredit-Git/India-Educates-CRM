@@ -600,7 +600,7 @@ const Sidebar = () => {
       </div>
 
       {/* Password Change Modal */}
-      <div
+      {/* <div
         className="modal fade"
         id="passwordModal"
         tabIndex={-1}
@@ -663,11 +663,11 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
 
       {/* Profile Edit Modal */}
-      <div
+      {/* <div
         className="modal fade"
         id="profileModal"
         tabIndex={-1}
@@ -730,7 +730,7 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <ToastContainer />
     </div>
   );

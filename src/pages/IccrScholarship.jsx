@@ -357,20 +357,68 @@ const IccrScholarship = () => {
                 <div className="body d-flex py-lg-3 py-md-2">
                     <div className="container-xxl">
                         <div className="border-0 mb-3">
-                            <div className="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                                <h3 className="fw-bold mb-0">ICCR Scholarship</h3>
+                            <div className="card-header py-4 bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap" style={{
+                                borderBottom: '2px solid rgba(82, 180, 71, 0.2) !important'
+                            }}>
+                                <h3 className="mb-0" style={{
+                                    fontWeight: '700',
+                                    color: '#333',
+                                    fontSize: '24px',
+                                    position: 'relative',
+                                    paddingLeft: '15px'
+                                }}>
+                                    <span style={{
+                                        position: 'absolute',
+                                        left: '0',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        width: '5px',
+                                        height: '24px',
+                                        background: 'linear-gradient(to bottom, #ff8a00, #ff5e00)',
+                                        borderRadius: '3px'
+                                    }}></span>
+                                    ICCR Scholarship
+                                </h3>
                                 <div>
                                     <button
-                                        className="btn btn-outline-secondary me-2"
+                                        className="btn me-2"
+                                        style={{
+                                            backgroundColor: showFilters ? 'rgba(255, 138, 0, 0.1)' : 'white',
+                                            color: '#ff5e00',
+                                            border: '1px solid rgba(255, 138, 0, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '8px 16px',
+                                            fontWeight: '600',
+                                            transition: 'all 0.2s ease',
+                                            boxShadow: showFilters ? '0 3px 8px rgba(255, 138, 0, 0.1)' : 'none'
+                                        }}
                                         onClick={() => setShowFilters(!showFilters)}
                                     >
-                                        <i className="bi bi-funnel me-1"></i>
+                                        <i className="icofont-filter me-2" style={{ fontSize: '16px' }}></i>
                                         {showFilters ? 'Hide Filters' : 'Show Filters'}
                                     </button>
                                     <button
-                                        className="btn btn-primary"
+                                        className="btn"
+                                        style={{
+                                            background: 'linear-gradient(135deg, #52b447, #429938)',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            padding: '8px 18px',
+                                            fontWeight: '600',
+                                            boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                                            transition: 'all 0.2s ease'
+                                        }}
                                         onClick={handleRefresh}
                                         disabled={loading}
+                                        onMouseOver={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                                        }}
                                     >
                                         {loading ? (
                                             <>
@@ -379,7 +427,7 @@ const IccrScholarship = () => {
                                             </>
                                         ) : (
                                             <>
-                                                <i className="bi bi-arrow-clockwise me-2"></i>
+                                                <i className="icofont-refresh me-2"></i>
                                                 Refresh Data
                                             </>
                                         )}
@@ -390,12 +438,35 @@ const IccrScholarship = () => {
 
                         {/* Advanced Filter Panel */}
                         {showFilters && (
-                            <div className="card mb-3">
-                                <div className="card-body">
-                                    <h5 className="card-title mb-3">Advanced Filters</h5>
+                            <div className="card mb-4" style={{
+                                borderRadius: '12px',
+                                boxShadow: '0 6px 15px rgba(0,0,0,0.05)',
+                                border: '1px solid rgba(82, 180, 71, 0.15)',
+                                overflow: 'hidden'
+                            }}>
+                                <div className="card-body" style={{ padding: '25px' }}>
+                                    <h5 className="card-title mb-4" style={{
+                                        color: '#333',
+                                        fontWeight: '700',
+                                        fontSize: '18px',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}>
+                                        <i className="icofont-filter-alt" style={{ 
+                                            color: '#ff5e00', 
+                                            marginRight: '10px',
+                                            fontSize: '20px'
+                                        }}></i>
+                                        Advanced Filters
+                                    </h5>
                                     <div className="row g-3">
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="searchInput" className="form-label">Search</label>
+                                            <label htmlFor="searchInput" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Search</label>
                                             <div className="input-group">
                                                 <input
                                                     id="searchInput"
@@ -404,19 +475,45 @@ const IccrScholarship = () => {
                                                     placeholder="Name, Email, Mobile..."
                                                     value={searchTerm}
                                                     onChange={(e) => setSearchTerm(e.target.value)}
+                                                    style={{
+                                                        borderRadius: '8px 0 0 8px',
+                                                        border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                        padding: '10px 15px',
+                                                        color: '#333',
+                                                        boxShadow: 'none'
+                                                    }}
                                                 />
-                                                <span className="input-group-text">
-                                                    <i className="fa fa-search"></i>
+                                                <span className="input-group-text" style={{
+                                                    backgroundColor: '#52b447',
+                                                    border: 'none',
+                                                    borderRadius: '0 8px 8px 0',
+                                                    color: 'white'
+                                                }}>
+                                                    <i className="icofont-search"></i>
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="genderFilter" className="form-label">Gender</label>
+                                            <label htmlFor="genderFilter" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Gender</label>
                                             <select
                                                 id="genderFilter"
                                                 className="form-select"
                                                 value={filters.gender}
                                                 onChange={(e) => handleFilterChange('gender', e.target.value)}
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    padding: '10px 15px',
+                                                    color: '#333',
+                                                    boxShadow: 'none',
+                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2352b447' d='M8 10.5l-4-4h8l-4 4z'/%3E%3C/svg%3E")`,
+                                                    cursor: 'pointer'
+                                                }}
                                             >
                                                 <option value="">All Genders</option>
                                                 <option value="Male">Male</option>
@@ -425,12 +522,26 @@ const IccrScholarship = () => {
                                             </select>
                                         </div>
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="courseFilter" className="form-label">Course</label>
+                                            <label htmlFor="courseFilter" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Course</label>
                                             <select
                                                 id="courseFilter"
                                                 className="form-select"
                                                 value={filters.course}
                                                 onChange={(e) => handleFilterChange('course', e.target.value)}
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    padding: '10px 15px',
+                                                    color: '#333',
+                                                    boxShadow: 'none',
+                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2352b447' d='M8 10.5l-4-4h8l-4 4z'/%3E%3C/svg%3E")`,
+                                                    cursor: 'pointer'
+                                                }}
                                             >
                                                 <option value="">All Courses</option>
                                                 {uniqueCourses.map((course, index) => (
@@ -439,12 +550,26 @@ const IccrScholarship = () => {
                                             </select>
                                         </div>
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="qualificationFilter" className="form-label">Qualification</label>
+                                            <label htmlFor="qualificationFilter" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Qualification</label>
                                             <select
                                                 id="qualificationFilter"
                                                 className="form-select"
                                                 value={filters.lastQualification}
                                                 onChange={(e) => handleFilterChange('lastQualification', e.target.value)}
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    padding: '10px 15px',
+                                                    color: '#333',
+                                                    boxShadow: 'none',
+                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2352b447' d='M8 10.5l-4-4h8l-4 4z'/%3E%3C/svg%3E")`,
+                                                    cursor: 'pointer'
+                                                }}
                                             >
                                                 <option value="">All Qualifications</option>
                                                 {uniqueQualifications.map((qual, index) => (
@@ -453,7 +578,12 @@ const IccrScholarship = () => {
                                             </select>
                                         </div>
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="dateFromFilter" className="form-label">Date From</label>
+                                            <label htmlFor="dateFromFilter" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Date From</label>
                                             <DatePicker
                                                 id="dateFromFilter"
                                                 selected={filters.dateFrom}
@@ -462,10 +592,23 @@ const IccrScholarship = () => {
                                                 placeholderText="From date"
                                                 dateFormat="dd/MM/yyyy"
                                                 isClearable
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    padding: '10px 15px',
+                                                    color: '#333',
+                                                    boxShadow: 'none',
+                                                    width: '100%'
+                                                }}
                                             />
                                         </div>
                                         <div className="col-md-6 col-lg-3">
-                                            <label htmlFor="dateToFilter" className="form-label">Date To</label>
+                                            <label htmlFor="dateToFilter" className="form-label" style={{
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px',
+                                                marginBottom: '8px'
+                                            }}>Date To</label>
                                             <DatePicker
                                                 id="dateToFilter"
                                                 selected={filters.dateTo}
@@ -474,22 +617,53 @@ const IccrScholarship = () => {
                                                 placeholderText="To date"
                                                 dateFormat="dd/MM/yyyy"
                                                 isClearable
+                                                style={{
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    padding: '10px 15px',
+                                                    color: '#333',
+                                                    boxShadow: 'none',
+                                                    width: '100%'
+                                                }}
                                             />
                                         </div>
                                         <div className="col-md-6 col-lg-3 d-flex align-items-end">
                                             <button 
-                                                className="btn btn-secondary w-100"
+                                                className="btn w-100"
                                                 onClick={clearFilters}
+                                                style={{
+                                                    backgroundColor: '#fff',
+                                                    color: '#ff5e00',
+                                                    border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                    borderRadius: '8px',
+                                                    padding: '10px 15px',
+                                                    fontWeight: '600',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.05)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.backgroundColor = '#fff';
+                                                }}
                                             >
-                                                <i className="bi bi-x-circle me-2"></i>
+                                                <i className="icofont-ui-delete me-2"></i>
                                                 Clear Filters
                                             </button>
                                         </div>
                                         <div className="col-md-6 col-lg-3 d-flex align-items-end">
-                                            <div className="text-end w-100">
-                                                <span className="badge bg-primary p-2">
-                                                    {filteredAndSortedForms.length} Results
-                                                </span>
+                                            <div className="w-100" style={{
+                                                background: 'linear-gradient(135deg, #52b447, #429938)',
+                                                borderRadius: '8px',
+                                                padding: '11px 15px',
+                                                color: 'white',
+                                                fontWeight: '600',
+                                                textAlign: 'center',
+                                                fontSize: '14px',
+                                                boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)'
+                                            }}>
+                                                <i className="icofont-listine-dots me-2"></i>
+                                                {filteredAndSortedForms.length} Results Found
                                             </div>
                                         </div>
                                     </div>
@@ -510,25 +684,66 @@ const IccrScholarship = () => {
                                 className="btn btn-outline-primary me-3 mb-3"
                                 onClick={handleIccr2ButtonClick}
                                 disabled={loading}
+                                style={{
+                                    background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    padding: '8px 16px',
+                                    fontWeight: '600',
+                                    boxShadow: '0 4px 10px rgba(255, 138, 0, 0.2)',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseOver={(e) => {
+                                    if (!loading) {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(255, 138, 0, 0.3)';
+                                    }
+                                }}
+                                onMouseOut={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(255, 138, 0, 0.2)';
+                                }}
                             >
                                 {loading ? (
                                     <>
                                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
                                         Loading...
                                     </>
-                                ) : 'ICCR Form 2'}
+                                ) : (
+                                    <>
+                                        <i className="icofont-paper me-2"></i>
+                                        ICCR Form 2
+                                    </>
+                                )}
                             </button>
 
                             <div className="input-group mb-3" style={{ width: '250px' }}>
                                 <input
                                     type="text"
                                     className="form-control"
-                                    placeholder="Search..."
+                                    placeholder="Quick Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        borderRadius: '8px 0 0 8px',
+                                        border: '1px solid rgba(82, 180, 71, 0.3)',
+                                        padding: '8px 15px',
+                                        color: '#333',
+                                        boxShadow: 'none'
+                                    }}
                                 />
-                                <button type="button" className="btn btn-outline-secondary">
-                                    <i className="fa fa-search" />
+                                <button 
+                                    type="button" 
+                                    className="btn"
+                                    style={{
+                                        backgroundColor: '#52b447',
+                                        border: 'none',
+                                        borderRadius: '0 8px 8px 0',
+                                        color: 'white'
+                                    }}
+                                >
+                                    <i className="icofont-search" />
                                 </button>
                             </div>
                         </div>
@@ -545,64 +760,213 @@ const IccrScholarship = () => {
                             <>
                                 {viewMode === 'list' ? (
                                     // List View
-                                    <div className="card">
-                                        <div className="card-header">
-                                            <h5 className="card-title">ICCR Form 1 Submissions</h5>
+                                    <div className="card" style={{ 
+                                        borderRadius: '12px',
+                                        boxShadow: '0 6px 15px rgba(0,0,0,0.05)',
+                                        border: 'none',
+                                        overflow: 'hidden'
+                                    }}>
+                                        <div className="card-header" style={{
+                                            background: 'linear-gradient(135deg, #52b447, #429938)',
+                                            borderBottom: 'none',
+                                            padding: '18px 25px'
+                                        }}>
+                                            <h5 className="card-title" style={{
+                                                color: 'white',
+                                                margin: '0',
+                                                fontWeight: '600',
+                                                fontSize: '18px'
+                                            }}>
+                                                <i className="icofont-listing-box me-2"></i>
+                                                ICCR Form 1 Submissions
+                                            </h5>
                                         </div>
-                                        <div className="card-body">
+                                        <div className="card-body" style={{ padding: '0' }}>
                                             <div className="table-responsive">
-                                                <table className="table table-hover align-middle mb-0">
-                                                    <thead className="table-light">
+                                                <table className="table align-middle mb-0" style={{
+                                                    borderCollapse: 'separate',
+                                                    borderSpacing: '0'
+                                                }}>
+                                                    <thead style={{
+                                                        background: '#f8f9fa'
+                                                    }}>
                                                         <tr>
-                                                            <th className="text-center">S.No</th>
-                                                            <th className="text-center sortable" onClick={() => requestSort('fullName')}>
+                                                            <th className="text-center" style={{
+                                                                padding: '16px 10px',
+                                                                borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                fontWeight: '600',
+                                                                color: '#444'
+                                                            }}>S.No</th>
+                                                            <th className="text-center sortable" 
+                                                                onClick={() => requestSort('fullName')}
+                                                                style={{
+                                                                    padding: '16px 10px',
+                                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                    fontWeight: '600',
+                                                                    color: '#444',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
                                                                 Name
                                                                 {sortConfig.key === 'fullName' && (
-                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`}></i>
+                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`} style={{ color: '#ff8a00' }}></i>
                                                                 )}
                                                             </th>
-                                                            <th className="text-center sortable" onClick={() => requestSort('email')}>
+                                                            <th className="text-center sortable" 
+                                                                onClick={() => requestSort('email')}
+                                                                style={{
+                                                                    padding: '16px 10px',
+                                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                    fontWeight: '600',
+                                                                    color: '#444',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
                                                                 Email
                                                                 {sortConfig.key === 'email' && (
-                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`}></i>
+                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`} style={{ color: '#ff8a00' }}></i>
                                                                 )}
                                                             </th>
-                                                            <th className="text-center">Mobile</th>
-                                                            <th className="text-center sortable" onClick={() => requestSort('course')}>
+                                                            <th className="text-center" style={{
+                                                                padding: '16px 10px',
+                                                                borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                fontWeight: '600',
+                                                                color: '#444'
+                                                            }}>Mobile</th>
+                                                            <th className="text-center sortable" 
+                                                                onClick={() => requestSort('course')}
+                                                                style={{
+                                                                    padding: '16px 10px',
+                                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                    fontWeight: '600',
+                                                                    color: '#444',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
                                                                 Course
                                                                 {sortConfig.key === 'course' && (
-                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`}></i>
+                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`} style={{ color: '#ff8a00' }}></i>
                                                                 )}
                                                             </th>
-                                                            <th className="text-center sortable" onClick={() => requestSort('createdAt')}>
+                                                            <th className="text-center sortable" 
+                                                                onClick={() => requestSort('createdAt')}
+                                                                style={{
+                                                                    padding: '16px 10px',
+                                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                    fontWeight: '600',
+                                                                    color: '#444',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                            >
                                                                 Date
                                                                 {sortConfig.key === 'createdAt' && (
-                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`}></i>
+                                                                    <i className={`bi bi-arrow-${sortConfig.direction === 'asc' ? 'up' : 'down'} ms-1`} style={{ color: '#ff8a00' }}></i>
                                                                 )}
                                                             </th>
-                                                            <th className="text-center">Actions</th>
+                                                            <th className="text-center" style={{
+                                                                padding: '16px 10px',
+                                                                borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                                fontWeight: '600',
+                                                                color: '#444'
+                                                            }}>Actions</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {currentItems.length > 0 ? (
                                                             currentItems.map((form, index) => (
-                                                                <tr key={form._id} className="align-middle">
-                                                                    <td className="text-center">{indexOfFirstItem + index + 1}</td>
-                                                                    <td className="text-center fw-semibold">{form.fullName}</td>
-                                                                    <td className="text-center">{form.email}</td>
-                                                                    <td className="text-center">{form.countryCode} {form.mobileNumber}</td>
-                                                                    <td className="text-center">
-                                                                        <span className="badge bg-light text-dark px-3 py-2">
+                                                                <tr key={form._id} 
+                                                                    className="align-middle"
+                                                                    style={{
+                                                                        transition: 'background 0.2s ease',
+                                                                    }}
+                                                                    onMouseOver={(e) => e.currentTarget.style.background = 'rgba(82, 180, 71, 0.04)'}
+                                                                    onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                                                                >
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                                                    }}>
+                                                                        <span style={{
+                                                                            background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                                                                            color: 'white',
+                                                                            borderRadius: '50%',
+                                                                            width: '28px',
+                                                                            height: '28px',
+                                                                            display: 'inline-flex',
+                                                                            alignItems: 'center',
+                                                                            justifyContent: 'center',
+                                                                            fontWeight: '600',
+                                                                            fontSize: '12px'
+                                                                        }}>
+                                                                            {indexOfFirstItem + index + 1}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="text-center" style={{
+                                                                        fontWeight: '600',
+                                                                        color: '#333',
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                                                    }}>{form.fullName}</td>
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                                        color: '#555'
+                                                                    }}>
+                                                                        <i className="icofont-email me-1" style={{ color: '#52b447' }}></i>
+                                                                        {form.email}
+                                                                    </td>
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                                        color: '#555'
+                                                                    }}>
+                                                                        <i className="icofont-mobile-phone me-1" style={{ color: '#52b447' }}></i>
+                                                                        {form.countryCode} {form.mobileNumber}
+                                                                    </td>
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                                                    }}>
+                                                                        <span style={{
+                                                                            backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                            color: '#52b447',
+                                                                            padding: '5px 12px',
+                                                                            borderRadius: '30px',
+                                                                            fontWeight: '500',
+                                                                            fontSize: '13px',
+                                                                            display: 'inline-block',
+                                                                            border: '1px solid rgba(82, 180, 71, 0.2)'
+                                                                        }}>
                                                                             {form.course}
                                                                         </span>
                                                                     </td>
-                                                                    <td className="text-center">
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                                        color: '#555'
+                                                                    }}>
+                                                                        <i className="icofont-calendar me-1" style={{ color: '#52b447' }}></i>
                                                                         {formatDateOnly(form.createdAt)}
                                                                     </td>
-                                                                    <td className="text-center">
+                                                                    <td className="text-center" style={{
+                                                                        padding: '16px 10px',
+                                                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                                                    }}>
                                                                         <div className="btn-group">
                                                                             <button
-                                                                                className="btn btn-sm btn-outline-primary me-1"
+                                                                                className="btn"
+                                                                                style={{
+                                                                                    background: 'linear-gradient(135deg, #52b447, #429938)',
+                                                                                    color: 'white',
+                                                                                    border: 'none',
+                                                                                    borderRadius: '6px',
+                                                                                    padding: '6px 12px',
+                                                                                    marginRight: '8px',
+                                                                                    fontWeight: '500',
+                                                                                    fontSize: '13px',
+                                                                                    lineHeight: '1.2',
+                                                                                    boxShadow: '0 2px 6px rgba(82, 180, 71, 0.2)'
+                                                                                }}
                                                                                 onClick={() => handleViewDetails(form._id)}
                                                                                 disabled={formDetailLoading}
                                                                                 title="View Details"
@@ -610,7 +974,17 @@ const IccrScholarship = () => {
                                                                                 <i className="icofont-eye"></i>
                                                                             </button>
                                                                             <button
-                                                                                className="btn btn-sm btn-outline-danger"
+                                                                                className="btn"
+                                                                                style={{
+                                                                                    backgroundColor: 'white',
+                                                                                    color: '#ff5e00',
+                                                                                    border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                                                    borderRadius: '6px',
+                                                                                    padding: '6px 12px',
+                                                                                    fontWeight: '500',
+                                                                                    fontSize: '13px',
+                                                                                    lineHeight: '1.2'
+                                                                                }}
                                                                                 onClick={() => showDeleteConfirmation(form._id)}
                                                                                 disabled={deleteLoading}
                                                                                 title="Delete"
@@ -623,9 +997,20 @@ const IccrScholarship = () => {
                                                             ))
                                                         ) : (
                                                             <tr>
-                                                                <td colSpan="7" className="text-center py-4">
-                                                                    <i className="bi bi-inbox-fill fs-3 mb-3 d-block text-muted"></i>
+                                                                <td colSpan="7" className="text-center py-4" style={{
+                                                                    padding: '40px 20px',
+                                                                    backgroundColor: '#f9fcf7'
+                                                                }}>
+                                                                    <i className="icofont-file-alt" style={{ 
+                                                                        fontSize: '48px', 
+                                                                        color: '#52b447',
+                                                                        opacity: '0.5',
+                                                                        marginBottom: '15px',
+                                                                        display: 'block'
+                                                                    }}></i>
+                                                                    <p style={{ margin: 0, fontSize: '16px', fontWeight: '500', color: '#666' }}>
                                                                     No ICCR form submissions found
+                                                                    </p>
                                                                 </td>
                                                             </tr>
                                                         )}
@@ -636,47 +1021,182 @@ const IccrScholarship = () => {
                                     </div>
                                 ) : (
                                     // Grid View
-                                    <div className="row">
+                                    <div className="row" style={{ margin: "0 -15px" }}>
                                         {currentItems.length > 0 ? (
                                             currentItems.map((form, index) => (
-                                                <div className="col-md-4" key={form._id}>
+                                                <div className="col-md-4" key={form._id} style={{ padding: "15px" }}>
                                                     <div
-                                                        className="card mt-4 task-card"
+                                                        className="card"
                                                         style={{
                                                             height: 'auto',
-                                                            minHeight: '250px'
+                                                            minHeight: '280px',
+                                                            borderRadius: '12px',
+                                                            boxShadow: '0 10px 20px rgba(0,0,0,0.05), 0 6px 6px rgba(0,0,0,0.06)',
+                                                            transition: 'all 0.3s ease',
+                                                            border: '1px solid rgba(0,0,0,0.05)',
+                                                            overflow: 'hidden',
+                                                            backgroundColor: '#ffffff',
+                                                            position: 'relative'
+                                                        }}
+                                                        onMouseOver={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(-8px)';
+                                                            e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1), 0 8px 8px rgba(0,0,0,0.08)';
+                                                        }}
+                                                        onMouseOut={(e) => {
+                                                            e.currentTarget.style.transform = 'translateY(0)';
+                                                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.05), 0 6px 6px rgba(0,0,0,0.06)';
                                                         }}
                                                     >
-                                                        <div className="card-body d-flex flex-column">
-                                                            <div className="d-flex justify-content-between">
-                                                                <span className="fw-bold fs-5">{indexOfFirstItem + index + 1}. </span>
-                                                                <h5 className="card-title text-capitalize fw-bold">
+                                                        <div
+                                                            style={{
+                                                                position: 'absolute',
+                                                                top: 0,
+                                                                left: 0,
+                                                                right: 0,
+                                                                height: '6px',
+                                                                background: 'linear-gradient(90deg, #ff8a00, #ff5e00)'
+                                                            }}
+                                                        ></div>
+                                                        <div className="card-body d-flex flex-column" style={{ padding: '25px' }}>
+                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                <span style={{ 
+                                                                    background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                                                                    color: 'white', 
+                                                                    borderRadius: '50%',
+                                                                    width: '36px',
+                                                                    height: '36px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontWeight: '600',
+                                                                    fontSize: '14px',
+                                                                    boxShadow: '0 4px 8px rgba(255, 138, 0, 0.3)'
+                                                                }}>
+                                                                    {indexOfFirstItem + index + 1}
+                                                                </span>
+                                                                <h5 className="card-title text-capitalize" style={{ 
+                                                                    margin: 0,
+                                                                    fontWeight: '700',
+                                                                    color: '#333333',
+                                                                    fontSize: '18px'
+                                                                }}>
                                                                     {form.fullName}
                                                                 </h5>
                                                             </div>
 
-                                                            <div className="mt-3">
-                                                                <div><span className="fw-semibold">Email: </span>{form.email}</div>
-                                                                <div><span className="fw-semibold">Mobile: </span>{form.countryCode} {form.mobileNumber}</div>
-                                                                <div><span className="fw-semibold">Course: </span>{form.course}</div>
+                                                            <div style={{ 
+                                                                marginTop: '22px', 
+                                                                backgroundColor: '#f9fcf7', 
+                                                                padding: '18px', 
+                                                                borderRadius: '10px',
+                                                                border: '1px solid rgba(82, 180, 71, 0.15)'
+                                                            }}>
+                                                                <div style={{ 
+                                                                    marginBottom: '12px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center'
+                                                                }}>
+                                                                    <i className="icofont-email" style={{ 
+                                                                        color: '#52b447', 
+                                                                        marginRight: '8px',
+                                                                        fontSize: '16px'
+                                                                    }}></i>
+                                                                    <span style={{ fontWeight: '600', color: '#555555', width: '60px' }}>Email: </span>
+                                                                    <span style={{ 
+                                                                        color: '#333333', 
+                                                                        fontWeight: '500',
+                                                                        textOverflow: 'ellipsis',
+                                                                        overflow: 'hidden',
+                                                                        whiteSpace: 'nowrap'
+                                                                    }}>{form.email}</span>
+                                                                </div>
+                                                                <div style={{ 
+                                                                    marginBottom: '12px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center'
+                                                                }}>
+                                                                    <i className="icofont-mobile-phone" style={{ 
+                                                                        color: '#52b447', 
+                                                                        marginRight: '8px',
+                                                                        fontSize: '16px'
+                                                                    }}></i>
+                                                                    <span style={{ fontWeight: '600', color: '#555555', width: '60px' }}>Mobile: </span>
+                                                                    <span style={{ color: '#333333', fontWeight: '500' }}>{form.countryCode} {form.mobileNumber}</span>
+                                                                </div>
+                                                                <div style={{ 
+                                                                    display: 'flex',
+                                                                    alignItems: 'center'
+                                                                }}>
+                                                                    <i className="icofont-graduate" style={{ 
+                                                                        color: '#52b447', 
+                                                                        marginRight: '8px',
+                                                                        fontSize: '16px'
+                                                                    }}></i>
+                                                                    <span style={{ fontWeight: '600', color: '#555555', width: '60px' }}>Course: </span>
+                                                                    <span style={{ 
+                                                                        color: '#333333', 
+                                                                        fontWeight: '500',
+                                                                        backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                        padding: '3px 8px',
+                                                                        borderRadius: '4px',
+                                                                        fontSize: '13px'
+                                                                    }}>{form.course}</span>
+                                                                </div>
                                                             </div>
 
-                                                            <div className="mt-auto pt-3 d-flex justify-content-end">
+                                                            <div className="mt-auto pt-4 d-flex justify-content-end" style={{ gap: '10px' }}>
                                                                 <button
-                                                                    className="btn btn-sm btn-primary me-2"
+                                                                    className="btn btn-sm"
+                                                                    style={{
+                                                                        background: 'linear-gradient(135deg, #52b447, #429938)',
+                                                                        color: 'white',
+                                                                        border: 'none',
+                                                                        borderRadius: '8px',
+                                                                        padding: '8px 16px',
+                                                                        fontWeight: '600',
+                                                                        fontSize: '13px',
+                                                                        boxShadow: '0 4px 10px rgba(82, 180, 71, 0.3)',
+                                                                        transition: 'all 0.2s ease'
+                                                                    }}
+                                                                    onMouseOver={(e) => {
+                                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.4)';
+                                                                    }}
+                                                                    onMouseOut={(e) => {
+                                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                                        e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.3)';
+                                                                    }}
                                                                     onClick={() => handleViewDetails(form._id)}
                                                                     disabled={formDetailLoading}
                                                                 >
-                                                                    <i className="icofont-eye me-1"></i>
-                                                                    View
+                                                                    <i className="icofont-eye"></i>
+                                                                    
                                                                 </button>
                                                                 <button
-                                                                    className="btn btn-sm btn-danger"
+                                                                    className="btn btn-sm"
+                                                                    style={{
+                                                                        backgroundColor: '#fff',
+                                                                        color: '#ff5e00',
+                                                                        border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                                        borderRadius: '8px',
+                                                                        padding: '8px 16px',
+                                                                        fontWeight: '600',
+                                                                        fontSize: '13px',
+                                                                        transition: 'all 0.2s ease'
+                                                                    }}
+                                                                    onMouseOver={(e) => {
+                                                                        e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.05)';
+                                                                        e.currentTarget.style.borderColor = '#ff5e00';
+                                                                    }}
+                                                                    onMouseOut={(e) => {
+                                                                        e.currentTarget.style.backgroundColor = '#fff';
+                                                                        e.currentTarget.style.borderColor = 'rgba(255, 94, 0, 0.3)';
+                                                                    }}
                                                                     onClick={() => showDeleteConfirmation(form._id)}
                                                                     disabled={deleteLoading}
                                                                 >
-                                                                    <i className="icofont-ui-delete me-1"></i>
-                                                                    Delete
+                                                                    <i className="icofont-ui-delete"></i>
+                                                                    
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -684,22 +1204,54 @@ const IccrScholarship = () => {
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="col-12 text-center mt-4">
-                                                <p>No ICCR form submissions found</p>
+                                            <div className="col-12 text-center mt-4" style={{ 
+                                                padding: '40px 20px', 
+                                                backgroundColor: '#f9fcf7', 
+                                                borderRadius: '12px',
+                                                color: '#666666',
+                                                border: '1px dashed rgba(82, 180, 71, 0.3)'
+                                            }}>
+                                                <i className="icofont-file-alt" style={{ 
+                                                    fontSize: '48px', 
+                                                    color: '#52b447',
+                                                    opacity: '0.5',
+                                                    marginBottom: '15px',
+                                                    display: 'block'
+                                                }}></i>
+                                                <p style={{ margin: 0, fontSize: '16px', fontWeight: '500' }}>No ICCR form submissions found</p>
                                             </div>
                                         )}
                                     </div>
                                 )}
 
                                 {/* Pagination controls */}
-                                <div className="row mt-3">
+                                <div className="row mt-4" style={{ marginBottom: '20px' }}>
                                     <div className="col-12 col-md-6 mb-3">
-                                        <div className="d-flex align-items-center">
-                                            <label htmlFor="itemsPerPage" className="form-label me-2 mb-0">Items per page:</label>
+                                        <div className="d-flex align-items-center" style={{ 
+                                            background: '#f9fcf7',
+                                            padding: '12px 15px',
+                                            borderRadius: '8px',
+                                            border: '1px solid rgba(82, 180, 71, 0.15)'
+                                        }}>
+                                            <label htmlFor="itemsPerPage" className="form-label me-3 mb-0" style={{ 
+                                                fontWeight: '600',
+                                                color: '#444',
+                                                fontSize: '14px'
+                                            }}>Items per page:</label>
                                             <select
                                                 id="itemsPerPage"
                                                 className="form-select"
-                                                style={{ width: 'auto' }}
+                                                style={{ 
+                                                    width: 'auto',
+                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                    borderRadius: '6px',
+                                                    color: '#333',
+                                                    fontWeight: '500',
+                                                    padding: '8px 30px 8px 12px',
+                                                    boxShadow: 'none',
+                                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2352b447' d='M8 10.5l-4-4h8l-4 4z'/%3E%3C/svg%3E")`,
+                                                    cursor: 'pointer'
+                                                }}
                                                 value={itemsPerPage}
                                                 onChange={(e) => {
                                                     setItemsPerPage(e.target.value === 'all' ? filteredAndSortedForms.length : parseInt(e.target.value, 10));
@@ -712,30 +1264,91 @@ const IccrScholarship = () => {
                                                 <option value="100">100</option>
                                                 <option value="all">Show All</option>
                                             </select>
+                                            <div style={{ 
+                                                marginLeft: '15px',
+                                                padding: '6px 12px',
+                                                backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                borderRadius: '6px',
+                                                fontSize: '13px',
+                                                color: '#52b447',
+                                                fontWeight: '600',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}>
+                                                <i className="icofont-listine-dots me-1"></i>
+                                                Total: {filteredAndSortedForms.length}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="col-12 col-md-6">
-                                        <nav aria-label="Page navigation">
-                                            <ul className="pagination justify-content-md-end">
-                                                <li className="page-item">
-                                                    <button onClick={prevPage} className="page-link" disabled={currentPage === 1}>
-                                                        &laquo;
+                                        <nav aria-label="Page navigation" style={{ 
+                                            background: '#f9fcf7',
+                                            padding: '12px 15px',
+                                            borderRadius: '8px',
+                                            border: '1px solid rgba(82, 180, 71, 0.15)'
+                                        }}>
+                                            <ul className="pagination justify-content-md-end mb-0">
+                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                    <button 
+                                                        onClick={prevPage} 
+                                                        className="page-link"
+                                                        style={{ 
+                                                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                            borderRadius: '6px 0 0 6px',
+                                                            color: currentPage === 1 ? '#999' : '#52b447',
+                                                            padding: '8px 14px',
+                                                            fontWeight: '600',
+                                                            backgroundColor: currentPage === 1 ? '#f8f8f8' : 'white',
+                                                            transition: 'all 0.2s ease'
+                                                        }}
+                                                        disabled={currentPage === 1}
+                                                    >
+                                                        <i className="icofont-arrow-left" style={{ fontSize: '14px' }}></i>
                                                     </button>
                                                 </li>
                                                 {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
                                                     <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
-                                                        <button onClick={() => paginate(page)} className="page-link bg-white">
+                                                        <button 
+                                                            onClick={() => paginate(page)} 
+                                                            className="page-link" 
+                                                            style={{ 
+                                                                border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                                borderLeft: 'none',
+                                                                borderRight: 'none',
+                                                                color: currentPage === page ? 'white' : '#555',
+                                                                padding: '8px 14px',
+                                                                fontWeight: '600',
+                                                                background: currentPage === page ? 
+                                                                    'linear-gradient(135deg, #ff8a00, #ff5e00)' : 'white',
+                                                                boxShadow: currentPage === page ? 
+                                                                    '0 2px 5px rgba(255, 94, 0, 0.3)' : 'none',
+                                                                transition: 'all 0.2s ease',
+                                                                minWidth: '40px',
+                                                                textAlign: 'center'
+                                                            }}
+                                                        >
                                                             {page}
                                                         </button>
                                                     </li>
                                                 ))}
-                                                {endPage < totalPages && (
-                                                    <li className="page-item">
-                                                        <button onClick={nextPage} className="page-link">
-                                                            &raquo;
+                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                    <button 
+                                                        onClick={nextPage} 
+                                                        className="page-link" 
+                                                        style={{ 
+                                                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                            borderRadius: '0 6px 6px 0',
+                                                            color: currentPage === totalPages ? '#999' : '#52b447',
+                                                            padding: '8px 14px',
+                                                            fontWeight: '600',
+                                                            backgroundColor: currentPage === totalPages ? '#f8f8f8' : 'white',
+                                                            transition: 'all 0.2s ease'
+                                                        }}
+                                                        disabled={currentPage === totalPages}
+                                                    >
+                                                        <i className="icofont-arrow-right" style={{ fontSize: '14px' }}></i>
                                                         </button>
                                                     </li>
-                                                )}
                                             </ul>
                                         </nav>
                                     </div>
@@ -804,63 +1417,308 @@ const IccrScholarship = () => {
 
             {/* Modal for viewing form details */}
             {showModal && selectedForm && (
-                <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
-                    <div className="modal-dialog modal-dialog-centered modal-lg">
-                        <div className="modal-content" style={{ marginLeft: '1rem' }}>
-                            <div className="modal-header">
-                                <h5 className="modal-title">ICCR Form Details</h5>
-                                <button type="button" className="btn-close" onClick={handleCloseModal}></button>
+                <div className="modal fade show" style={{ 
+                    display: 'block', 
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    backdropFilter: 'blur(3px)'
+                }} tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered modal-lg" style={{
+                        marginRight: '60px',  // इसे दाहिनी ओर शिफ्ट किया गया है
+                        maxWidth: '900px'     // मोडल की चौड़ाई को नियंत्रित करने के लिए
+                    }}>
+                        <div className="modal-content" style={{ 
+                            borderRadius: '15px',
+                            border: 'none',
+                            boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                            overflow: 'hidden'
+                        }}>
+                            <div className="modal-header" style={{
+                                background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                                borderBottom: 'none',
+                                padding: '15px 25px',  // पैडिंग को कम किया
+                                position: 'relative'
+                            }}>
+                                <h5 className="modal-title" style={{
+                                    color: 'white',
+                                    fontWeight: '700',
+                                    margin: '0',
+                                    fontSize: '18px',  // फॉंट साइज को कम किया
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                }}>
+                                    <i className="icofont-info-circle me-2" style={{ fontSize: '20px' }}></i>
+                                    ICCR Form Details
+                            </h5>
+                            <button
+                                type="button"
+                                className="btn-close"
+                                    onClick={handleCloseModal}
+                                    style={{
+                                        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                        borderRadius: '50%',
+                                        padding: '8px',
+                                        opacity: '1',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+                                        e.currentTarget.style.transform = 'rotate(90deg)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                                        e.currentTarget.style.transform = 'rotate(0deg)';
+                                    }}
+                                ></button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ padding: '20px 25px' }}>  {/* पैडिंग को कम किया */}
                                 {formDetailLoading ? (
-                                    <div className="text-center">
-                                        <div className="spinner-border" role="status">
+                                    <div className="text-center py-4">  {/* पैडिंग को कम किया */}
+                                        <div className="spinner-border" style={{ 
+                                            color: '#52b447',
+                                            width: '3rem',
+                                            height: '3rem'
+                                        }} role="status">
                                             <span className="visually-hidden">Loading...</span>
                                         </div>
+                                        <p style={{ 
+                                            marginTop: '15px',
+                                            color: '#666',
+                                            fontWeight: '500'
+                                        }}>Loading form details...</p>
                                     </div>
                                 ) : (
                                     <div className="container">
-                                        <div className="row mb-3">
+                                        <div className="row mb-3">  {/* मार्जिन को कम किया */}
                                             <div className="col-12">
-                                                <h4 className="border-bottom pb-2">Personal Information</h4>
+                                                <h4 style={{
+                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                    paddingBottom: '8px',  // पैडिंग को कम किया
+                                                    marginBottom: '15px',  // मार्जिन को कम किया
+                                                    color: '#333',
+                                                    fontWeight: '700',
+                                                    fontSize: '16px',  // फॉन्ट साइज को कम किया
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}>
+                                                    <i className="icofont-user-alt-7" style={{ 
+                                                        color: '#52b447', 
+                                                        marginRight: '10px',
+                                                        fontSize: '18px'  // आइकॉन साइज को कम किया
+                                                    }}></i>
+                                                    Personal Information
+                                                </h4>
                                             </div>
                                             <div className="col-md-6">
-                                                <p><strong>Full Name:</strong> {selectedForm.fullName || 'N/A'}</p>
-                                                <p><strong>Email:</strong> {selectedForm.email || 'N/A'}</p>
-                                                <p><strong>Mobile:</strong> {selectedForm.countryCode} {selectedForm.mobileNumber || 'N/A'}</p>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Full Name:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedForm.fullName || 'N/A'}</span>
+                                                    </p>
+                                                </div>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Email:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedForm.email || 'N/A'}</span>
+                                                    </p>
+                                                </div>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Mobile:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedForm.countryCode} {selectedForm.mobileNumber || 'N/A'}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                             <div className="col-md-6">
-                                                <p><strong>Date of Birth:</strong> {formatDateOnly(selectedForm.dateOfBirth)}</p>
-                                                <p><strong>Gender:</strong> {selectedForm.gender || 'N/A'}</p>
-                                                <p><strong>Last Qualification:</strong> {selectedForm.lastQualification || 'N/A'}</p>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Date of Birth:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{formatDateOnly(selectedForm.dateOfBirth)}</span>
+                                                    </p>
+                                                </div>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Gender:</strong>
+                                                        <span style={{ 
+                                                            color: '#333', 
+                                                            fontWeight: '500',
+                                                            backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                                                            padding: '2px 8px',  // पैडिंग को कम किया
+                                                            borderRadius: '4px',
+                                                            fontSize: '12px'  // फॉन्ट साइज को कम किया
+                                                        }}>{selectedForm.gender || 'N/A'}</span>
+                                                    </p>
+                                                </div>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Last Qualification:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{selectedForm.lastQualification || 'N/A'}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="row mb-3">
+                                        <div className="row mb-3">  {/* मार्जिन को कम किया */}
                                             <div className="col-12">
-                                                <h4 className="border-bottom pb-2">Course Information</h4>
+                                                <h4 style={{
+                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                    paddingBottom: '8px',  // पैडिंग को कम किया
+                                                    marginBottom: '15px',  // मार्जिन को कम किया
+                                                    color: '#333',
+                                                    fontWeight: '700',
+                                                    fontSize: '16px',  // फॉन्ट साइज को कम किया
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}>
+                                                    <i className="icofont-graduate" style={{ 
+                                                        color: '#52b447', 
+                                                        marginRight: '10px',
+                                                        fontSize: '18px'  // आइकॉन साइज को कम किया
+                                                    }}></i>
+                                                    Course Information
+                                                </h4>
                                             </div>
                                             <div className="col-md-6">
-                                                <p><strong>Course:</strong> {selectedForm.course || 'N/A'}</p>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '90px' }}>Course:</strong>
+                                                        <span style={{ 
+                                                            color: 'white', 
+                                                            fontWeight: '500',
+                                                            backgroundColor: '#52b447',
+                                                            padding: '2px 8px',  // पैडिंग को कम किया
+                                                            borderRadius: '4px',
+                                                            fontSize: '12px'  // फॉन्ट साइज को कम किया
+                                                        }}>{selectedForm.course || 'N/A'}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
                                         <div className="row">
                                             <div className="col-12">
-                                                <h4 className="border-bottom pb-2">Application Information</h4>
+                                                <h4 style={{
+                                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                                    paddingBottom: '8px',  // पैडिंग को कम किया
+                                                    marginBottom: '15px',  // मार्जिन को कम किया
+                                                    color: '#333',
+                                                    fontWeight: '700',
+                                                    fontSize: '16px',  // फॉन्ट साइज को कम किया
+                                                    display: 'flex',
+                                                    alignItems: 'center'
+                                                }}>
+                                                    <i className="icofont-file-document" style={{ 
+                                                        color: '#52b447', 
+                                                        marginRight: '10px',
+                                                        fontSize: '18px'  // आइकॉन साइज को कम किया
+                                                    }}></i>
+                                                    Application Information
+                                                </h4>
                                             </div>
                                             <div className="col-md-6">
-                                                <p><strong>Application Date:</strong> {formatDate(selectedForm.createdAt)}</p>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '110px' }}>Application Date:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{formatDate(selectedForm.createdAt)}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                             <div className="col-md-6">
-                                                <p><strong>Last Updated:</strong> {formatDate(selectedForm.updatedAt)}</p>
+                                                <div style={{
+                                                    marginBottom: '10px',  // मार्जिन को कम किया
+                                                    padding: '10px',  // पैडिंग को कम किया
+                                                    backgroundColor: '#f9fcf7',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.1)'
+                                                }}>
+                                                    <p style={{ margin: '0' }}>
+                                                        <strong style={{ color: '#555', marginRight: '8px', display: 'inline-block', minWidth: '110px' }}>Last Updated:</strong>
+                                                        <span style={{ color: '#333', fontWeight: '500' }}>{formatDate(selectedForm.updatedAt)}</span>
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>Close</button>
+                            <div className="modal-footer" style={{
+                                borderTop: '1px solid rgba(82, 180, 71, 0.1)',
+                                padding: '12px 25px'  // पैडिंग को कम किया
+                            }}>
+                                <button 
+                                    type="button" 
+                                    className="btn"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #52b447, #429938)',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '8px 20px',  // पैडिंग को कम किया
+                                        fontWeight: '600',
+                                        fontSize: '14px',  // फॉन्ट साइज को कम किया
+                                        boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseOver={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                        e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                                    }}
+                                    onClick={handleCloseModal}
+                                >
+                                    <i className="icofont-close-circled me-2"></i>
+                                    Close
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -935,50 +1793,207 @@ const IccrScholarship = () => {
                 onHide={handleCloseIccr2Modal}
                 size="xl"
                 centered
+                contentClassName="border-0"
+                backdropClassName="modal-backdrop-custom"
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>ICCR Form 2 Applications</Modal.Title>
+                <Modal.Header closeButton style={{
+                    background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                    borderBottom: 'none',
+                    padding: '15px 25px',
+                    color: 'white'
+                }}>
+                    <Modal.Title style={{
+                        fontWeight: '700',
+                        fontSize: '18px',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <i className="icofont-paper me-2" style={{ fontSize: '20px' }}></i>
+                        ICCR Form 2 Applications
+                    </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body style={{
+                    padding: '20px',
+                    maxHeight: '70vh',
+                    overflow: 'auto'
+                }}>
                     {iccr2Data.length > 0 ? (
                         <div className="table-responsive">
-                            <table className="table table-striped table-hover">
+                            <table className="table" style={{
+                                borderCollapse: 'separate',
+                                borderSpacing: '0',
+                                width: '100%',
+                                marginBottom: '0'
+                            }}>
                                 <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Course Level</th>
-                                        <th>Course Stream</th>
-                                        <th>Status</th>
-                                        <th>Date Applied</th>
-                                        <th>Actions</th>
+                                    <tr style={{
+                                        background: '#f8f9fa',
+                                    }}>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'left'
+                                        }}>Name</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'left'
+                                        }}>Email</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'left'
+                                        }}>Course Level</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'left'
+                                        }}>Course Stream</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'center'
+                                        }}>Status</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'left'
+                                        }}>Date Applied</th>
+                                        <th style={{
+                                            padding: '14px 15px',
+                                            fontWeight: '600',
+                                            color: '#444',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            textAlign: 'center'
+                                        }}>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {iccr2Data.map((application) => (
-                                        <tr key={application._id}>
-                                            <td>{application.fullName}</td>
-                                            <td>{application.email}</td>
-                                            <td>{application.levelOfCourse}</td>
-                                            <td>{application.courseMainStream}</td>
-                                            <td>
-                                                <Badge bg={
-                                                    application.status === 'Approved' ? 'success' :
-                                                    application.status === 'Rejected' ? 'danger' :
-                                                    application.status === 'Under Review' ? 'warning' : 'secondary'
-                                                }>
-                                                    {application.status}
-                                                </Badge>
+                                        <tr key={application._id} style={{
+                                            transition: 'background 0.2s ease',
+                                        }}
+                                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(82, 180, 71, 0.04)'}
+                                        onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                color: '#333',
+                                                fontWeight: '600'
+                                            }}>{application.fullName}</td>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                color: '#555'
+                                            }}>
+                                                <i className="icofont-email me-1" style={{ color: '#52b447' }}></i>
+                                                {application.email}
                                             </td>
-                                            <td>{new Date(application.createdAt).toLocaleDateString()}</td>
-                                            <td>
-                                                <Button 
-                                                    variant="primary" 
-                                                    size="sm"
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                color: '#555'
+                                            }}>
+                                                <span style={{
+                                                    backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                    color: '#52b447',
+                                                    padding: '3px 10px',
+                                                    borderRadius: '4px',
+                                                    fontWeight: '500',
+                                                    fontSize: '13px'
+                                                }}>
+                                                    {application.levelOfCourse}
+                                                </span>
+                                            </td>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                color: '#555'
+                                            }}>{application.courseMainStream}</td>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                textAlign: 'center'
+                                            }}>
+                                                <span style={{
+                                                    backgroundColor: 
+                                                        application.status === 'Approved' ? 'rgba(25, 135, 84, 0.1)' :
+                                                        application.status === 'Rejected' ? 'rgba(220, 53, 69, 0.1)' :
+                                                        application.status === 'Under Review' ? 'rgba(255, 193, 7, 0.1)' : 
+                                                        'rgba(108, 117, 125, 0.1)',
+                                                    color: 
+                                                        application.status === 'Approved' ? '#198754' :
+                                                        application.status === 'Rejected' ? '#dc3545' :
+                                                        application.status === 'Under Review' ? '#ff8a00' : 
+                                                        '#6c757d',
+                                                    padding: '5px 10px',
+                                                    borderRadius: '30px',
+                                                    fontWeight: '600',
+                                                    fontSize: '12px',
+                                                    display: 'inline-block',
+                                                    border: 
+                                                        application.status === 'Approved' ? '1px solid rgba(25, 135, 84, 0.2)' :
+                                                        application.status === 'Rejected' ? '1px solid rgba(220, 53, 69, 0.2)' :
+                                                        application.status === 'Under Review' ? '1px solid rgba(255, 193, 7, 0.2)' : 
+                                                        '1px solid rgba(108, 117, 125, 0.2)'
+                                                }}>
+                                                    {application.status === 'Approved' && <i className="icofont-check-circled me-1"></i>}
+                                                    {application.status === 'Rejected' && <i className="icofont-close-circled me-1"></i>}
+                                                    {application.status === 'Under Review' && <i className="icofont-clock-time me-1"></i>}
+                                                    {application.status}
+                                                </span>
+                                            </td>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                color: '#555'
+                                            }}>
+                                                <i className="icofont-calendar me-1" style={{ color: '#52b447' }}></i>
+                                                {new Date(application.createdAt).toLocaleDateString()}
+                                            </td>
+                                            <td style={{
+                                                padding: '14px 15px',
+                                                borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                                textAlign: 'center'
+                                            }}>
+                                                <button 
+                                                    className="btn"
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #52b447, #429938)',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '6px',
+                                                        padding: '6px 12px',
+                                                        fontWeight: '500',
+                                                        fontSize: '13px',
+                                                        boxShadow: '0 2px 6px rgba(82, 180, 71, 0.2)',
+                                                        transition: 'all 0.2s ease'
+                                                    }}
+                                                    onMouseOver={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                                        e.currentTarget.style.boxShadow = '0 4px 8px rgba(82, 180, 71, 0.3)';
+                                                    }}
+                                                    onMouseOut={(e) => {
+                                                        e.currentTarget.style.transform = 'translateY(0)';
+                                                        e.currentTarget.style.boxShadow = '0 2px 6px rgba(82, 180, 71, 0.2)';
+                                                    }}
                                                     onClick={() => handleViewDetailsClick(application._id)}
                                                 >
+                                                    <i className="icofont-eye me-1"></i>
                                                     View Details
-                                                </Button>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -986,15 +2001,62 @@ const IccrScholarship = () => {
                             </table>
                         </div>
                     ) : (
-                        <div className="alert alert-info">
+                        <div style={{ 
+                            padding: '30px 20px', 
+                            textAlign: 'center',
+                            backgroundColor: '#f9fcf7', 
+                            borderRadius: '12px',
+                            color: '#666666',
+                            border: '1px dashed rgba(82, 180, 71, 0.3)'
+                        }}>
+                            <i className="icofont-file-alt" style={{ 
+                                fontSize: '48px', 
+                                color: '#52b447',
+                                opacity: '0.5',
+                                marginBottom: '15px',
+                                display: 'block'
+                            }}></i>
+                            <p style={{ 
+                                margin: 0, 
+                                fontSize: '16px', 
+                                fontWeight: '500',
+                                color: '#666' 
+                            }}>
                             No ICCR Form 2 applications found.
+                            </p>
                         </div>
                     )}
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseIccr2Modal}>
+                <Modal.Footer style={{
+                    borderTop: '1px solid rgba(82, 180, 71, 0.1)',
+                    padding: '15px 25px'
+                }}>
+                    <button 
+                        className="btn"
+                        style={{
+                            background: 'linear-gradient(135deg, #52b447, #429938)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 20px',
+                            fontWeight: '600',
+                            fontSize: '14px',
+                            boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                            transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.transform = 'translateY(-2px)';
+                            e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                        }}
+                        onClick={handleCloseIccr2Modal}
+                    >
+                        <i className="icofont-close-circled me-2"></i>
                         Close
-                    </Button>
+                    </button>
                 </Modal.Footer>
             </Modal>
             
