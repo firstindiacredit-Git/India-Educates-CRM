@@ -109,6 +109,26 @@ const ClientSidebar = () => {
                                 </li>
                             </ul>
                         </li>
+
+                        <li className="collapsed">
+                            <a
+                                className="m-link"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#more-Components"
+                                href="#"
+                            >
+                                <i className="icofont-listine-dots" /> <span>More</span>{" "}
+                                <span className="arrow icofont-dotted-down ms-auto text-end fs-5" />
+                            </a>
+                            <ul className="sub-menu collapse" id="more-Components">
+                                <li>
+                                    <Link className="ms-link" to="/iccr+scholarship">
+                                        <span>ICCR Scholarship</span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </li>
+                        
                     </ul>
                     {/* Menu: menu collepce btn */}
                     <div className="d-flex justify-content-end mb-2">

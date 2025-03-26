@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
+import Sidebar from "../../clientCompt/ClientSidebar";
+import Header from "../../clientCompt/ClientHeader";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import axios from 'axios';
-import FloatingMenu from '../Chats/FloatingMenu'
+// import FloatingMenu from '../Chats/FloatingMenu'
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Modal, Button, Spinner, Badge, Tabs, Tab, Row, Col } from 'react-bootstrap';
@@ -1510,7 +1510,7 @@ const IccrScholarship = () => {
             </Modal>
 
             <ToastContainer />
-            <FloatingMenu userType="admin" isMobile={isMobile} />
+            {/* <FloatingMenu userType="admin" isMobile={isMobile} /> */}
 
             {/* Modal backdrop */}
             {showDeleteModal && (

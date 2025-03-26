@@ -29,6 +29,13 @@ const ClientTask = () => {
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
   const [showExcelSheet, setShowExcelSheet] = useState(false);
   const [showExcelModal, setShowExcelModal] = useState(false);
+  const [excelData, setExcelData] = useState({
+    rows: 6,
+    columns: 6,
+    columnLabels: ['A', 'B', 'C', 'D', 'E', 'F'],
+    rowLabels: [1, 2, 3, 4, 5, 6]
+  });
+  const [cellValues, setCellValues] = useState({});
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -314,6 +321,133 @@ const ClientTask = () => {
     
     handleExcelModalOpen();
   }, [showExcelModal]);
+
+  const addRow = () => {
+    setExcelData(prev => ({
+      ...prev,
+      rows: prev.rows + 1,
+      rowLabels: [...prev.rowLabels, prev.rows + 1]
+    }));
+  };
+
+  const addColumn = () => {
+    const nextColumnLabel = String.fromCharCode(65 + excelData.columns);
+    setExcelData(prev => ({
+      ...prev,
+      columns: prev.columns + 1,
+      columnLabels: [...prev.columnLabels, nextColumnLabel]
+    }));
+  };
+
+  const deleteRow = (rowIndex) => {
+    if (excelData.rows <= 1) return; // Prevent deleting the last row
+    
+    setExcelData(prev => {
+      const updatedRowLabels = [...prev.rowLabels];
+      updatedRowLabels.splice(rowIndex, 1);
+      
+      return {
+        ...prev,
+        rows: prev.rows - 1,
+        rowLabels: updatedRowLabels
+      };
+    });
+  };
+
+  const deleteColumn = (colIndex) => {
+    if (excelData.columns <= 1) return; // Prevent deleting the last column
+    
+    setExcelData(prev => {
+      const updatedColumnLabels = [...prev.columnLabels];
+      updatedColumnLabels.splice(colIndex, 1);
+      
+      return {
+        ...prev,
+        columns: prev.columns - 1,
+        columnLabels: updatedColumnLabels
+      };
+    });
+  };
+
+  const handleCellChange = (rowIndex, colIndex, value) => {
+    const cellKey = `${rowIndex}-${colIndex}`;
+    setCellValues(prev => ({
+      ...prev,
+      [cellKey]: value
+    }));
+  };
+
+  const getCellValue = (rowIndex, colIndex) => {
+    const cellKey = `${rowIndex}-${colIndex}`;
+    return cellValues[cellKey] || '';
+  };
+
+  const downloadCSV = () => {
+    // Create CSV content
+    let csvContent = '';
+    
+    // Add header row
+    csvContent += excelData.columnLabels.join(',') + '\n';
+    
+    // Add data rows
+    excelData.rowLabels.forEach((row, rowIndex) => {
+      const rowData = excelData.columnLabels.map((_, colIndex) => {
+        // Get cell value or empty string
+        const value = getCellValue(rowIndex, colIndex);
+        
+        // Escape quotes and wrap in quotes if needed
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
+      });
+      
+      csvContent += rowData.join(',') + '\n';
+    });
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'excel_sheet.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleSaveAndInsertExcel = () => {
+    // Create formatted Excel data as text
+    let excelText = "```excel\n";
+    
+    // Add header row with column labels
+    excelText += excelData.columnLabels.join('\t') + '\n';
+    
+    // Add data rows
+    excelData.rowLabels.forEach((row, rowIndex) => {
+      const rowData = excelData.columnLabels.map((_, colIndex) => {
+        return getCellValue(rowIndex, colIndex) || '';
+      });
+      excelText += rowData.join('\t') + '\n';
+    });
+    
+    excelText += "```";
+    
+    // Set the Excel content as the message content
+    setContent(excelText);
+    
+    // Close the modal
+    const excelModal = bootstrap.Modal.getInstance(document.getElementById('excelSheetModal'));
+    if (excelModal) {
+      excelModal.hide();
+    }
+    
+    // Focus on the message input after inserting Excel data
+    if (messageInputRef.current) {
+      messageInputRef.current.focus();
+    }
+  };
 
   return (
     <>
@@ -696,11 +830,33 @@ const ClientTask = () => {
                 {messages.map((message, index) => (
                   <div key={index} className="mb-2">
                     <strong>{message.senderId}: </strong>
-                    {message.content}
+                    {message.content.startsWith("```excel") ? (
+                      <div className="excel-message p-2 border rounded bg-light mt-1 mb-1">
+                        <div className="mb-1 small text-muted">Excel Sheet:</div>
+                        <table className="table table-sm table-bordered">
+                          <tbody>
+                            {message.content
+                              .replace("```excel\n", "")
+                              .replace("```", "")
+                              .trim()
+                              .split('\n')
+                              .map((row, rowIdx) => (
+                                <tr key={rowIdx}>
+                                  {row.split('\t').map((cell, cellIdx) => (
+                                    <td key={cellIdx} className="px-2 py-1">{cell}</td>
+                                  ))}
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      message.content
+                    )}
                     <span className="px-3 text-muted">{new Date(message.createdAt).toLocaleString()}</span>
                     {message.fileUrls && message.fileUrls.map((fileUrl, fileIndex) => {
                       if (fileUrl) {
-                        const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
+                        const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl}`;
                         const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
 
                         if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
@@ -808,25 +964,52 @@ const ClientTask = () => {
                     </h6>
                   </div>
                   
-                  <div className="table-responsive mb-3">
-                    <table className="table table-bordered">
+                  <div className="table-responsive mb-3" style={{ maxWidth: '100%', overflowX: 'auto' }}>
+                    <table className="table table-bordered" style={{ minWidth: 'max-content' }}>
                       <thead>
                         <tr>
-                          <th style={{ width: '30px', backgroundColor: '#f8f9fa' }}></th>
-                          {['A', 'B', 'C', 'D', 'E', 'F'].map((col) => (
-                            <th key={col} className="text-center" style={{ backgroundColor: '#f8f9fa', padding: '2px', width: '80px' }}>
+                          <th style={{ width: '30px', backgroundColor: '#f8f9fa', position: 'sticky', left: 0, zIndex: 2 }}></th>
+                          {excelData.columnLabels.map((col, colIndex) => (
+                            <th key={col} className="text-center position-relative" style={{ backgroundColor: '#f8f9fa', padding: '2px', width: '80px' }}>
                               {col}
+                              {excelData.columns > 1 && (
+                                <div 
+                                  className="text-danger p-0 position-absolute top-0 start-0" 
+                                  style={{ fontSize: '8px', width: '14px', height: '14px', lineHeight: '10px' }}
+                                  onClick={() => deleteColumn(colIndex)}
+                                  title="Delete column"
+                                >
+                                  <i className="bi bi-x-lg"></i>
+                                </div>
+                              )}
                             </th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
-                        {[1, 2, 3, 4, 5, 6].map((row) => (
+                        {excelData.rowLabels.map((row, rowIndex) => (
                           <tr key={row}>
-                            <td className="text-center" style={{ backgroundColor: '#f8f9fa', padding: '2px', fontSize: '12px' }}>
+                            <td className="text-center position-relative" style={{ 
+                              backgroundColor: '#f8f9fa', 
+                              padding: '2px', 
+                              fontSize: '12px',
+                              position: 'sticky',
+                              left: 0,
+                              zIndex: 1
+                            }}>
                               {row}
+                              {excelData.rows > 1 && (
+                                <div 
+                                  className="text-danger p-0 position-absolute top-0 start-0" 
+                                  style={{ fontSize: '8px', width: '14px', height: '14px', lineHeight: '10px' }}
+                                  onClick={() => deleteRow(rowIndex)}
+                                  title="Delete row"
+                                >
+                                  <i className="bi bi-x-lg"></i>
+                                </div>
+                              )}
                             </td>
-                            {['A', 'B', 'C', 'D', 'E', 'F'].map((col) => (
+                            {excelData.columnLabels.map((col, colIndex) => (
                               <td key={col} style={{ padding: '0' }}>
                                 <textarea
                                   className="form-control"
@@ -840,6 +1023,8 @@ const ClientTask = () => {
                                     overflow: 'hidden',
                                     fontSize: '12px'
                                   }}
+                                  value={getCellValue(rowIndex, colIndex)}
+                                  onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
                                 />
                               </td>
                             ))}
@@ -851,18 +1036,24 @@ const ClientTask = () => {
                   
                   <div className="d-flex justify-content-between">
                     <div>
-                      <button type="button" className="btn btn-sm btn-secondary me-1">
+                      <button type="button" className="btn btn-sm btn-secondary me-1" onClick={addRow}>
                         <i className="bi bi-plus-circle me-1"></i>Row
                       </button>
-                      <button type="button" className="btn btn-sm btn-secondary">
+                      <button type="button" className="btn btn-sm btn-secondary" onClick={addColumn}>
                         <i className="bi bi-plus-circle me-1"></i>Column
                       </button>
                     </div>
                     <div>
-                      <button type="button" className="btn btn-sm btn-dark me-1">
-                        <i className="bi bi-download me-1"></i>Download
+                      <button type="button" className="btn btn-sm btn-dark me-1" onClick={downloadCSV}>
+                        <i className="bi bi-download me-1"></i>Download CSV
                       </button>
-                      <button type="button" className="btn btn-sm btn-danger">
+                      <button 
+                        type="button" 
+                        className="btn btn-sm btn-danger" 
+                        onClick={() => {
+                          setCellValues({});
+                        }}
+                      >
                         <i className="bi bi-trash me-1"></i>Clear
                       </button>
                     </div>
@@ -872,7 +1063,13 @@ const ClientTask = () => {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Save and Insert</button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={handleSaveAndInsertExcel}
+              >
+                Save and Insert
+              </button>
             </div>
           </div>
         </div>

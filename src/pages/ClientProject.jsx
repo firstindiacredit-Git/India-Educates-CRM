@@ -50,7 +50,7 @@ const ClientProject = () => {
             authorization: `Bearer ${Token}`, // Ensure Bearer token format
           },
         });
-        console.log(response.data);
+        // console.log(response.data);
 
         setProjects(response.data); // Set fetched projects to state
       } catch (error) {

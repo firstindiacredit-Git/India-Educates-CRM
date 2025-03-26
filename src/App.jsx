@@ -83,6 +83,7 @@ import EmployeeChat from './Chats/EmployeeChat';
 import ClientChat from './Chats/ClientChat';
 import StudentProfile from './pages/members/StudentProfile';
 import IccrScholarship from './pages/IccrScholarship';
+import IccrScholarship1 from './pages/clients-tools/IccrScholarship';
 import CreditLines from './pages/CreditLines';
 import WebMail from './pages/webmail';
 
@@ -173,6 +174,7 @@ function AppContent() {
           <Route path='/chat' element={<Chat />}></Route>
           <Route path="/student-profile" element={<StudentProfile />} />
           <Route path="/iccr-scholarship" element={<IccrScholarship />} />
+          <Route path="/iccr+scholarship" element={<IccrScholarship1 />} />
           <Route path="/credit-line" element={<CreditLines />} />
           <Route path="/web-mail" element={<WebMail />} />
 

@@ -916,13 +916,13 @@ const Tasks = () => {
                                       {task.taskAssignPerson && task.taskAssignPerson.employeeName
                                         ? (
                                           <>
-                                            {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
+                                            {task.taskAssignPerson.employeeName} <span className="badge bg-info text-dark">Associate</span>
                                           </>
                                         )
                                         : task.clientAssignPerson && task.clientAssignPerson.clientName
                                           ? (
                                             <>
-                                              {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
+                                              {task.clientAssignPerson.clientName} <span className="badge bg-warning text-dark">Team Member</span>
                                             </>
                                           )
                                           : 'Unassigned'
@@ -1075,13 +1075,13 @@ const Tasks = () => {
                                           {task.taskAssignPerson && task.taskAssignPerson.employeeName
                                             ? (
                                               <>
-                                                {task.taskAssignPerson.employeeName} <span className="badge bg-info">Employee</span>
+                                                {task.taskAssignPerson.employeeName} <span className="badge bg-info text-dark">Associate</span>
                                               </>
                                             )
                                             : task.clientAssignPerson && task.clientAssignPerson.clientName
                                               ? (
                                                 <>
-                                                  {task.clientAssignPerson.clientName} <span className="badge bg-warning">Client</span>
+                                                  {task.clientAssignPerson.clientName} <span className="badge bg-warning text-dark">Team Member</span>
                                                 </>
                                               )
                                               : 'Unassigned'
@@ -1795,10 +1795,33 @@ const Tasks = () => {
                             <div className="border-bottom">
                               <div className="d-flex py-1">
                                 <h6 className="fw-bold px-3">{message.senderId}</h6> -
-                                <span className="px-3 text-break">{message.content}</span>
+                                {message.content.startsWith("```excel") ? (
+                                  <div className="excel-message p-2 border rounded bg-light mt-1 mb-1 w-100">
+                                    <div className="mb-1 small text-muted">Excel Sheet:</div>
+                                    <table className="table table-sm table-bordered">
+                                      <tbody>
+                                        {message.content
+                                          .replace("```excel\n", "")
+                                          .replace("```", "")
+                                          .trim()
+                                          .split('\n')
+                                          .map((row, rowIdx) => (
+                                            <tr key={rowIdx}>
+                                              {row.split('\t').map((cell, cellIdx) => (
+                                                <td key={cellIdx} className="px-2 py-1">{cell}</td>
+                                              ))}
+                                            </tr>
+                                          ))}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                ) : (
+                                  <span className="px-3 text-break">{message.content}</span>
+                                )}
+                                <span className="px-3 text-muted">{new Date(message.createdAt).toLocaleString()}</span>
                                 {message.fileUrls && message.fileUrls.map((fileUrl, index) => {
                                   if (fileUrl) {
-                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
+                                    const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl}`;
                                     const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
 
                                     if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
@@ -1809,8 +1832,21 @@ const Tasks = () => {
                                           </a>
                                         </div>
                                       );
+                                    } else if (fileExtension === 'pdf') {
+                                      return (
+                                        <div key={index} className="px-3">
+                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">PDF File</a>
+                                        </div>
+                                      );
+                                    } else {
+                                      return (
+                                        <div key={index} className="px-3">
+                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">Download File</a>
+                                        </div>
+                                      );
                                     }
                                   }
+                                  return null;
                                 })}
                               </div>
                             </div>
