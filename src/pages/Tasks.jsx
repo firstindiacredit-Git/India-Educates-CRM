@@ -970,7 +970,16 @@ const Tasks = () => {
                                         />
                                       </div>
                                     </td>
-                                    <td style={{ backgroundColor }} className="">
+                                    
+                                    <td style={{
+                                      padding: '15px',
+                                      backgroundColor: rowBg,
+                                      borderRight: `2px solid ${borderColor}`,
+                                      borderTop: `1px solid ${borderColor}`,
+                                      borderBottom: `1px solid ${borderColor}`,
+                                      borderRadius: '0 8px 8px 0'
+                                    }}>
+                                      <div className="d-flex flex-column align-items-start gap-2">
                                       {task.taskStatus === 'Not Started' && (
                                         <span className="badge bg-warning text-dark">Not Started</span>
                                       )}
