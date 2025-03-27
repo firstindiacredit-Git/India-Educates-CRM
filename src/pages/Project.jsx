@@ -1047,10 +1047,10 @@ const Project = () => {
                               color: '#333',
                               fontSize: '14px'
                             }}>Projects for: <span style={{ color: '#ff5e00' }}>{filteredEmployeeName}</span></span>
-                            <button
-                              type="button"
+                          <button
+                            type="button"
                               className="btn"
-                              onClick={clearFilter}
+                            onClick={clearFilter}
                               style={{
                                 backgroundColor: '#ff5e00',
                                 color: 'white',
@@ -1073,7 +1073,7 @@ const Project = () => {
                             >
                               <i className="icofont-close-line"></i>
                               Clear
-                            </button>
+                          </button>
                           </div>
                         </div>
                       )}
@@ -1317,8 +1317,8 @@ const Project = () => {
                                               state={{ projectName: project.projectName }}
                                               onMouseOver={(e) => e.currentTarget.style.color = '#52b447'}
                                               onMouseOut={(e) => e.currentTarget.style.color = '#333'}>
-                                                {project.projectName}
-                                              </Link>
+                                              {project.projectName}
+                                            </Link>
                                               <div className="mt-1" style={{ 
                                                 fontSize: '12px',
                                                 color: '#777'
@@ -1356,7 +1356,7 @@ const Project = () => {
                                               <i className="icofont-attachment" style={{ fontSize: '14px' }} />
                                             </button>
                                           )}
-                                        </div>
+                                          </div>
                                       </td>
                                       <td style={{
                                         padding: '16px 15px',
@@ -1406,7 +1406,7 @@ const Project = () => {
                                                 }}>
                                                   <i className="icofont-people me-2"></i>
                                                   Team Members
-                                                </div>
+                                        </div>
                                               </li>
                                               {project.clientAssignPerson?.map((client, idx) => (
                                                 <li key={idx} style={{ marginBottom: '8px' }}>
@@ -1420,7 +1420,7 @@ const Project = () => {
                                                       fontSize: '13px',
                                                       color: '#444'
                                                     }}>{client.clientName}</span>
-                                                  </div>
+                                        </div>
                                                 </li>
                                               ))}
                                             </ul>
@@ -1447,7 +1447,7 @@ const Project = () => {
                                           display: 'inline-block'
                                         }}>
                                           <i className="icofont-calendar me-1"></i>
-                                          {getFormattedDate(project.projectStartDate)}
+                                        {getFormattedDate(project.projectStartDate)}
                                         </div>
                                       </td>
                                       <td style={{
@@ -1464,7 +1464,7 @@ const Project = () => {
                                           display: 'inline-block'
                                         }}>
                                           <i className="icofont-calendar me-1"></i>
-                                          {getFormattedDate(project.projectEndDate)}
+                                        {getFormattedDate(project.projectEndDate)}
                                         </div>
                                       </td>
                                       <td style={{
@@ -1585,12 +1585,12 @@ const Project = () => {
                                         textAlign: 'center'
                                       }}>
                                         <div className="d-flex gap-2 justify-content-center">
-                                          <button
+                                        <button
                                             type="button"
-                                            onClick={() => setToEdit(project._id)}
+                                          onClick={() => setToEdit(project._id)}
                                             className="btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editproject"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#editproject"
                                             title="Edit Project"
                                             style={{
                                               backgroundColor: 'rgba(82, 180, 71, 0.1)',
@@ -1614,11 +1614,11 @@ const Project = () => {
                                           >
                                             <i className="icofont-edit"></i>
                                           </button>
-                                          <button
+                                        <button
                                             type="button"
                                             className="btn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#deleteproject"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#deleteproject"
                                             title="Delete Project"
                                             style={{
                                               backgroundColor: 'rgba(255, 94, 0, 0.1)',
@@ -1633,9 +1633,9 @@ const Project = () => {
                                               border: 'none',
                                               transition: 'all 0.2s ease'
                                             }}
-                                            onClick={() => {
-                                              setDeletableId(project._id);
-                                            }}
+                                          onClick={() => {
+                                            setDeletableId(project._id);
+                                          }}
                                             onMouseOver={(e) => {
                                               e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
                                             }}
@@ -1645,11 +1645,11 @@ const Project = () => {
                                           >
                                             <i className="icofont-ui-delete"></i>
                                           </button>
-                                          <button
+                                        <button
                                             className="btn position-relative"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#addUser"
-                                            type="button"
+                                          data-bs-toggle="modal"
+                                          data-bs-target="#addUser"
+                                          type="button"
                                             title="Messages"
                                             style={{
                                               backgroundColor: 'rgba(82, 180, 71, 0.1)',
@@ -1664,7 +1664,7 @@ const Project = () => {
                                               border: 'none',
                                               transition: 'all 0.2s ease'
                                             }}
-                                            onClick={() => handleOpenMessages(project)}
+                                          onClick={() => handleOpenMessages(project)}
                                             onMouseOver={(e) => {
                                               e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
                                             }}
@@ -1673,7 +1673,7 @@ const Project = () => {
                                             }}
                                           >
                                             <i className="icofont-ui-message"></i>
-                                            {notifications[project._id] > 0 && (
+                                          {notifications[project._id] > 0 && (
                                               <span style={{
                                                 position: 'absolute',
                                                 top: '-5px',
@@ -1690,10 +1690,10 @@ const Project = () => {
                                                 fontWeight: 'bold',
                                                 boxShadow: '0 2px 5px rgba(255, 94, 0, 0.3)'
                                               }}>
-                                                {notifications[project._id]}
-                                              </span>
-                                            )}
-                                          </button>
+                                              {notifications[project._id]}
+                                            </span>
+                                          )}
+                                        </button>
                                         </div>
                                       </td>
                                     </tr>
@@ -2075,7 +2075,7 @@ const Project = () => {
                                           </span>
                                         </div>
                                         <div
-                                            className="clients-list"
+                                          className="clients-list"
                                           style={{
                                               height: '80px',
                                             overflowY: 'auto',
@@ -2098,7 +2098,7 @@ const Project = () => {
                                           ))}
                                         </div>
                                       </div>
-                                      </div>
+                                    </div>
 
                                     </div>
 
@@ -2356,9 +2356,9 @@ const Project = () => {
 
                     <div className="row g-3 mb-4">
                       <div className="col-md-6">
-                        <label
-                          htmlFor="formFileMultipleone"
-                          className="form-label"
+                      <label
+                        htmlFor="formFileMultipleone"
+                        className="form-label"
                           style={{
                             fontWeight: '600',
                             color: '#444',
@@ -2371,14 +2371,14 @@ const Project = () => {
                         >
                           <i className="icofont-file-image" style={{ color: '#ff5e00' }}></i>
                           Project Images
-                        </label>
-                        <input
-                          className="form-control"
-                          type="file"
-                          id="formFileMultipleone"
-                          multiple
-                          name="projectImage"
-                          onChange={handleFileChange}
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="formFileMultipleone"
+                        multiple
+                        name="projectImage"
+                        onChange={handleFileChange}
                           style={{
                             borderRadius: '8px',
                             border: '1px solid rgba(255, 94, 0, 0.3)',
@@ -2387,8 +2387,8 @@ const Project = () => {
                             boxShadow: 'none',
                             backgroundColor: 'rgba(255, 94, 0, 0.03)'
                           }}
-                        />
-                      </div>
+                      />
+                    </div>
                       <div className="col-md-6">
                         <label 
                           htmlFor="projectIcon" 
@@ -2404,15 +2404,15 @@ const Project = () => {
                           }}
                         >
                           <i className="icofont-image" style={{ color: '#ff5e00' }}></i>
-                          Project Icon
-                        </label>
-                        <input
-                          type="file"
-                          className="form-control"
-                          id="projectIcon"
-                          name="projectIcon"
-                          accept="image/*"
-                          onChange={handleFileChange}
+                        Project Icon
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control"
+                        id="projectIcon"
+                        name="projectIcon"
+                        accept="image/*"
+                        onChange={handleFileChange}
                           style={{
                             borderRadius: '8px',
                             border: '1px solid rgba(255, 94, 0, 0.3)',
@@ -2425,7 +2425,7 @@ const Project = () => {
                         <small style={{ color: '#777', fontSize: '12px', marginTop: '5px', display: 'block' }}>
                           Upload an icon for your project (optional)
                         </small>
-                      </div>
+                    </div>
                     </div>
                     
                     <div className="deadline-form">
@@ -2874,9 +2874,9 @@ const Project = () => {
 
                     <div className="row g-3 mb-4">
                       <div className="col-md-6">
-                        <label
-                          htmlFor="formFileMultiple456"
-                          className="form-label"
+                      <label
+                        htmlFor="formFileMultiple456"
+                        className="form-label"
                           style={{
                             fontWeight: '600',
                             color: '#444',
@@ -2889,14 +2889,14 @@ const Project = () => {
                         >
                           <i className="icofont-file-image" style={{ color: '#ff5e00' }}></i>
                           Project Images
-                        </label>
-                        <input
-                          className="form-control"
-                          type="file"
-                          id="formFileMultiple456"
-                          name="projectImage"
-                          onChange={projectHandleChange}
-                          multiple
+                      </label>
+                      <input
+                        className="form-control"
+                        type="file"
+                        id="formFileMultiple456"
+                        name="projectImage"
+                        onChange={projectHandleChange}
+                        multiple
                           style={{
                             borderRadius: '8px',
                             border: '1px solid rgba(255, 94, 0, 0.3)',
@@ -2905,8 +2905,8 @@ const Project = () => {
                             boxShadow: 'none',
                             backgroundColor: 'rgba(255, 94, 0, 0.03)'
                           }}
-                        />
-                      </div>
+                      />
+                    </div>
 
                       <div className="col-md-6">
                         <label 
@@ -3195,7 +3195,7 @@ const Project = () => {
                         </button>
                       </div>
                     </div>
-                  </div>
+                        </div>
                   <div className="modal-footer" style={{
                     borderTop: '1px solid rgba(82, 180, 71, 0.1)',
                     padding: '16px 25px'
@@ -3313,29 +3313,53 @@ const Project = () => {
                   borderRadius: '15px',
                   border: 'none',
                   boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  height: '80vh', // Fixed height for better chat experience
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}>
                   <div className="modal-header" style={{
                     background: 'linear-gradient(135deg, #52b447, #429938)',
                     borderBottom: 'none',
-                    padding: '20px 25px',
-                    position: 'relative'
+                    padding: '15px 20px',
+                    position: 'relative',
+                    zIndex: 1
                   }}>
+                    <div 
+                      className="d-flex align-items-center"
+                      style={{ width: '100%' }}
+                    >
+                      <div 
+                        style={{
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(255,255,255,0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginRight: '12px'
+                        }}
+                      >
+                        <i className="icofont-ui-message" style={{ fontSize: '20px', color: 'white' }}></i>
+                      </div>
+                      <div style={{ flex: 1 }}>
                     <h5 
                       className="modal-title" 
                       id="addUserLabel"
                       style={{
                         color: 'white',
                         fontSize: '18px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        fontWeight: '600'
-                      }}
-                    >
-                      <i className="icofont-ui-message" style={{ fontSize: '22px' }}></i>
+                            fontWeight: '600',
+                            margin: 0
+                          }}
+                        >
                       {selectProject.projectName}
                     </h5>
+                        <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px' }}>
+                          <i className="icofont-ui-user me-1"></i> Project Chat
+                        </span>
+                  </div>
                     <button 
                       type="button" 
                       className="btn-close" 
@@ -3359,101 +3383,174 @@ const Project = () => {
                       }}
                     ></button>
                   </div>
-                  <div className="modal-body" style={{ 
-                    maxHeight: '60vh', 
+                  </div>
+
+                  {/* Chat Body */}
+                  <div className="modal-body p-0" style={{ 
+                    flex: 1, 
                     overflowY: 'auto',
-                    padding: '25px',
-                    backgroundColor: '#f9fcf7'
+                    backgroundColor: '#f5f5f5',
+                    backgroundImage: 'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23000000" fill-opacity="0.03" fill-rule="evenodd"%3E%3Ccircle cx="3" cy="3" r="3"/%3E%3Ccircle cx="13" cy="13" r="3"/%3E%3C/g%3E%3C/svg%3E")',
+                    padding: '20px'
                   }}>
-                    {/* Message List */}
-                    <ul className="list-group mb-4" style={{ 
-                      border: 'none',
-                      boxShadow: 'none'
-                    }}>
-                      {messages.map((message, index) => {
-                        const isEven = index % 2 === 0;
-                        return (
-                        <li key={message._id} style={{
-                          marginBottom: '15px',
-                          listStyle: 'none'
+                    {messages.length === 0 ? (
+                      <div style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        color: '#888',
+                        padding: '30px'
+                      }}>
+                        <div style={{
+                          width: '80px',
+                          height: '80px',
+                          borderRadius: '50%',
+                          backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: '15px'
                         }}>
+                          <i className="icofont-ui-messaging" style={{ fontSize: '40px', color: '#52b447' }}></i>
+                        </div>
+                        <h6 style={{ color: '#666', marginBottom: '10px' }}>No messages yet</h6>
+                        <p style={{ textAlign: 'center', fontSize: '14px' }}>
+                          Start the conversation by sending your first message below.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="chat-messages">
+                      {messages.map((message, index) => {
+                          const isCurrentUser = message.senderId === "currentUser"; // Replace with your actual logic
+                          const prevSender = index > 0 ? messages[index-1].senderId : null;
+                          const showSender = prevSender !== message.senderId;
+                          
+                        return (
+                            <div key={message._id} className={`message-group ${isCurrentUser ? 'own-messages' : ''}`} style={{
+                              marginBottom: showSender ? '20px' : '2px',
+                              marginTop: showSender ? '20px' : '2px',
+                            }}>
+                              {showSender && !isCurrentUser && (
                           <div style={{
-                            backgroundColor: isEven ? 'white' : 'rgba(255, 138, 0, 0.05)',
-                            borderRadius: '12px',
-                            padding: '15px',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                            border: isEven ? '1px solid rgba(82, 180, 71, 0.1)' : '1px solid rgba(255, 138, 0, 0.1)'
-                          }}>
-                            <div className="d-flex align-items-center mb-2">
+                                  fontSize: '13px', 
+                                  color: '#666',
+                                  marginLeft: '48px',
+                                  marginBottom: '5px'
+                                }}>
+                                  {message.senderId}
+                                </div>
+                              )}
+                              
                               <div style={{
-                                backgroundColor: isEven ? 'rgba(82, 180, 71, 0.1)' : 'rgba(255, 138, 0, 0.1)',
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                marginBottom: '1px'
+                              }}>
+                                {!isCurrentUser && showSender && (
+                                  <div style={{
+                                    width: '35px',
+                                    height: '35px',
                                 borderRadius: '50%',
-                                width: '42px',
-                                height: '42px',
+                                    backgroundColor: 'rgba(255, 138, 0, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                marginRight: '12px'
+                                    marginRight: '10px',
+                                    flexShrink: 0
                               }}>
-                                <i className={`icofont-user-alt-7 ${isEven ? 'text-success' : 'text-warning'}`} style={{ fontSize: '20px' }}></i>
+                                    <i className="icofont-user-alt-7" style={{ color: '#ff8a00', fontSize: '18px' }}></i>
                               </div>
-                              <div>
-                                <h6 style={{
-                                  fontWeight: '700',
-                                  margin: '0',
-                                  color: isEven ? '#52b447' : '#ff5e00',
-                                  fontSize: '15px'
-                                }}>{message.senderId}</h6>
-                                <p style={{ 
-                                  margin: '0', 
-                                  fontSize: '12px', 
-                                  color: '#888' 
+                                )}
+                                
+                                {!isCurrentUser && !showSender && (
+                                  <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                )}
+                                
+                                <div style={{
+                                  maxWidth: '75%',
+                                  wordBreak: 'break-word',
+                                  backgroundColor: isCurrentUser ? 'rgba(82, 180, 71, 0.2)' : 'white',
+                                  color: '#333',
+                                  padding: '10px 14px',
+                                  borderRadius: isCurrentUser 
+                                    ? '15px 15px 2px 15px' 
+                                    : '15px 15px 15px 2px',
+                                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                  position: 'relative'
                                 }}>
-                                  <i className="icofont-clock-time me-1"></i>
-                                  {new Date(message.createdAt).toLocaleString()}
-                                </p>
+                                  <div style={{ fontSize: '14px' }}>{message.content}</div>
+                                  <div style={{ 
+                                    fontSize: '11px',
+                                    color: '#999',
+                                    textAlign: 'right',
+                                    marginTop: '4px' 
+                                  }}>
+                                    {new Date(message.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    {isCurrentUser && (
+                                      <i className="icofont-check-circled ms-1" style={{ color: '#52b447' }}></i>
+                                    )}
                               </div>
                             </div>
 
+                                {isCurrentUser && showSender && (
                             <div style={{ 
-                              padding: '5px 0 5px 54px',
-                              color: '#444',
-                              fontSize: '14px',
-                              lineHeight: '1.5'
-                            }} className="text-break">
-                              {message.content}
+                                    width: '35px',
+                                    height: '35px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(82, 180, 71, 0.2)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginLeft: '10px',
+                                    flexShrink: 0
+                                  }}>
+                                    <i className="icofont-user-alt-7" style={{ color: '#52b447', fontSize: '18px' }}></i>
                             </div>
-
+                                )}
+                                
+                                {isCurrentUser && !showSender && (
+                                  <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                )}
+                              </div>
+                              
+                              {/* Attachments */}
                             {message.fileUrls && message.fileUrls.length > 0 && message.fileUrls.some(url => url) && (
                               <div style={{ 
-                                marginTop: '15px',
-                                paddingTop: '15px',
-                                borderTop: '1px solid rgba(0,0,0,0.05)',
-                                marginLeft: '54px'
-                              }}>
-                                <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
-                                  <i className="icofont-attachment me-1"></i>
-                                  Attachments
-                                </div>
-                                <div className="d-flex flex-wrap gap-3">
+                                  display: 'flex',
+                                  justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                  marginTop: '5px'
+                                }}>
+                                  {!isCurrentUser && (
+                                    <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                  )}
+                                  
+                                  <div style={{
+                                    maxWidth: '75%',
+                                    display: 'flex',
+                                    flexWrap: 'wrap',
+                                    gap: '8px',
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start'
+                                  }}>
                                   {message.fileUrls.map((fileUrl, index) => {
-                                    if (fileUrl) {
-                                      // Remove 'uploads/' from the file path
-                                      const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
-                                      const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
+                                if (fileUrl) {
+                                  const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl.replace('uploads/', '')}`;
+                                  const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
                                       const fileName = cleanFileUrl.split('/').pop();
 
-                                      if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-                                        return (
+                                  if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                                    return (
                                           <div key={index} style={{
-                                            position: 'relative',
-                                            borderRadius: '8px',
+                                              borderRadius: '10px',
                                             overflow: 'hidden',
-                                            border: '1px solid rgba(0,0,0,0.1)',
-                                            width: '100px',
-                                            height: '100px'
+                                              border: `2px solid ${isCurrentUser ? 'rgba(82, 180, 71, 0.3)' : 'rgba(255, 138, 0, 0.3)'}`,
+                                              width: '120px',
+                                              height: '120px',
+                                              position: 'relative'
                                           }}>
-                                            <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
+                                        <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
                                               <img 
                                                 src={cleanFileUrl} 
                                                 alt={`Attachment ${index + 1}`} 
@@ -3464,230 +3561,195 @@ const Project = () => {
                                                   cursor: 'pointer'
                                                 }} 
                                               />
-                                              <div style={{
-                                                position: 'absolute',
-                                                bottom: '0',
-                                                left: '0',
-                                                right: '0',
-                                                background: 'rgba(0,0,0,0.5)',
-                                                color: 'white',
-                                                fontSize: '11px',
-                                                padding: '3px 6px',
-                                                textAlign: 'center',
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis'
-                                              }}>
-                                                {fileName}
-                                              </div>
-                                            </a>
-                                          </div>
-                                        );
-                                      } else if (fileExtension === 'pdf') {
-                                        return (
-                                          <div key={index}>
+                                        </a>
+                                      </div>
+                                    );
+                                  } else {
+                                          const isDoc = fileExtension === 'pdf' || fileExtension === 'doc' || fileExtension === 'docx';
+                                    return (
                                             <a 
+                                              key={index}
                                               href={cleanFileUrl} 
                                               target="_blank" 
                                               rel="noopener noreferrer" 
                                               style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '8px 15px',
-                                                backgroundColor: 'rgba(255, 94, 0, 0.08)',
-                                                borderRadius: '8px',
-                                                color: '#ff5e00',
-                                                fontWeight: '500',
-                                                fontSize: '13px',
+                                                gap: '8px',
+                                                padding: '8px 12px',
+                                                backgroundColor: isCurrentUser ? 'rgba(82, 180, 71, 0.1)' : 'rgba(255, 138, 0, 0.1)',
+                                                borderRadius: '10px',
+                                                color: isCurrentUser ? '#52b447' : '#ff8a00',
                                                 textDecoration: 'none',
-                                                borderLeft: '3px solid #ff5e00'
+                                                maxWidth: '250px'
                                               }}
                                             >
-                                              <i className="icofont-file-pdf" style={{ fontSize: '18px' }}></i>
+                                              <i className={`icofont-file-${isDoc ? 'pdf' : 'text'}`} style={{ fontSize: '20px' }}></i>
                                               <span style={{
-                                                maxWidth: '150px',
                                                 whiteSpace: 'nowrap',
                                                 overflow: 'hidden',
-                                                textOverflow: 'ellipsis'
+                                                textOverflow: 'ellipsis',
+                                                fontSize: '13px'
                                               }}>
                                                 {fileName}
                                               </span>
                                             </a>
-                                          </div>
-                                        );
-                                      } else {
-                                        return (
-                                          <div key={index}>
-                                            <a 
-                                              href={cleanFileUrl} 
-                                              target="_blank" 
-                                              rel="noopener noreferrer" 
-                                              style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                padding: '8px 15px',
-                                                backgroundColor: 'rgba(82, 180, 71, 0.08)',
-                                                borderRadius: '8px',
-                                                color: '#52b447',
-                                                fontWeight: '500',
-                                                fontSize: '13px',
-                                                textDecoration: 'none',
-                                                borderLeft: '3px solid #52b447'
-                                              }}
-                                            >
-                                              <i className="icofont-file-text" style={{ fontSize: '18px' }}></i>
-                                              <span style={{
-                                                maxWidth: '150px',
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis'
-                                              }}>
-                                                {fileName}
-                                              </span>
-                                            </a>
-                                          </div>
-                                        );
-                                      }
-                                    }
-                                    return null;
-                                  })}
-                                </div>
-                              </div>
+                                    );
+                                  }
+                                }
+                                return null;
+                              })}
+                            </div>
+                                  
+                                  {isCurrentUser && (
+                                    <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                  )}
+                          </div>
                             )}
                           </div>
-                        </li>
-                      )})}
-                    </ul>
+                          );
+                        })}
+                      </div>
+                    )}
+                          </div>
 
-                    {/* Message Submission Form */}
-                    <div style={{
+                  {/* Message Input Area */}
+                  <div className="chat-input-area" style={{
+                    padding: '15px',
                       backgroundColor: 'white',
-                      borderRadius: '12px',
-                      padding: '20px',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
-                      border: '1px solid rgba(82, 180, 71, 0.15)'
-                    }}>
-                      <h6 style={{
-                        fontWeight: '600',
-                        color: '#333',
-                        marginBottom: '15px',
-                        fontSize: '16px',
+                    borderTop: '1px solid rgba(0,0,0,0.05)',
+                    boxShadow: '0 -2px 10px rgba(0,0,0,0.03)',
+                    zIndex: 1
+                  }}>
+                    <form onSubmit={messageSubmit} className="d-flex flex-column">
+                      <div style={{
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
+                        alignItems: 'flex-end',
+                        gap: '10px'
                       }}>
-                        <i className="icofont-paper-plane" style={{ color: '#52b447' }}></i>
-                        Send New Message
-                      </h6>
-                      <form onSubmit={messageSubmit}>
-                        <div className="mb-3">
-                          <label 
-                            htmlFor="currentMessage" 
-                            className="form-label"
-                            style={{
-                              fontWeight: '600',
-                              color: '#444',
-                              fontSize: '14px',
-                              marginBottom: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '5px'
+                        <div style={{
+                          position: 'relative',
+                          flex: 1
+                        }}>
+                        <textarea
+                          className="form-control"
+                          id="currentMessage"
+                          name="message"
+                            rows="1"
+                          value={content}
+                            onChange={(e) => {
+                              setContent(e.target.value);
+                              // Auto resize textarea
+                              e.target.style.height = 'auto';
+                              e.target.style.height = Math.min(120, e.target.scrollHeight) + 'px';
                             }}
-                          >
-                            <i className="icofont-ui-message" style={{ color: '#52b447' }}></i>
-                            Message
-                          </label>
-                          <textarea
-                            className="form-control"
-                            id="currentMessage"
-                            name="message"
-                            rows="3"
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            required
-                            ref={messageInputRef}
+                          required
+                          ref={messageInputRef}
                             style={{
-                              borderRadius: '8px',
-                              border: '1px solid rgba(82, 180, 71, 0.3)',
-                              padding: '12px 15px',
+                              borderRadius: '20px',
+                              border: '1px solid rgba(0,0,0,0.1)',
+                              padding: '12px 50px 12px 15px',
                               color: '#333',
                               boxShadow: 'none',
-                              resize: 'vertical'
+                              resize: 'none',
+                              fontSize: '14px',
+                              lineHeight: '1.4',
+                              overflowY: 'auto',
+                              maxHeight: '120px'
                             }}
-                            placeholder="Type your message here..."
+                            placeholder="Type a message here..."
                           />
-                        </div>
-                        <div className="mb-3">
                           <label 
                             htmlFor="fileUpload" 
-                            className="form-label"
                             style={{
-                              fontWeight: '600',
-                              color: '#444',
-                              fontSize: '14px',
-                              marginBottom: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '5px'
+                              position: 'absolute',
+                              right: '15px',
+                              bottom: '10px',
+                              margin: 0,
+                              cursor: 'pointer',
+                              color: '#ff8a00'
                             }}
                           >
-                            <i className="icofont-attachment" style={{ color: '#ff5e00' }}></i>
-                            Attachments
+                            <i className="icofont-attachment" style={{ fontSize: '20px' }}></i>
                           </label>
-                          <input
-                            type="file"
-                            className="form-control"
-                            id="fileUpload"
-                            onChange={messageFileChange}
-                            multiple
-                            style={{
-                              borderRadius: '8px',
-                              border: '1px solid rgba(255, 94, 0, 0.3)',
-                              padding: '10px 15px',
-                              color: '#333',
-                              boxShadow: 'none',
-                              backgroundColor: 'rgba(255, 94, 0, 0.03)'
-                            }}
-                          />
-                          <small style={{ color: '#777', fontSize: '12px', marginTop: '5px', display: 'block' }}>
-                            You can upload multiple files (images, documents, etc.)
-                          </small>
-                        </div>
-                        <div className="text-end">
+                        <input
+                          type="file"
+                            className="form-control d-none"
+                          id="fileUpload"
+                          onChange={messageFileChange}
+                          multiple
+                        />
+                      </div>
                           <button 
                             type="submit" 
-                            className="btn"
                             style={{
-                              background: 'linear-gradient(135deg, #52b447, #429938)',
+                            width: '45px',
+                            height: '45px',
+                            borderRadius: '50%',
+                            backgroundColor: '#52b447',
                               color: 'white',
                               border: 'none',
-                              borderRadius: '8px',
-                              padding: '8px 20px',
-                              fontWeight: '600',
-                              fontSize: '14px',
-                              boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
-                              transition: 'all 0.2s ease',
-                              display: 'inline-flex',
+                            display: 'flex',
                               alignItems: 'center',
-                              gap: '8px'
+                            justifyContent: 'center',
+                            boxShadow: '0 2px 8px rgba(82,180,71,0.3)',
+                            transition: 'all 0.2s ease'
                             }}
                             onMouseOver={(e) => {
-                              e.currentTarget.style.transform = 'translateY(-2px)';
-                              e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            e.currentTarget.style.backgroundColor = '#429938';
                             }}
                             onMouseOut={(e) => {
-                              e.currentTarget.style.transform = 'translateY(0)';
-                              e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.backgroundColor = '#52b447';
                             }}
                           >
-                            <i className="icofont-paper-plane"></i>
-                            Send Message
+                          <i className="icofont-paper-plane" style={{ fontSize: '18px' }}></i>
                           </button>
                         </div>
-                      </form>
+                      
+                      {/* File preview area - shows when files are selected */}
+                      <div id="filePreviewArea" style={{ 
+                        display: 'none', /* Change this dynamically with JS when files are selected */
+                        marginTop: '10px',
+                        padding: '10px',
+                        borderRadius: '12px',
+                        backgroundColor: 'rgba(0,0,0,0.03)',
+                        border: '1px dashed rgba(0,0,0,0.1)'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: '8px'
+                        }}>
+                          <span style={{ fontSize: '13px', color: '#666' }}>
+                            <i className="icofont-attachment me-1"></i>
+                            <span id="fileCount">0</span> files selected
+                          </span>
+                          <button 
+                            type="button" 
+                            id="clearFiles"
+                            style={{
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              color: '#ff5e00',
+                              fontSize: '13px',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            Clear all
+                          </button>
                     </div>
+                        <div id="previewContainer" style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          gap: '8px'
+                        }}>
+                          {/* File previews will be added here dynamically */}
+                        </div>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
@@ -3722,7 +3784,7 @@ const Project = () => {
                       <i className="icofont-image" style={{ fontSize: '22px' }}></i>
                       {selectedImageTitle}
                     </h5>
-                        <button 
+                    <button
                       type="button"
                       className="btn-close"
                       data-bs-dismiss="modal"
@@ -3914,7 +3976,7 @@ const Project = () => {
                     <div className="row g-4">
                       {selectedProjectImages.length > 0 ? (
                         selectedProjectImages.map((image, index) => (
-                          <div key={index} className="col-md-4">
+                        <div key={index} className="col-md-4">
                             <div style={{
                               borderRadius: '10px',
                               overflow: 'hidden',
@@ -3939,17 +4001,17 @@ const Project = () => {
                                 position: 'relative',
                                 overflow: 'hidden'
                               }}>
-                                <img
-                                  src={`${import.meta.env.VITE_BASE_URL}${image}`}
-                                  alt={`Project Image ${index + 1}`}
-                                  style={{
+                            <img
+                              src={`${import.meta.env.VITE_BASE_URL}${image}`}
+                              alt={`Project Image ${index + 1}`}
+                              style={{
                                     height: '180px',
                                     width: '100%',
-                                    objectFit: 'cover',
+                                objectFit: 'cover',
                                     cursor: 'pointer',
                                     transition: 'transform 0.5s ease'
-                                  }}
-                                  onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
+                              }}
+                              onClick={() => window.open(`${import.meta.env.VITE_BASE_URL}${image}`, '_blank')}
                                   onMouseOver={(e) => {
                                     e.currentTarget.style.transform = 'scale(1.05)';
                                   }}
@@ -3969,8 +4031,8 @@ const Project = () => {
                                   fontWeight: '500'
                                 }}>
                                   Image {index + 1}
-                                </div>
-                              </div>
+                            </div>
+                          </div>
                               <div style={{
                                 padding: '15px',
                                 display: 'flex',
@@ -4007,9 +4069,9 @@ const Project = () => {
                                   <i className="icofont-eye"></i>
                                   View Full Size
                                 </button>
-                              </div>
-                            </div>
-                          </div>
+                        </div>
+                    </div>
+                  </div>
                         ))
                       ) : (
                         <div className="col-12 text-center py-5">

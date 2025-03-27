@@ -706,87 +706,216 @@ const Tasks = () => {
               <div className="container-xxl">
                 <div className="row align-items-center">
                   <div className="border-0 mb-3">
-                    <div className="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                      <h3 className="fw-bold mb-0">Task Management</h3>
-
-                      <div className="col-auto d-flex w-sm-100 flex-wrap">
+                    <div className="card-header py-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between" style={{
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                      backgroundColor: 'transparent',
+                      padding: '0 0 20px 0'
+                    }}>
+                      <h3 className="flex-fill mb-3 mb-sm-0" style={{
+                        fontWeight: '700',
+                                              color: '#333',
+                        fontSize: '24px',
+                        position: 'relative',
+                        paddingLeft: '15px'
+                      }}>
+                                              <span style={{
+                                                position: 'absolute',
+                          left: '0',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '5px',
+                          height: '24px',
+                          background: 'linear-gradient(to bottom, #ff8a00, #ff5e00)',
+                          borderRadius: '3px'
+                        }}></span>
+                        Task Management
+                      </h3>
+                      <div className="d-flex flex-column flex-sm-row align-items-center">
                         <button
                           type="button"
-                          className="btn btn-dark btn-set-task w-sm-100 me-2 mb-2 mb-md-0"
+                          className="btn mb-3 mb-sm-0 me-sm-3"
                           data-bs-toggle="modal"
                           data-bs-target="#createtask"
-                        >
-                          <i className="icofont-plus-circle me-2 fs-6" />
+                                          style={{
+                                            background: 'linear-gradient(135deg, #52b447, #429938)',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                            padding: '10px 18px',
+                            fontWeight: '600',
+                          boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                            transition: 'all 0.2s ease',
+                            fontSize: '14px'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                        }}
+                      >
+                          <i className="icofont-plus-circle me-2" style={{ fontSize: '16px' }} />
                           Create Task
                         </button>
-
-                        <ul className="nav nav-tabs tab-body-header rounded ms-1 prtab-set w-sm-100" role="tablist">
-                          <li className="nav-item">
+                        <div
+                          className="nav tab-body-header rounded prtab-set d-inline-flex"
+                          role="tablist"
+                          style={{
+                            padding: '5px',
+                            background: '#f8f9fa',
+                            borderRadius: '10px',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+                          }}
+                        >
+                          <div className="nav-item" style={{ position: 'relative' }}>
                             <a
-                              className={`nav-link ${activeTab === 'All' ? 'active' : ''}`}
-                              onClick={() => setActiveTab('All')}
+                              className={`nav-link ${activeTab === "All" ? "active" : ""}`}
+                              onClick={() => setActiveTab("All")}
                               data-bs-toggle="tab"
                               href="#All-list"
                               role="tab"
+                            style={{
+                                padding: '8px 20px',
+                              fontWeight: '600',
+                                fontSize: '14px',
+                                color: activeTab === "All" ? 'white' : '#666',
+                                background: activeTab === "All" ? 'linear-gradient(135deg, #ff8a00, #ff5e00)' : 'transparent',
+                                        borderRadius: '8px',
+                                border: 'none',
+                                transition: 'all 0.2s ease',
+                                zIndex: '1',
+                                                position: 'relative'
+                              }}
                             >
                               All
                             </a>
-                          </li>
-                          <li className="nav-item">
+                                              </div>
+                          <div className="nav-item" style={{ position: 'relative' }}>
                             <a
-                              className={`nav-link ${activeTab === 'Not Started' ? 'active' : ''}`}
-                              onClick={() => setActiveTab('Not Started')}
+                              className={`nav-link ${activeTab === "Not Started" ? "active" : ""}`}
+                              onClick={() => setActiveTab("Not Started")}
                               data-bs-toggle="tab"
                               href="#NotStarted-list"
                               role="tab"
+                                                style={{
+                                padding: '8px 20px',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                color: activeTab === "Not Started" ? 'white' : '#666',
+                                background: activeTab === "Not Started" ? 'linear-gradient(135deg, #ff8a00, #ff5e00)' : 'transparent',
+                                borderRadius: '8px',
+                              border: 'none',
+                                transition: 'all 0.2s ease',
+                                zIndex: '1',
+                                position: 'relative'
+                              }}
                             >
+                              <i className={`icofont-ui-timer me-1 ${activeTab === "Not Started" ? '' : 'text-warning'}`}
+                                style={{ fontSize: '14px' }}></i>
                               Not Started
                             </a>
-                          </li>
-                          <li className="nav-item">
+                          </div>
+                          <div className="nav-item" style={{ position: 'relative' }}>
                             <a
-                              className={`nav-link ${activeTab === 'In Progress' ? 'active' : ''}`}
-                              onClick={() => setActiveTab('In Progress')}
+                              className={`nav-link ${activeTab === "In Progress" ? "active" : ""}`}
+                              onClick={() => setActiveTab("In Progress")}
                               data-bs-toggle="tab"
                               href="#Started-list"
                               role="tab"
+                              style={{
+                                padding: '8px 20px',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                color: activeTab === "In Progress" ? 'white' : '#666',
+                                background: activeTab === "In Progress" ? 'linear-gradient(135deg, #ff8a00, #ff5e00)' : 'transparent',
+                                borderRadius: '8px',
+                                border: 'none',
+                                transition: 'all 0.2s ease',
+                                zIndex: '1',
+                                position: 'relative'
+                              }}
                             >
+                              <i className={`icofont-spinner-alt-3 me-1 ${activeTab === "In Progress" ? '' : 'text-warning'}`}
+                                style={{ fontSize: '14px' }}></i>
                               In Progress
                             </a>
-                          </li>
-                          <li className="nav-item">
+                          </div>
+                          <div className="nav-item" style={{ position: 'relative' }}>
                             <a
-                              className={`nav-link ${activeTab === 'Completed' ? 'active' : ''}`}
-                              onClick={() => setActiveTab('Completed')}
+                              className={`nav-link ${activeTab === "Completed" ? "active" : ""}`}
+                              onClick={() => setActiveTab("Completed")}
                               data-bs-toggle="tab"
                               href="#Completed-list"
                               role="tab"
+                              style={{
+                                padding: '8px 20px',
+                                fontWeight: '600',
+                                fontSize: '14px',
+                                color: activeTab === "Completed" ? 'white' : '#666',
+                                background: activeTab === "Completed" ? 'linear-gradient(135deg, #52b447, #429938)' : 'transparent',
+                                borderRadius: '8px',
+                                border: 'none',
+                                transition: 'all 0.2s ease',
+                                zIndex: '1',
+                                position: 'relative'
+                              }}
                             >
+                              <i className={`icofont-verification-check me-1 ${activeTab === "Completed" ? '' : 'text-success'}`}
+                                style={{ fontSize: '14px' }}></i>
                               Completed
                             </a>
-                          </li>
-                        </ul>
                       </div>
-
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>{" "}
-                <div className="d-flex justify-content-between border-bottom mb-3">
-                  <div className="col-12 col-md-4 mb-3">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-3 mb-3 gap-3">
+                  <div>
                     <div className="d-flex">
                       {viewMode === 'row' ? (
                         <button
-                          className="btn btn-outline-primary"
+                          className="btn"
                           onClick={() => setViewMode('list')}
                           title="Switch to List View"
+                          style={{
+                            backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                            color: '#52b447',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 12px',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                          }}
                         >
                           <i className="bi bi-list-task"></i>
                         </button>
                       ) : (
                         <button
-                          className="btn btn-outline-primary"
+                          className="btn"
                           onClick={() => setViewMode('row')}
                           title="Switch to Grid View"
+                          style={{
+                            backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                            color: '#52b447',
+                            border: 'none',
+                            borderRadius: '8px',
+                            padding: '8px 12px',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                          }}
                         >
                           <i className="bi bi-grid-3x3-gap-fill"></i>
                         </button>
@@ -794,45 +923,107 @@ const Tasks = () => {
                     </div>
                   </div>
 
-                  <div className="col-12 col-md-4">
-                    <div className="input-group">
+                  {(filteredProjectName || filteredEmployeeName) && (
+                    <div className="d-flex align-items-center">
+                      <div style={{
+                        backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                        padding: '8px 15px',
+                        borderRadius: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '10px',
+                        flexWrap: 'wrap'
+                      }}>
+                        <i className="icofont-filter" style={{ color: '#ff5e00', fontSize: '16px' }}></i>
+                        
+                        {filteredProjectName && (
+                          <span style={{
+                            fontWeight: '600',
+                            color: '#333',
+                            fontSize: '14px'
+                          }}>Project: <span style={{ color: '#ff5e00' }}>{filteredProjectName}</span></span>
+                        )}
+                        
+                        {filteredEmployeeName && (
+                          <span style={{
+                            fontWeight: '600',
+                            color: '#333',
+                            fontSize: '14px',
+                            marginLeft: filteredProjectName ? '10px' : '0'
+                          }}>Assignee: <span style={{ color: '#ff5e00' }}>{filteredEmployeeName}</span></span>
+                        )}
+                        
+                      <button
+                        type="button"
+                          className="btn"
+                          onClick={clearFilter}
+                          style={{
+                            backgroundColor: '#ff5e00',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '4px 12px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = '#e65500';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor = '#ff5e00';
+                          }}
+                        >
+                          <i className="icofont-close-line"></i>
+                          Clear
+                      </button>
+                    </div>
+                      </div>
+                    )}
+
+                  <div>
+                    <div className="input-group" style={{
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                      borderRadius: '8px',
+                      overflow: 'hidden'
+                    }}>
                       <input
-                        type="text"
+                        type="search"
                         className="form-control"
-                        placeholder="Search"
+                        aria-label="search"
+                        aria-describedby="addon-wrapping"
+                        placeholder="Search tasks..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{
+                          border: '1px solid rgba(82, 180, 71, 0.2)',
+                          borderRight: 'none',
+                          padding: '10px 15px',
+                          fontSize: '14px',
+                          color: '#333',
+                          minWidth: '220px'
+                        }}
                       />
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="input-group-text"
+                        id="addon-wrapping"
+                        style={{
+                          backgroundColor: '#52b447',
+                          border: 'none',
+                          color: 'white',
+                          padding: '0 15px',
+                          cursor: 'pointer'
+                        }}
                       >
-                        <i className="fa fa-search" />
+                        <i className="icofont-search" />
                       </button>
                     </div>
-                    {(filteredProjectName || filteredEmployeeName) && (
-                      <div className="mt-2">
-                        {filteredProjectName && <strong className="me-2">Project: {filteredProjectName}</strong>}
-                        {filteredEmployeeName && <strong className="me-2">Employee: {filteredEmployeeName}</strong>}
-                        <button type="button" className="btn btn-sm btn-outline-secondary" onClick={clearFilter}>Clear Filter</button>
-                      </div>
-                    )}
                   </div>
-
-                  {/* <div className="col-12 col-md-4">
-                    <div className="input-group d-flex gap-2 align-items-center" style={{ width: "20rem" }}>
-                      <span className="fw-bold">Filter by Date - </span>
-                      <input
-                        className="form-control"
-                        type="date"
-                        value={filterDate}
-                        onChange={(e) => setFilterDate(e.target.value)}
-                      />
-                    </div>
-                  </div> */}
                 </div>
-
-                {/* Row end  */}
 
                 {loading ? (
                   <tr>
@@ -848,18 +1039,79 @@ const Tasks = () => {
                   <>
                     <div>
                       {viewMode === 'list' ? (
+                       <div className="card mb-3" style={{
+                        borderRadius: '12px',
+                        boxShadow: '0 6px 15px rgba(0,0,0,0.05)',
+                        border: 'none',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-body" style={{ padding: '0' }}>
                         <div className="table-responsive">
-                          <table className="table table-bordered table-hover">
+                            <table className="table align-middle mb-0" style={{
+                              width: "100%",
+                              borderCollapse: 'separate',
+                              borderSpacing: '0'
+                            }}>
                             <thead>
-                              <tr>
-                                <th scope="col" >SrNo.</th>
-                                <th scope="col" style={{ width: '6rem' }}>Project name</th>
-                                <th scope="col">Task name</th>
-                                <th scope="col" style={{ width: '7rem' }}>Assignee</th>
-                                <th scope="col" style={{ width: '6rem' }}>Due Date</th>
-                                <th scope="col" style={{ width: '6rem' }}>Priority</th>
-                                <th scope="col" style={{ width: '' }}>U/D</th>
-                                <th scope="col" style={{ width: '' }}>Status</th>
+                                <tr style={{ background: '#f8f9fa' }}>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    textAlign: 'center',
+                                    fontSize: '14px'
+                                  }}>SrNo.</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Project name</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Task name</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Assignee</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Due Date</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Priority</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    textAlign: 'center',
+                                    fontSize: '14px'
+                                  }}>Actions</th>
+                                  <th style={{
+                                    padding: '16px 15px',
+                                    fontWeight: '600',
+                                    color: '#444',
+                                    borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                    fontSize: '14px'
+                                  }}>Status</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -868,85 +1120,375 @@ const Tasks = () => {
                                 const taskEndDate = new Date(task.taskEndDate);
                                 const isOverdue = taskEndDate < currentDate && task.taskStatus !== 'Completed';
 
-                                let backgroundColor = '';
-                                if (isOverdue) {
-                                  backgroundColor = '#f6c8b7';
-                                }
+                                  // Remove the background color for overdue items since we'll use a badge instead
 
                                 return (
-                                  <tr
-                                    key={task._id}
-                                    style={{ backgroundColor }}
-                                  >
-                                    <td><span className="fw-bold fs-6">{index + 1}. </span></td>
-                                    <td style={{ backgroundColor }}>
+                                    <tr key={task._id}
+                                      style={{
+                                        transition: 'background 0.2s ease',
+                                      }}
+                                      onMouseOver={(e) => e.currentTarget.style.background = 'rgba(82, 180, 71, 0.04)'}
+                                      onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+                                    >
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                        textAlign: 'center'
+                                      }}>
+                                        <span style={{
+                                          background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                                          color: 'white',
+                                          borderRadius: '50%',
+                                          width: '30px',
+                                          height: '30px',
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          fontWeight: '600',
+                                          fontSize: '14px',
+                                          boxShadow: '0 2px 5px rgba(255, 138, 0, 0.3)'
+                                        }}>
+                                          {index + 1}
+                                        </span>
+                                      </td>
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
+                                        <div className="d-flex gap-2 align-items-center">
+                                          <div>
+                                            <div style={{
+                                              fontWeight: '600',
+                                              color: '#333',
+                                              fontSize: '14px'
+                                            }}>
                                       {task.projectName}
-                                      <p>{task.taskDate}</p>
-                                      <Link
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          handleOpenTaskImages(task);
-                                        }}
-                                        style={{ marginLeft: "33px", cursor: 'pointer' }}
-                                      >
-                                        <i className="bi-paperclip fs-6" />
-                                      </Link>
+                                            </div>
+                                            <div className="mt-1" style={{
+                                              fontSize: '12px',
+                                              color: '#777'
+                                            }}>
+                                              <i className="bi-calendar3 me-1" style={{ color: '#52b447' }}></i>
+                                              {task.taskDate}
+                                            </div>
+                                          </div>
+                                          
+                                          {/* <button
+                                            className="btn"
+                                            style={{
+                                              color: '#52b447',
+                                              padding: '5px',
+                                              borderRadius: '50%',
+                                              transition: 'all 0.2s',
+                                              border: 'none',
+                                              backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                              width: '30px',
+                                              height: '30px',
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center'
+                                            }}
+                                            onClick={() => handleOpenTaskImages(task)}
+                                            onMouseOver={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                                            }}
+                                          >
+                                            <i className="bi-paperclip" style={{ fontSize: '14px' }} />
+                                          </button> */}
+                                        </div>
                                     </td>
-                                    <td className="" style={{ backgroundColor }}>
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
+                                        <div className="dropdown">
+                                          {/* Task title display */}
+                                          <div 
+                                            className="d-flex align-items-center justify-content-between"
+                                            data-bs-toggle="dropdown"
+                                            aria-expanded="false"
+                                            style={{ cursor: 'pointer' }}
+                                          >
+                                            <div>
+                                              <div style={{ 
+                                                fontWeight: '600', 
+                                                fontSize: '14px',
+                                                color: '#333',
+                                                marginBottom: '3px'
+                                              }}>
+                                                {task.taskTitle || 'Untitled Task'}
+                                              </div>
+                                              
+                                              <div style={{ 
+                                                fontSize: '13px',
+                                                color: '#666',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: '2',
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis'
+                                              }}>
+                                                {task.description || 'No description'}
+                                              </div>
+                                            </div>
+                                            
+                                            <div style={{ 
+                                              color: '#52b447',
+                                              marginLeft: '10px'
+                                            }}>
+                                              <i className="bi-pencil"></i>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* Dropdown menu with edit form */}
+                                          <div className="dropdown-menu p-3" style={{ 
+                                            width: '300px',
+                                            boxShadow: '0 6px 15px rgba(0,0,0,0.1)',
+                                            border: '1px solid rgba(82, 180, 71, 0.2)',
+                                            borderRadius: '8px'
+                                          }}>
+                                            <h6 style={{ 
+                                              color: '#52b447', 
+                                              fontWeight: '600',
+                                              marginBottom: '10px',
+                                              borderBottom: '1px solid rgba(82, 180, 71, 0.2)',
+                                              paddingBottom: '8px'
+                                            }}>
+                                              <i className="bi-list-task me-2"></i>
+                                              Edit Task Details
+                                            </h6>
+                                            
+                                            <div className="mb-3">
+                                              <label className="form-label" style={{ fontSize: '13px', fontWeight: '600', color: '#555' }}>
+                                                Task Title
+                                              </label>
                                       <input
-                                        className="form-control fw-bold"
+                                                className="form-control"
                                         type="text"
                                         name="taskTitle"
                                         placeholder="Task Title"
                                         value={task.taskTitle}
                                         onChange={(e) => taskHandleChange(e, task._id)}
-                                        style={{ backgroundColor: 'transparent', border: 'none' }}
-                                      />
+                                                style={{ 
+                                                  fontSize: '14px',
+                                                  border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                  padding: '8px 12px'
+                                                }}
+                                              />
+                                            </div>
+                                            
+                                            <div className="mb-3">
+                                              <label className="form-label" style={{ fontSize: '13px', fontWeight: '600', color: '#555' }}>
+                                                Task Description
+                                              </label>
                                       <textarea
-                                        className="w-100 form-control"
+                                                className="form-control"
                                         type="text"
                                         placeholder="Explain The Task What To Do & How To Do"
                                         name="description"
                                         value={task.description}
                                         onChange={(e) => taskHandleChange(e, task._id)}
-                                        style={{ outline: 'none', border: 'none', textWrap: 'wrap' }}
-                                      />
+                                                style={{ 
+                                                  fontSize: '13px',
+                                                  border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                  padding: '8px 12px',
+                                                  resize: 'vertical',
+                                                  minHeight: '80px'
+                                                }}
+                                              />
+                                            </div>
+                                            
+                                            <div className="d-flex justify-content-end">
+                                              <button 
+                                                className="btn"
+                                                onClick={() => taskHandleSubmit(task._id)}
+                                                style={{
+                                                  backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                  color: '#52b447',
+                                                  fontWeight: '600',
+                                                  fontSize: '13px',
+                                                  padding: '6px 12px',
+                                                  borderRadius: '6px',
+                                                  border: 'none',
+                                                  transition: 'all 0.2s ease'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                  e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                  e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                                                }}
+                                              >
+                                                <i className="bi-check2 me-1"></i>
+                                                Save Changes
+                                              </button>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        
+                                        {/* Overdue indicator below the task details */}
+                                        {isOverdue && (
+                                          <div style={{
+                                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            color: '#dc3545',
+                                            fontSize: '11px',
+                                            fontWeight: '600',
+                                            display: 'inline-block',
+                                            marginTop: '5px'
+                                          }}>
+                                            <i className="bi-exclamation-triangle-fill me-1"></i>
+                                            Overdue
+                                          </div>
+                                        )}
                                     </td>
-                                    <td style={{ backgroundColor }}>
-                                      {task.taskAssignPerson && task.taskAssignPerson.employeeName
-                                        ? (
-                                          <>
-                                            {task.taskAssignPerson.employeeName} <span className="badge bg-info text-dark">Associate</span>
-                                          </>
-                                        )
-                                        : task.clientAssignPerson && task.clientAssignPerson.clientName
-                                          ? (
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
+                                        <div>
+                                          {task.taskAssignPerson && task.taskAssignPerson.employeeName ? (
                                             <>
-                                              {task.clientAssignPerson.clientName} <span className="badge bg-warning text-dark">Team Member</span>
+                                              <div className="d-flex align-items-center">
+                                                <div style={{
+                                                  backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                  color: '#52b447',
+                                                  width: '30px',
+                                                  height: '30px',
+                                                  borderRadius: '50%',
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  marginRight: '8px'
+                                                }}>
+                                                  <i className="bi-person"></i>
+                                                </div>
+                                                <div>
+                                                  <div style={{
+                                                    fontSize: '14px',
+                                                    fontWeight: '600',
+                                                    color: '#333'
+                                                  }}>{task.taskAssignPerson.employeeName}</div>
+                                                  <span style={{
+                                                    backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                                                    color: '#0dcaf0',
+                                                    fontSize: '11px',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px',
+                                                    fontWeight: '600'
+                                                  }}>Associate</span>
+                                                </div>
+                                              </div>
                                             </>
-                                          )
-                                          : 'Unassigned'
-                                      }
-                                      <p className="text-muted">By:-{task.assignedBy}</p>
+                                          ) : task.clientAssignPerson && task.clientAssignPerson.clientName ? (
+                                            <>
+                                              <div className="d-flex align-items-center">
+                                                <div style={{
+                                                  backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                                                  color: '#ff8a00',
+                                                  width: '30px',
+                                                  height: '30px',
+                                                  borderRadius: '50%',
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  justifyContent: 'center',
+                                                  marginRight: '8px'
+                                                }}>
+                                                  <i className="bi-people"></i>
+                                                </div>
+                                                <div>
+                                                  <div style={{
+                                                    fontSize: '14px',
+                                                    fontWeight: '600',
+                                                    color: '#333'
+                                                  }}>{task.clientAssignPerson.clientName}</div>
+                                                  <span style={{
+                                                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                                                    color: '#ffc107',
+                                                    fontSize: '11px',
+                                                    padding: '2px 6px',
+                                                    borderRadius: '4px',
+                                                    fontWeight: '600'
+                                                  }}>Team Member</span>
+                                                </div>
+                                              </div>
+                                            </>
+                                          ) : (
+                                            <span style={{
+                                              color: '#999',
+                                              fontStyle: 'italic',
+                                              fontSize: '13px'
+                                            }}>Unassigned</span>
+                                          )}
+                                          <div className="mt-2" style={{
+                                            fontSize: '12px',
+                                            color: '#777'
+                                          }}>
+                                            <i className="bi-person-check me-1" style={{ color: '#52b447' }}></i>
+                                            By: {task.assignedBy}
+                                          </div>
+                                        </div>
                                     </td>
-                                    <td style={{ backgroundColor }}>
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
+                                        <div style={{
+                                          backgroundColor: isOverdue ? 'rgba(220, 53, 69, 0.1)' : 'rgba(82, 180, 71, 0.1)',
+                                          padding: '8px 12px',
+                                          borderRadius: '6px',
+                                          marginBottom: '5px'
+                                        }}>
                                       <input
                                         type="date"
                                         className="form-control"
                                         name="taskEndDate"
                                         value={task.taskEndDate}
                                         onChange={(e) => taskHandleChange(e, task._id)}
-                                        style={{ width: '120px', fontSize: '0.8rem' }} // Adjusted width and font size
-                                      />
+                                            style={{ 
+                                              width: '100%', 
+                                              fontSize: '13px',
+                                              backgroundColor: 'transparent',
+                                              border: 'none',
+                                              color: isOverdue ? '#dc3545' : '#52b447',
+                                              fontWeight: '600',
+                                              padding: '0'
+                                            }}
+                                          />
+                                        </div>
                                     </td>
-                                    <td style={{ backgroundColor }}>
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
                                       <select
                                         className="form-select"
                                         aria-label="Default select Priority"
                                         name="taskPriority"
                                         value={task.taskPriority}
                                         onChange={(e) => taskHandleChange(e, task._id)}
-                                        style={{ width: '120px', fontSize: '0.8rem' }}
+                                          style={{ 
+                                            width: '100%', 
+                                            fontSize: '13px',
+                                            backgroundColor: 
+                                              task.taskPriority === 'Highest' ? 'rgba(220, 53, 69, 0.1)' : 
+                                              task.taskPriority === 'Medium' ? 'rgba(255, 193, 7, 0.1)' : 
+                                              task.taskPriority === 'Lowest' ? 'rgba(82, 180, 71, 0.1)' : 
+                                              'white',
+                                            color: 
+                                              task.taskPriority === 'Highest' ? '#dc3545' : 
+                                              task.taskPriority === 'Medium' ? '#ffc107' : 
+                                              task.taskPriority === 'Lowest' ? '#52b447' : 
+                                              '#666',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            padding: '8px 12px',
+                                            fontWeight: '600'
+                                          }}
                                       >
                                         <option value="">Set Priority</option>
                                         <option value="Highest">Highest</option>
@@ -954,61 +1496,158 @@ const Tasks = () => {
                                         <option value="Lowest">Lowest</option>
                                       </select>
                                     </td>
-                                    <td className="bg-transparent">
-                                      <div className="d-flex gap-2 bg-transparent">
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                        textAlign: 'center'
+                                      }}>
+                                        <div className="d-flex gap-2 justify-content-center">
                                         <button
                                           onClick={() => taskHandleSubmit(task._id)}
-                                          className="bi bi-check2 bg-primary text-white border-0 rounded"
                                           title="Update Task"
-                                        />
+                                            style={{
+                                              backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                              color: '#52b447',
+                                              width: '32px',
+                                              height: '32px',
+                                              borderRadius: '50%',
+                                              padding: '0',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              border: 'none',
+                                              transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                                            }}
+                                          >
+                                            <i className="bi-check2"></i>
+                                          </button>
                                         <button
                                           data-bs-toggle="modal"
                                           data-bs-target="#dremovetask"
                                           onClick={() => setDeletableId(task._id)}
-                                          className="bi bi-trash bg-danger text-white border-0 rounded"
                                           title="Delete Task"
-                                        />
+                                            style={{
+                                              backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                              color: '#ff5e00',
+                                              width: '32px',
+                                              height: '32px',
+                                              borderRadius: '50%',
+                                              padding: '0',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              border: 'none',
+                                              transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.1)';
+                                            }}
+                                          >
+                                            <i className="bi-trash"></i>
+                                          </button>
                                       </div>
                                     </td>
-                                    
-                                    <td style={{
-                                      padding: '15px',
-                                      backgroundColor: rowBg,
-                                      borderRight: `2px solid ${borderColor}`,
-                                      borderTop: `1px solid ${borderColor}`,
-                                      borderBottom: `1px solid ${borderColor}`,
-                                      borderRadius: '0 8px 8px 0'
-                                    }}>
-                                      <div className="d-flex flex-column align-items-start gap-2">
+                                      <td style={{
+                                        padding: '16px 15px',
+                                        borderBottom: '1px solid rgba(0,0,0,0.05)'
+                                      }}>
+                                        <div className="d-flex align-items-center gap-2">
                                       {task.taskStatus === 'Not Started' && (
-                                        <span className="badge bg-warning text-dark">Not Started</span>
+                                            <div style={{
+                                              backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                                              color: '#ffc107',
+                                              padding: '5px 10px',
+                                              borderRadius: '6px',
+                                              fontSize: '12px',
+                                              fontWeight: '600'
+                                            }}>Not Started</div>
                                       )}
                                       {task.taskStatus === 'In Progress' && (
-                                        <span className="badge bg-info text-dark">In Progress</span>
+                                            <div style={{
+                                              backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                                              color: '#0dcaf0',
+                                              padding: '5px 10px',
+                                              borderRadius: '6px',
+                                              fontSize: '12px',
+                                              fontWeight: '600'
+                                            }}>In Progress</div>
                                       )}
                                       {task.taskStatus === 'Completed' && (
-                                        <span className="badge bg-success">Completed</span>
+                                            <div style={{
+                                              backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                              color: '#52b447',
+                                              padding: '5px 10px',
+                                              borderRadius: '6px',
+                                              fontSize: '12px',
+                                              fontWeight: '600'
+                                            }}>Completed</div>
                                       )}
 
                                       <button
-                                        className="btn btn-sm position-relative"
+                                            className="btn position-relative"
                                         data-bs-toggle="modal"
                                         data-bs-target="#taskMessage"
                                         onClick={() => handleOpenMessages(task)}
-                                      >
-                                        <i className="bi bi-chat-left-dots"></i>
+                                            style={{
+                                              backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                              color: '#52b447',
+                                              width: '32px',
+                                              height: '32px',
+                                              borderRadius: '50%',
+                                              padding: '0',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              border: 'none',
+                                              transition: 'all 0.2s ease'
+                                            }}
+                                            onMouseOver={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.2)';
+                                            }}
+                                            onMouseOut={(e) => {
+                                              e.currentTarget.style.backgroundColor = 'rgba(82, 180, 71, 0.1)';
+                                            }}
+                                          >
+                                            <i className="bi-chat-left-dots"></i>
                                         {notifications[task._id] > 0 && (
-                                          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                              <span style={{
+                                                position: 'absolute',
+                                                top: '-5px',
+                                                right: '-5px',
+                                                backgroundColor: '#ff5e00',
+                                                color: 'white',
+                                                borderRadius: '50%',
+                                                width: '18px',
+                                                height: '18px',
+                                                fontSize: '10px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                fontWeight: 'bold',
+                                                boxShadow: '0 2px 5px rgba(255, 94, 0, 0.3)'
+                                              }}>
                                             {notifications[task._id]}
                                           </span>
                                         )}
                                       </button>
+                                        </div>
                                     </td>
                                   </tr>
                                 );
                               })}
                             </tbody>
                           </table>
+                          </div>
+                        </div>
                         </div>
                       ) : (
                         <div className="row">
@@ -1017,40 +1656,116 @@ const Tasks = () => {
                             const taskEndDate = new Date(task.taskEndDate);
                             const isOverdue = taskEndDate < currentDate && task.taskStatus !== 'Completed';
 
-                            let backgroundColor = '';
-                            if (isOverdue) {
-                              backgroundColor = '#f6c8b7';
+                            // Calculate days remaining or overdue
+                            const timeDiff = taskEndDate.getTime() - currentDate.getTime();
+                            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                            const daysText = daysDiff === 0 ? "Due today" :
+                              daysDiff > 0 ? `${daysDiff} days left` :
+                                `${Math.abs(daysDiff)} days overdue`;
+
+                            // Set priority colors
+                            let priorityColor = '#999';
+                            let priorityBg = '#f0f0f0';
+                            if (task.taskPriority === 'Highest') {
+                              priorityColor = '#ff5e00';
+                              priorityBg = 'rgba(255, 94, 0, 0.1)';
+                            } else if (task.taskPriority === 'Medium') {
+                              priorityColor = '#ff8a00';
+                              priorityBg = 'rgba(255, 138, 0, 0.1)';
+                            } else if (task.taskPriority === 'Lowest') {
+                              priorityColor = '#52b447';
+                              priorityBg = 'rgba(82, 180, 71, 0.1)';
                             }
 
                             return (
                               <div key={task._id} className="col-12 col-sm-6 col-md-4 col-lg-4 mb-4">
                                 <div className="card task-card" style={{
-                                  backgroundColor,
                                   height: '100%',
-                                  minHeight: '400px', // Set minimum height
+                                  minHeight: '400px',
                                   display: 'flex',
-                                  flexDirection: 'column'
-                                }}>
-                                  <div className="card-body d-flex flex-column">
-                                    {/* Header */}
-                                    <div className="d-flex justify-content-between align-items-center mb-3">
-                                      <span className="fw-bold fs-6">{index + 1}. </span>
-                                      <h5 className="card-title text-capitalize fw-bold text-center mb-0 text-truncate"
-                                        style={{ maxWidth: '200px' }}
-                                        title={task.projectName}>{task.projectName}
+                                  flexDirection: 'column',
+                                  borderRadius: '15px',
+                                  border: 'none',
+                                  boxShadow: '0 5px 15px rgba(0,0,0,0.07)',
+                                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                  overflow: 'hidden',
+                                  background: isOverdue
+                                    ? 'linear-gradient(to bottom right, #fff, #fff, #ffeae0, #ffded0)'
+                                    : 'white',
+                                }}
+                                  onMouseOver={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(-5px)';
+                                    e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.11)';
+                                  }}
+                                  onMouseOut={(e) => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(0,0,0,0.07)';
+                                  }}>
+                                  {/* Task Status Top Banner */}
+                                  <div style={{
+                                    height: '6px',
+                                    width: '100%',
+                                    background: task.taskStatus === 'Completed'
+                                      ? 'linear-gradient(to right, #52b447, #429938)'
+                                      : task.taskStatus === 'In Progress'
+                                        ? 'linear-gradient(to right, #ff8a00, #ff5e00)'
+                                        : isOverdue
+                                          ? 'linear-gradient(to right, #ff5e00, #d14b00)'
+                                          : 'linear-gradient(to right, #ffb347, #ffcc33)'
+                                  }}></div>
+
+                                  <div className="card-body d-flex flex-column p-0">
+                                    {/* Header with Project Name */}
+                                    <div style={{
+                                      padding: '15px 20px',
+                                      borderBottom: '1px solid rgba(0,0,0,0.05)',
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center',
+                                      backgroundColor: 'rgba(0,0,0,0.02)',
+                                    }}>
+                                      <div className="d-flex align-items-center" style={{ flex: 1 }}>
+                                        <span style={{
+                                          width: '28px',
+                                          height: '28px',
+                                          borderRadius: '50%',
+                                          backgroundColor: '#52b447',
+                                          color: 'white',
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          fontWeight: 'bold',
+                                          marginRight: '10px',
+                                          fontSize: '14px'
+                                        }}>
+                                          {index + 1}
+                                        </span>
+                                        <h5 className="card-title text-capitalize fw-bold mb-0 text-truncate"
+                                          style={{ maxWidth: '190px', fontSize: '16px' }}
+                                          title={task.projectName}>
+                                          {task.projectName}
                                       </h5>
+                                      </div>
+
                                       {task.taskImages && task.taskImages.length > 0 && (
                                         <button
-                                          className="btn btn-link p-0"
+                                          className="btn btn-link p-0 ms-2"
                                           onClick={() => handleOpenTaskImages(task)}
+                                          style={{
+                                            color: '#ff8a00',
+                                            transition: 'transform 0.2s ease',
+                                          }}
+                                          onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
+                                          onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                                         >
-                                          <i className="bi-paperclip fs-6" />
+                                          <i className="bi-paperclip fs-5" />
                                         </button>
                                       )}
                                     </div>
 
-                                    {/* Task Content - Using flex-grow to take available space */}
-                                    <div className="flex-grow-1">
+                                    {/* Task Content */}
+                                    <div className="flex-grow-1 p-3">
+                                      <div className="mb-3">
                                       <input
                                         className="form-control mb-2"
                                         type="text"
@@ -1061,90 +1776,220 @@ const Tasks = () => {
                                         style={{
                                           backgroundColor: 'transparent',
                                           border: 'none',
+                                            borderBottom: '2px solid rgba(82, 180, 71, 0.2)',
+                                            borderRadius: '0',
+                                            padding: '8px 3px',
                                           fontWeight: 'bold',
-                                          width: '100%'
+                                            fontSize: '16px',
+                                            width: '100%',
+                                            color: '#333',
+                                            transition: 'border-color 0.3s ease'
                                         }}
+                                          onFocus={(e) => e.target.style.borderColor = 'rgba(82, 180, 71, 0.8)'}
+                                          onBlur={(e) => e.target.style.borderColor = 'rgba(82, 180, 71, 0.2)'}
                                       />
                                       <textarea
                                         className="form-control mb-3"
                                         rows=""
                                         name="description"
+                                          placeholder="Task description..."
                                         value={task.description}
                                         onChange={(e) => taskHandleChange(e, task._id)}
                                         style={{
                                           resize: 'none',
-                                          backgroundColor: 'transparent',
-                                          height: '90px' // Fixed height for description
-                                        }}
-                                      />
+                                            backgroundColor: 'rgba(0,0,0,0.02)',
+                                            height: '90px',
+                                            border: '1px solid rgba(0,0,0,0.07)',
+                                            borderRadius: '8px',
+                                            padding: '10px',
+                                            fontSize: '14px',
+                                            lineHeight: '1.5',
+                                            color: '#555'
+                                          }}
+                                        />
 
-                                      {/* Task Details */}
-                                      <div className="mb-3">
-                                        <p className="mb-1 fw-semibold text-primary">
+                                        {/* Priority & Date Display */}
+                                        <div className="d-flex justify-content-between align-items-center mb-3">
+                                          <div style={{
+                                            backgroundColor: priorityBg,
+                                            color: priorityColor,
+                                            padding: '5px 10px',
+                                            borderRadius: '20px',
+                                            fontSize: '12px',
+                                            fontWeight: '600',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '5px'
+                                          }}>
+                                            <i className="bi bi-flag-fill"></i>
+                                            {task.taskPriority || 'No Priority'}
+                                          </div>
+
+                                          <div style={{
+                                            color: isOverdue && task.taskStatus !== 'Completed' ? '#ff5e00' : '#52b447',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '5px'
+                                          }}>
+                                            <i className={`bi ${isOverdue && task.taskStatus !== 'Completed' ? 'bi-alarm' : 'bi-calendar-check'}`}></i>
+                                            {daysText}
+                                          </div>
+                                        </div>
+
+                                        {/* Assigned Person */}
+                                        <div className="mb-3" style={{
+                                          backgroundColor: 'rgba(0,0,0,0.02)',
+                                          borderRadius: '8px',
+                                          padding: '10px 15px',
+                                        }}>
+                                          <p className="mb-1 fw-semibold" style={{ fontSize: '14px', color: '#666' }}>
+                                            <i className="bi bi-person-fill me-2" style={{ color: '#52b447' }}></i>
+                                            Assigned to:
+                                          </p>
+                                          <p className="mb-1" style={{
+                                            fontWeight: '600',
+                                            color: '#333',
+                                            fontSize: '15px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between'
+                                          }}>
                                           {task.taskAssignPerson && task.taskAssignPerson.employeeName
-                                            ? (
-                                              <>
-                                                {task.taskAssignPerson.employeeName} <span className="badge bg-info text-dark">Associate</span>
-                                              </>
-                                            )
+                                              ? task.taskAssignPerson.employeeName
                                             : task.clientAssignPerson && task.clientAssignPerson.clientName
-                                              ? (
-                                                <>
-                                                  {task.clientAssignPerson.clientName} <span className="badge bg-warning text-dark">Team Member</span>
-                                                </>
-                                              )
+                                                ? task.clientAssignPerson.clientName
                                               : 'Unassigned'
                                           }
-                                        </p>
-                                        <p className="mb-2 fw-semibold" style={{ color: "green" }}>
-                                          By: {task.assignedBy}
-                                        </p>
+                                            <span className="badge" style={{
+                                              backgroundColor: task.taskAssignPerson && task.taskAssignPerson.employeeName ? 'rgba(82, 180, 71, 0.2)' : 'rgba(255, 138, 0, 0.2)',
+                                              color: task.taskAssignPerson && task.taskAssignPerson.employeeName ? '#52b447' : '#ff8a00',
+                                              fontSize: '11px',
+                                              padding: '4px 8px',
+                                              borderRadius: '4px',
+                                            }}>
+                                              {task.taskAssignPerson && task.taskAssignPerson.employeeName ? 'Associate' : 'Team Member'}
+                                            </span>
+                                          </p>
+                                          <p className="mb-0" style={{ fontSize: '13px', color: '#666' }}>
+                                            <i className="bi bi-person-plus me-1"></i>
+                                            By: <span style={{ color: '#52b447', fontWeight: '600' }}>{task.assignedBy}</span>
+                                          </p>
+                                        </div>
                                       </div>
 
                                       {/* Task Controls */}
                                       <div className="mb-3">
+                                        <div className="row g-2">
+                                          <div className="col-7">
+                                            <label className="form-label mb-1" style={{ fontSize: '13px', color: '#666' }}>Due Date</label>
                                         <input
                                           type="date"
-                                          className="form-control mb-2"
+                                              className="form-control"
                                           name="taskEndDate"
                                           value={task.taskEndDate}
                                           onChange={(e) => taskHandleChange(e, task._id)}
-                                        />
+                                              style={{
+                                                fontSize: '14px',
+                                                padding: '8px 12px',
+                                                border: '1px solid rgba(0,0,0,0.1)',
+                                                borderRadius: '6px'
+                                              }}
+                                            />
+                                          </div>
+                                          <div className="col-5">
+                                            <label className="form-label mb-1" style={{ fontSize: '13px', color: '#666' }}>Priority</label>
                                         <select
-                                          className="form-select mb-2"
+                                              className="form-select"
                                           name="taskPriority"
                                           value={task.taskPriority}
                                           onChange={(e) => taskHandleChange(e, task._id)}
+                                              style={{
+                                                fontSize: '14px',
+                                                padding: '8px 12px',
+                                                border: '1px solid rgba(0,0,0,0.1)',
+                                                borderRadius: '6px'
+                                              }}
                                         >
                                           <option value="">Set Priority</option>
                                           <option value="Highest">Highest</option>
                                           <option value="Medium">Medium</option>
                                           <option value="Lowest">Lowest</option>
                                         </select>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
 
-                                    {/* Footer Actions - Always at bottom */}
-                                    <div className="mt-auto">
-                                      <div className="d-flex justify-content-between align-items-center mb-2">
+                                    {/* Footer Actions */}
+                                    <div className="mt-auto p-3 pt-0">
+                                      <div className="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
                                         {task.taskStatus === 'Not Started' && (
-                                          <span className="badge bg-warning text-dark">Not Started</span>
+                                            <span className="badge" style={{
+                                              backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                                              color: '#ffc107',
+                                              fontSize: '12px',
+                                              padding: '5px 10px',
+                                              borderRadius: '4px',
+                                              fontWeight: '600'
+                                            }}>Not Started</span>
                                         )}
                                         {task.taskStatus === 'In Progress' && (
-                                          <span className="badge bg-info text-dark">In Progress</span>
+                                            <span className="badge" style={{
+                                              backgroundColor: 'rgba(255, 138, 0, 0.2)',
+                                              color: '#ff8a00',
+                                              fontSize: '12px',
+                                              padding: '5px 10px',
+                                              borderRadius: '4px',
+                                              fontWeight: '600'
+                                            }}>In Progress</span>
                                         )}
                                         {task.taskStatus === 'Completed' && (
-                                          <span className="badge bg-success">Completed</span>
-                                        )}
+                                            <span className="badge" style={{
+                                              backgroundColor: 'rgba(82, 180, 71, 0.2)',
+                                              color: '#52b447',
+                                              fontSize: '12px',
+                                              padding: '5px 10px',
+                                              borderRadius: '4px',
+                                              fontWeight: '600'
+                                            }}>Completed</span>
+                                          )}
+                                        </div>
                                         <button
-                                          className="btn btn-sm position-relative"
+                                          className="btn position-relative"
                                           data-bs-toggle="modal"
                                           data-bs-target="#taskMessage"
                                           onClick={() => handleOpenMessages(task)}
+                                          style={{
+                                            color: '#ff8a00',
+                                            padding: '5px 10px',
+                                            transition: 'all 0.2s ease',
+                                            borderRadius: '50%',
+                                            backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                                            width: '38px',
+                                            height: '38px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center'
+                                          }}
+                                          onMouseOver={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(255, 138, 0, 0.2)';
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                          }}
+                                          onMouseOut={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(255, 138, 0, 0.1)';
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                          }}
                                         >
                                           <i className="bi bi-chat-left-dots"></i>
                                           {notifications[task._id] > 0 && (
-                                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                            <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill" style={{
+                                              backgroundColor: '#ff5e00',
+                                              color: 'white',
+                                              boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                            }}>
                                               {notifications[task._id]}
                                             </span>
                                           )}
@@ -1154,7 +1999,31 @@ const Tasks = () => {
                                       <div className="d-flex justify-content-between gap-2">
                                         <button
                                           onClick={() => taskHandleSubmit(task._id)}
-                                          className="btn btn-sm btn-primary"
+                                          className="btn"
+                                          style={{
+                                            flex: 1,
+                                            background: 'linear-gradient(135deg, #52b447, #429938)',
+                                            color: 'white',
+                                            fontWeight: '600',
+                                            fontSize: '14px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '5px',
+                                            padding: '8px',
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            boxShadow: '0 3px 6px rgba(82, 180, 71, 0.25)',
+                                            transition: 'all 0.2s ease'
+                                          }}
+                                          onMouseOver={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.boxShadow = '0 5px 12px rgba(82, 180, 71, 0.35)';
+                                          }}
+                                          onMouseOut={(e) => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 3px 6px rgba(82, 180, 71, 0.25)';
+                                          }}
                                         >
                                           <i className="bi bi-check2"></i> Update
                                         </button>
@@ -1162,7 +2031,29 @@ const Tasks = () => {
                                           data-bs-toggle="modal"
                                           data-bs-target="#dremovetask"
                                           onClick={() => setDeletableId(task._id)}
-                                          className="btn btn-sm btn-danger text-white"
+                                          className="btn"
+                                          style={{
+                                            backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                            color: '#ff5e00',
+                                            fontWeight: '600',
+                                            fontSize: '14px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '5px',
+                                            padding: '8px 12px',
+                                            borderRadius: '8px',
+                                            border: 'none',
+                                            transition: 'all 0.2s ease'
+                                          }}
+                                          onMouseOver={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
+                                            e.currentTarget.style.color = '#d14b00';
+                                          }}
+                                          onMouseOut={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.1)';
+                                            e.currentTarget.style.color = '#ff5e00';
+                                          }}
                                         >
                                           <i className="bi bi-trash"></i> Delete
                                         </button>
@@ -1180,15 +2071,34 @@ const Tasks = () => {
                 )}
                 <div />
 
-                {/* Pagination controls */}
-                <div className="row mt-3">
+                {/* Pagination controls with orange and green theme */}
+                <div className="row mt-4" style={{ marginBottom: '20px' }}>
                   <div className="col-12 col-md-6 mb-3">
-                    <div className="d-flex align-items-center">
-                      <label htmlFor="tasksPerPage" className="form-label me-2 mb-0">Tasks per page:</label>
+                    <div className="d-flex align-items-center" style={{
+                      background: '#f9fcf7',
+                      padding: '12px 15px',
+                            borderRadius: '8px',
+                      border: '1px solid rgba(82, 180, 71, 0.15)'
+                    }}>
+                      <label htmlFor="tasksPerPage" className="form-label me-3 mb-0" style={{
+                            fontWeight: '600',
+                            color: '#444',
+                        fontSize: '14px'
+                      }}>Tasks per page:</label>
                       <select
                         id="tasksPerPage"
                         className="form-select"
-                        style={{ width: 'auto' }}
+                              style={{
+                          width: 'auto',
+                                border: '1px solid rgba(82, 180, 71, 0.3)',
+                          borderRadius: '6px',
+                                color: '#333',
+                          fontWeight: '500',
+                          padding: '8px 30px 8px 12px',
+                                boxShadow: 'none',
+                          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%2352b447' d='M8 10.5l-4-4h8l-4 4z'/%3E%3C/svg%3E")`,
+                          cursor: 'pointer'
+                        }}
                         value={tasksPerPage}
                         onChange={handleTasksPerPageChange}
                       >
@@ -1198,27 +2108,89 @@ const Tasks = () => {
                         <option value="100">100</option>
                         <option value="all">Show All</option>
                       </select>
+                      <div style={{
+                        marginLeft: '15px',
+                        padding: '6px 12px',
+                        backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        color: '#52b447',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}>
+                        <i className="icofont-listine-dots me-1"></i>
+                        Total: {filteredTasks.length}
+                      </div>
                     </div>
                   </div>
                   <div className="col-12 col-md-6">
-                    <nav aria-label="Page navigation">
-                      <ul className="pagination justify-content-md-end">
-                        <li className="page-item">
-                          <button onClick={prevPage} className="page-link" disabled={currentPage === 1}>
-                            &laquo;
+                    <nav aria-label="Page navigation" style={{
+                      background: '#f9fcf7',
+                      padding: '12px 15px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(82, 180, 71, 0.15)'
+                    }}>
+                      <ul className="pagination justify-content-md-end mb-0">
+                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                          <button
+                            onClick={prevPage}
+                            className="page-link"
+                            style={{
+                              border: '1px solid rgba(82, 180, 71, 0.3)',
+                              borderRadius: '6px 0 0 6px',
+                              color: currentPage === 1 ? '#999' : '#52b447',
+                              padding: '8px 14px',
+                              fontWeight: '600',
+                              backgroundColor: currentPage === 1 ? '#f8f8f8' : 'white',
+                              transition: 'all 0.2s ease'
+                            }}
+                            disabled={currentPage === 1}
+                          >
+                            <i className="icofont-arrow-left" style={{ fontSize: '14px' }}></i>
                           </button>
                         </li>
                         {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((page) => (
                           <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
-                            <button onClick={() => paginate(page)} className="page-link bg-white">
+                            <button
+                              onClick={() => paginate(page)}
+                              className="page-link"
+                              style={{
+                                border: '1px solid rgba(82, 180, 71, 0.3)',
+                                borderLeft: 'none',
+                                borderRight: 'none',
+                                color: currentPage === page ? 'white' : '#555',
+                                padding: '8px 14px',
+                                fontWeight: '600',
+                                background: currentPage === page ?
+                                  'linear-gradient(135deg, #ff8a00, #ff5e00)' : 'white',
+                                boxShadow: currentPage === page ?
+                                  '0 2px 5px rgba(255, 94, 0, 0.3)' : 'none',
+                                transition: 'all 0.2s ease',
+                                minWidth: '40px',
+                                textAlign: 'center'
+                              }}
+                            >
                               {page}
                             </button>
                           </li>
                         ))}
                         {endPage < totalPages && (
                           <li className="page-item">
-                            <button onClick={() => paginate(endPage + 1)} className="page-link">
-                              &raquo;
+                            <button
+                              onClick={() => paginate(endPage + 1)}
+                              className="page-link"
+                              style={{
+                                border: '1px solid rgba(82, 180, 71, 0.3)',
+                                borderRadius: '0 6px 6px 0',
+                                color: '#52b447',
+                                padding: '8px 14px',
+                                fontWeight: '600',
+                                backgroundColor: 'white',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              <i className="icofont-arrow-right" style={{ fontSize: '14px' }}></i>
                             </button>
                           </li>
                         )}
@@ -1230,7 +2202,7 @@ const Tasks = () => {
               </div>
             </div>
             <>
-              {/* Create task */}
+              {/* Create task with Modern Design */}
               <div
                 className="modal fade"
                 id="createtask"
@@ -1238,13 +2210,30 @@ const Tasks = () => {
                 aria-hidden="true"
               >
                 <div className="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
-                  <div className="modal-content">
-                    <div className="modal-header">
+                  <div className="modal-content" style={{
+                    borderRadius: '15px',
+                    border: 'none',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    overflow: 'hidden'
+                  }}>
+                    <div className="modal-header" style={{
+                      background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                      borderBottom: 'none',
+                      padding: '20px 25px',
+                      position: 'relative'
+                    }}>
                       <h5
-                        className="modal-title  fw-bold"
+                        className="modal-title fw-bold"
                         id="createprojectlLabel"
+                        style={{
+                          color: 'white',
+                          fontSize: '18px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px'
+                        }}
                       >
-                        {" "}
+                        <i className="icofont-tasks-alt" style={{ fontSize: '22px' }}></i>
                         Create Task
                       </h5>
                       <button
@@ -1252,31 +2241,54 @@ const Tasks = () => {
                         className="btn-close"
                         data-bs-dismiss="modal"
                         aria-label="Close"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                          borderRadius: '50%',
+                          padding: '8px',
+                          opacity: '1',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+                          e.currentTarget.style.transform = 'rotate(90deg)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                          e.currentTarget.style.transform = 'rotate(0deg)';
+                        }}
                       />
                     </div>
-                    <div className="modal-body">
-                      <div className="mb-3">
-                        <label className="form-label">Project Name <span className="text-danger">*</span></label>
-                        {/* <Select
-                          className="form-control"
-                          styles={customStyles}
-                          options={projectOptions}
-                          placeholder="Search and select project"
-                          onChange={(selectedOption) => {
-                            setFormData({
-                              ...formData,
-                              projectName: selectedOption.value
-                            });
+                    <div className="modal-body" style={{ padding: '25px' }}>
+                      <div className="mb-4">
+                        <label
+                          className="form-label"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            marginBottom: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
                           }}
-                          value={projectOptions.find(option => option.value === formData.projectName)}
-                        /> */}
+                        >
+                          <i className="icofont-folder-open" style={{ color: '#ff5e00' }}></i>
+                          Project Name <span className="text-danger">*</span>
+                        </label>
                         <select
                           className="form-select"
-                          placeholder="Add Category"
-                          aria-label="Default select Project Category"
+                          aria-label="Default select Project"
                           name="projectName"
                           value={formData.projectName}
                           onChange={handleChange}
+                          style={{
+                            borderRadius: '8px',
+                            border: '1px solid rgba(255, 94, 0, 0.3)',
+                            padding: '10px 15px',
+                            color: '#333',
+                            boxShadow: 'none',
+                            backgroundColor: 'rgba(255, 94, 0, 0.03)'
+                          }}
                         >
                           <option>Select Project</option>
                           {projects.map((project) => (
@@ -1289,34 +2301,22 @@ const Tasks = () => {
                           ))}
                         </select>
                       </div>
-                      {/* <div className="mb-3">
-                        <label className="form-label">Task Category</label>
-                        <select
-                          className="form-select"
-                          placeholder="Add Category"
-                          aria-label="Default select Project Category"
-                          name="taskCategory"
-                          value={formData.taskCategory}
-                          onChange={handleChange}
-                        >
-                          <option selected="Add Category">Add Category</option>
-                          <option value={"UI/UX Design"}>UI/UX Design</option>
-                          <option value={"Website Developement"}>
-                            Website Developement
-                          </option>
-                          <option value={"App Development"}>
-                            App Development
-                          </option>
-                          <option value={"Digital Marketing"}>
-                            Digital Marketing
-                          </option>
-                        </select>
-                      </div> */}
-                      <div className="mb-3">
+
+                      <div className="mb-4">
                         <label
                           htmlFor="formFileMultipleone"
                           className="form-label"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            marginBottom: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
                         >
+                          <i className="icofont-file-image" style={{ color: '#52b447' }}></i>
                           Task Images &amp; Document
                         </label>
                         <input
@@ -1326,32 +2326,37 @@ const Tasks = () => {
                           multiple
                           name="taskImages"
                           onChange={handleChange}
+                          style={{
+                            borderRadius: '8px',
+                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                            padding: '10px 15px',
+                            color: '#333',
+                            boxShadow: 'none',
+                            backgroundColor: 'rgba(82, 180, 71, 0.03)'
+                          }}
                         />
+                        <small style={{ color: '#777', fontSize: '12px', marginTop: '5px', display: 'block' }}>
+                          Upload any relevant images or documents for this task
+                        </small>
                       </div>
-                      <div className="deadline-form mb-3">
-                        <form>
-                          <div className="row">
-                            {/* <div className="col">
-                              <label
-                                htmlFor="datepickerded"
-                                className="form-label"
-                              >
-                                Task Start Date
-                              </label>
-                              <input
-                                type="date"
-                                className="form-control"
-                                id="datepickerded"
-                                name="taskStartDate"
-                                value={formData.taskStartDate}
-                                onChange={handleChange}
-                              />
-                            </div> */}
-                            <div className="col">
+
+                      <div className="deadline-form mb-4">
+                        <div className="row g-3">
+                          <div className="col-12">
                               <label
                                 htmlFor="datepickerdedone"
                                 className="form-label"
-                              >
+                              style={{
+                                fontWeight: '600',
+                                color: '#444',
+                                fontSize: '14px',
+                                marginBottom: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px'
+                              }}
+                            >
+                              <i className="icofont-calendar" style={{ color: '#ff5e00' }}></i>
                                 Task End Date <span className="text-danger">*</span>
                               </label>
                               <input
@@ -1361,15 +2366,47 @@ const Tasks = () => {
                                 name="taskEndDate"
                                 value={formData.taskEndDate}
                                 onChange={handleChange}
+                              style={{
+                                borderRadius: '8px',
+                                border: '1px solid rgba(255, 94, 0, 0.3)',
+                                padding: '10px 15px',
+                                color: '#333',
+                                boxShadow: 'none',
+                                backgroundColor: 'rgba(255, 94, 0, 0.03)'
+                              }}
                               />
                             </div>
                           </div>
-                        </form>
                       </div>
-                      <div className="row g-3 mb-3">
-                        <div className="col-sm-12 mb-3">
-                          <label className="form-label">Assign Task To</label>
-                          <div className="form-check form-check-inline ms-3">
+
+                      <div className="mb-4" style={{
+                        backgroundColor: 'rgba(82, 180, 71, 0.05)',
+                        padding: '15px',
+                        borderRadius: '10px',
+                        border: '1px solid rgba(82, 180, 71, 0.1)'
+                      }}>
+                        <label
+                          className="form-label mb-3"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          <i className="icofont-users" style={{ color: '#52b447' }}></i>
+                          Assign Task To
+                        </label>
+
+                        <div className="d-flex mb-3" style={{
+                          backgroundColor: 'white',
+                          padding: '10px 15px',
+                          borderRadius: '8px',
+                          border: '1px solid rgba(82, 180, 71, 0.2)'
+                        }}>
+                          <div className="form-check form-check-inline me-4">
                             <input
                               className="form-check-input"
                               type="radio"
@@ -1378,8 +2415,21 @@ const Tasks = () => {
                               value="employee"
                               checked={assignType === 'employee'}
                               onChange={() => setAssignType('employee')}
+                              style={{
+                                cursor: 'pointer',
+                                borderColor: '#52b447'
+                              }}
                             />
-                            <label className="form-check-label" htmlFor="assignEmployee">
+                            <label
+                              className="form-check-label"
+                              htmlFor="assignEmployee"
+                              style={{
+                                cursor: 'pointer',
+                                fontWeight: assignType === 'employee' ? '600' : '400',
+                                color: assignType === 'employee' ? '#52b447' : '#666'
+                              }}
+                            >
+                              <i className={`icofont-business-man-alt-1 me-1 ${assignType === 'employee' ? 'text-success' : 'text-muted'}`}></i>
                               Employee
                             </label>
                           </div>
@@ -1392,23 +2442,55 @@ const Tasks = () => {
                               value="client"
                               checked={assignType === 'client'}
                               onChange={() => setAssignType('client')}
+                              style={{
+                                cursor: 'pointer',
+                                borderColor: '#ff8a00'
+                              }}
                             />
-                            <label className="form-check-label" htmlFor="assignClient">
+                            <label
+                              className="form-check-label"
+                              htmlFor="assignClient"
+                              style={{
+                                cursor: 'pointer',
+                                fontWeight: assignType === 'client' ? '600' : '400',
+                                color: assignType === 'client' ? '#ff8a00' : '#666'
+                              }}
+                            >
+                              <i className={`icofont-user-alt-3 me-1 ${assignType === 'client' ? 'text-warning' : 'text-muted'}`}></i>
                               Client
                             </label>
                           </div>
                         </div>
 
                         {assignType === 'employee' ? (
-                          <div className="col-sm">
-                            <label className="form-label">
+                          <div>
+                            <label
+                              className="form-label"
+                              style={{
+                                fontWeight: '600',
+                                color: '#444',
+                                fontSize: '14px',
+                                marginBottom: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px'
+                              }}
+                            >
+                              <i className="icofont-user-suited" style={{ color: '#52b447' }}></i>
                               Task Assign Person <span className="text-danger">*</span>
                             </label>
-                            <div>
                               <select
                                 className="form-select"
                                 value={selectedEmployees[0]?.value || ""}
                                 onChange={(e) => setSelectedEmployees([{ label: e.target.options[e.target.selectedIndex].text, value: e.target.value }])}
+                              style={{
+                                borderRadius: '8px',
+                                border: '1px solid rgba(82, 180, 71, 0.3)',
+                                padding: '10px 15px',
+                                color: '#333',
+                                boxShadow: 'none',
+                                backgroundColor: 'white'
+                              }}
                               >
                                 <option value="" disabled>Select Associates</option>
                                 {assignEmployee.map((employee) => (
@@ -1417,14 +2499,24 @@ const Tasks = () => {
                                   </option>
                                 ))}
                               </select>
-                            </div>
                           </div>
                         ) : (
-                          <div className="col-sm">
-                            <label className="form-label">
+                          <div>
+                            <label
+                              className="form-label"
+                              style={{
+                                fontWeight: '600',
+                                color: '#444',
+                                fontSize: '14px',
+                                marginBottom: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '5px'
+                              }}
+                            >
+                              <i className="icofont-user-alt-7" style={{ color: '#ff8a00' }}></i>
                               Task Assign Client <span className="text-danger">*</span>
                             </label>
-                            <div>
                               <select
                                 className="form-select"
                                 value={selectedClient?.value || ""}
@@ -1432,6 +2524,14 @@ const Tasks = () => {
                                   label: e.target.options[e.target.selectedIndex].text,
                                   value: e.target.value
                                 })}
+                              style={{
+                                borderRadius: '8px',
+                                border: '1px solid rgba(255, 94, 0, 0.3)',
+                                padding: '10px 15px',
+                                color: '#333',
+                                boxShadow: 'none',
+                                backgroundColor: 'white'
+                              }}
                               >
                                 <option value="" disabled>Select Client</option>
                                 {clients.map((client) => (
@@ -1440,31 +2540,64 @@ const Tasks = () => {
                                   </option>
                                 ))}
                               </select>
-                            </div>
                           </div>
                         )}
                       </div>
-                      <div className="row g-3 mb-3">
-                        <div className="col-sm">
-                          <label className="form-label">Task Priority</label>
+
+                      <div className="mb-4">
+                        <label
+                          className="form-label"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            marginBottom: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          <i className="icofont-flag" style={{ color: '#ff5e00' }}></i>
+                          Task Priority
+                        </label>
                           <select
                             className="form-select"
                             aria-label="Default select Priority"
                             name="taskPriority"
                             value={formData.taskPriority}
                             onChange={handleChange}
-                          >
-                            <option placeholder="set priority">
-                              Set Priority
-                            </option>
-                            <option value={"Highest"}>Highest</option>
-                            <option value={"Medium"}>Medium</option>
-                            <option value={"Lowest"}>Lowest</option>
+                          style={{
+                            borderRadius: '8px',
+                            border: '1px solid rgba(255, 94, 0, 0.3)',
+                            padding: '10px 15px',
+                            color: '#333',
+                            boxShadow: 'none',
+                            backgroundColor: 'rgba(255, 94, 0, 0.03)'
+                          }}
+                        >
+                          <option value="">Set Priority</option>
+                          <option value="Highest">Highest</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Lowest">Lowest</option>
                           </select>
                         </div>
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">Task Title <span className="text-danger">*</span></label>
+
+                      <div className="mb-4">
+                        <label
+                          className="form-label"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            marginBottom: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
+                        >
+                          <i className="icofont-ui-text-chat" style={{ color: '#52b447' }}></i>
+                          Task Title <span className="text-danger">*</span>
+                        </label>
                         <input
                           type="text"
                           className="form-control"
@@ -1473,42 +2606,110 @@ const Tasks = () => {
                           value={formData.taskTitle}
                           onChange={handleChange}
                           required
+                          style={{
+                            borderRadius: '8px',
+                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                            padding: '10px 15px',
+                            color: '#333',
+                            boxShadow: 'none',
+                            backgroundColor: 'rgba(82, 180, 71, 0.03)'
+                          }}
                         />
                       </div>
-                      <div className="mb-3">
+
+                      <div className="mb-4">
                         <label
                           htmlFor="exampleFormControlTextarea786"
                           className="form-label"
+                          style={{
+                            fontWeight: '600',
+                            color: '#444',
+                            fontSize: '14px',
+                            marginBottom: '8px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px'
+                          }}
                         >
-                          Task Name <span className="text-danger">*</span>
+                          <i className="icofont-notepad" style={{ color: '#52b447' }}></i>
+                          Task Description <span className="text-danger">*</span>
                         </label>
                         <textarea
                           className="form-control"
                           id="exampleFormControlTextarea786"
-                          rows={3}
+                          rows={4}
                           placeholder="Explain The Task What To Do & How To Do"
                           name="description"
                           value={formData.description}
                           onChange={handleChange}
+                          style={{
+                            borderRadius: '8px',
+                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                            padding: '12px 15px',
+                            color: '#333',
+                            boxShadow: 'none',
+                            backgroundColor: 'rgba(82, 180, 71, 0.03)',
+                            resize: 'vertical'
+                          }}
                         />
                       </div>
                     </div>
-                    <div className="modal-footer">
+
+                    <div className="modal-footer" style={{
+                      borderTop: '1px solid rgba(255, 94, 0, 0.1)',
+                      padding: '16px 25px'
+                    }}>
                       <button
                         type="button"
-                        className="btn btn-secondary bg-danger"
+                        className="btn"
                         data-bs-dismiss="modal"
+                        style={{
+                          backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                          color: '#ff5e00',
+                          border: '1px solid rgba(255, 94, 0, 0.3)',
+                          borderRadius: '8px',
+                          padding: '8px 20px',
+                          fontWeight: '600',
+                          fontSize: '14px',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.1)';
+                        }}
                       >
+                        <i className="icofont-close-circled me-2"></i>
                         Cancel
                       </button>
                       <button
                         type="button"
-                        className="btn close text-white"
-                        style={{ backgroundColor: "#0a9400" }}
+                        className="btn"
+                        style={{
+                          background: 'linear-gradient(135deg, #52b447, #429938)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '8px',
+                          padding: '8px 20px',
+                          fontWeight: '600',
+                          fontSize: '14px',
+                          boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                          transition: 'all 0.2s ease'
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                        }}
                         data-bs-dismiss="modal"
                         onClick={handleSubmit}
                       >
-                        Create
+                        <i className="icofont-verification-check me-2"></i>
+                        Create Task
                       </button>
                     </div>
                   </div>
@@ -1788,26 +2989,190 @@ const Tasks = () => {
                   </div>
                 </div>
               </div>
-              {/* Message Modal */}
+              {/* Message Modal with Orange and Green Theme */}
               <div className="modal fade" id="taskMessage" tabIndex={-1} aria-labelledby="taskMessageLabel" aria-hidden="true">
                 <div className="modal-dialog modal-dialog-centered modal-lg">
-                  <div className="modal-content">
-                    <div className="modal-header">
-                      <h5 className="modal-title" id="taskMessageLabel">{selectTask.projectName} - Task Work</h5>
-                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <div className="modal-content" style={{
+                    borderRadius: '15px',
+                    border: 'none',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+                    overflow: 'hidden',
+                    height: '80vh', // Fixed height for better chat experience
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}>
+                    <div className="modal-header" style={{
+                      background: 'linear-gradient(135deg, #ff8a00, #ff5e00)',
+                      borderBottom: 'none',
+                      padding: '15px 20px',
+                      position: 'relative',
+                      zIndex: 1
+                    }}>
+                      <div
+                        className="d-flex align-items-center"
+                        style={{ width: '100%' }}
+                      >
+                        <div
+                          style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(255,255,255,0.2)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginRight: '12px'
+                          }}
+                        >
+                          <i className="bi bi-card-checklist" style={{ fontSize: '20px', color: 'white' }}></i>
                     </div>
-                    <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }} ref={messageContainerRef}>
-                      {/* Message List */}
-                      <ul className="list-group mb-3">
-                        {messages.map((message) => (
-                          <li key={message._id}>
-                            <div className="border-bottom">
-                              <div className="d-flex py-1">
-                                <h6 className="fw-bold px-3">{message.senderId}</h6> -
+                        <div style={{ flex: 1 }}>
+                          <h5
+                            className="modal-title"
+                            id="taskMessageLabel"
+                            style={{
+                              color: 'white',
+                              fontSize: '18px',
+                              fontWeight: '600',
+                              margin: 0
+                            }}
+                          >
+                            {selectTask.projectName}
+                          </h5>
+                          <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px' }}>
+                            <i className="bi bi-chat-dots me-1"></i> Task Conversation
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-close"
+                          data-bs-dismiss="modal"
+                          aria-label="Close"
+                          style={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                            borderRadius: '50%',
+                            padding: '8px',
+                            opacity: '1',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+                            e.currentTarget.style.transform = 'rotate(90deg)';
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+                            e.currentTarget.style.transform = 'rotate(0deg)';
+                          }}
+                        ></button>
+                      </div>
+                    </div>
+
+                    {/* Chat Body */}
+                    <div className="modal-body p-0" style={{
+                      flex: 1,
+                      overflowY: 'auto',
+                      backgroundColor: '#f5f5f5',
+                      backgroundImage: 'url("data:image/svg+xml,%3Csvg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="%23000000" fill-opacity="0.03" fill-rule="evenodd"%3E%3Ccircle cx="3" cy="3" r="3"/%3E%3Ccircle cx="13" cy="13" r="3"/%3E%3C/g%3E%3C/svg%3E")',
+                      padding: '20px'
+                    }} ref={messageContainerRef}>
+                      {messages.length === 0 ? (
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: '100%',
+                          color: '#888',
+                          padding: '30px'
+                        }}>
+                          <div style={{
+                            width: '80px',
+                            height: '80px',
+                            borderRadius: '50%',
+                            backgroundColor: 'rgba(255, 138, 0, 0.1)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '15px'
+                          }}>
+                            <i className="bi bi-chat-square-text" style={{ fontSize: '40px', color: '#ff8a00' }}></i>
+                          </div>
+                          <h6 style={{ color: '#666', marginBottom: '10px' }}>No messages yet</h6>
+                          <p style={{ textAlign: 'center', fontSize: '14px' }}>
+                            Start the conversation by sending your first message below.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="chat-messages">
+                          {messages.map((message, index) => {
+                            const isCurrentUser = message.senderId === sessionStorage.getItem('employeeName'); // This should match your actual logic
+                            const prevSender = index > 0 ? messages[index - 1].senderId : null;
+                            const showSender = prevSender !== message.senderId;
+
+                            return (
+                              <div key={message._id} className={`message-group ${isCurrentUser ? 'own-messages' : ''}`} style={{
+                                marginBottom: showSender ? '20px' : '2px',
+                                marginTop: showSender ? '20px' : '2px',
+                              }}>
+                                {showSender && !isCurrentUser && (
+                                  <div style={{
+                                    fontSize: '13px',
+                                    color: '#666',
+                                    marginLeft: '48px',
+                                    marginBottom: '5px'
+                                  }}>
+                                    {message.senderId}
+                                  </div>
+                                )}
+
+                                <div style={{
+                                  display: 'flex',
+                                  alignItems: 'flex-start',
+                                  justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                  marginBottom: '1px'
+                                }}>
+                                  {!isCurrentUser && showSender && (
+                                    <div style={{
+                                      width: '35px',
+                                      height: '35px',
+                                      borderRadius: '50%',
+                                      backgroundColor: 'rgba(255, 138, 0, 0.2)',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      marginRight: '10px',
+                                      flexShrink: 0
+                                    }}>
+                                      <i className="bi bi-person" style={{ color: '#ff8a00', fontSize: '18px' }}></i>
+                                    </div>
+                                  )}
+
+                                  {!isCurrentUser && !showSender && (
+                                    <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                  )}
+
+                                  <div style={{
+                                    maxWidth: '75%',
+                                    wordBreak: 'break-word',
+                                    backgroundColor: isCurrentUser ? 'rgba(82, 180, 71, 0.2)' : 'white',
+                                    color: '#333',
+                                    padding: '10px 14px',
+                                    borderRadius: isCurrentUser
+                                      ? '15px 15px 2px 15px'
+                                      : '15px 15px 15px 2px',
+                                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                                    position: 'relative'
+                                  }}>
                                 {message.content.startsWith("```excel") ? (
-                                  <div className="excel-message p-2 border rounded bg-light mt-1 mb-1 w-100">
-                                    <div className="mb-1 small text-muted">Excel Sheet:</div>
-                                    <table className="table table-sm table-bordered">
+                                      <div className="excel-message p-1 rounded bg-light w-100" style={{
+                                        border: '1px solid rgba(0,0,0,0.1)',
+                                        borderRadius: '8px',
+                                        overflow: 'auto'
+                                      }}>
+                                        <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', padding: '0 5px' }}>
+                                          <i className="bi bi-file-earmark-spreadsheet me-1"></i>Excel Sheet:
+                                        </div>
+                                        <table className="table table-sm table-bordered m-0">
                                       <tbody>
                                         {message.content
                                           .replace("```excel\n", "")
@@ -1817,7 +3182,7 @@ const Tasks = () => {
                                           .map((row, rowIdx) => (
                                             <tr key={rowIdx}>
                                               {row.split('\t').map((cell, cellIdx) => (
-                                                <td key={cellIdx} className="px-2 py-1">{cell}</td>
+                                                    <td key={cellIdx} className="px-2 py-1" style={{ fontSize: '13px' }}>{cell}</td>
                                               ))}
                                             </tr>
                                           ))}
@@ -1825,70 +3190,275 @@ const Tasks = () => {
                                     </table>
                                   </div>
                                 ) : (
-                                  <span className="px-3 text-break">{message.content}</span>
-                                )}
-                                <span className="px-3 text-muted">{new Date(message.createdAt).toLocaleString()}</span>
-                                {message.fileUrls && message.fileUrls.map((fileUrl, index) => {
+                                      <div style={{ fontSize: '14px' }}>{message.content}</div>
+                                    )}
+                                    <div style={{
+                                      fontSize: '11px',
+                                      color: '#999',
+                                      textAlign: 'right',
+                                      marginTop: '4px'
+                                    }}>
+                                      {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                      {isCurrentUser && (
+                                        <i className="bi bi-check-all ms-1" style={{ color: '#52b447' }}></i>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {isCurrentUser && showSender && (
+                                    <div style={{
+                                      width: '35px',
+                                      height: '35px',
+                                      borderRadius: '50%',
+                                      backgroundColor: 'rgba(82, 180, 71, 0.2)',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      marginLeft: '10px',
+                                      flexShrink: 0
+                                    }}>
+                                      <i className="bi bi-person" style={{ color: '#52b447', fontSize: '18px' }}></i>
+                                    </div>
+                                  )}
+
+                                  {isCurrentUser && !showSender && (
+                                    <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                  )}
+                                </div>
+
+                                {/* Attachments */}
+                                {message.fileUrls && message.fileUrls.length > 0 && message.fileUrls.some(url => url) && (
+                                  <div style={{
+                                    display: 'flex',
+                                    justifyContent: isCurrentUser ? 'flex-end' : 'flex-start',
+                                    marginTop: '5px'
+                                  }}>
+                                    {!isCurrentUser && (
+                                      <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                    )}
+
+                                    <div style={{
+                                      maxWidth: '75%',
+                                      display: 'flex',
+                                      flexWrap: 'wrap',
+                                      gap: '8px',
+                                      justifyContent: isCurrentUser ? 'flex-end' : 'flex-start'
+                                    }}>
+                                      {message.fileUrls.map((fileUrl, index) => {
                                   if (fileUrl) {
                                     const cleanFileUrl = `${import.meta.env.VITE_BASE_URL}${fileUrl}`;
                                     const fileExtension = cleanFileUrl.split('.').pop().toLowerCase();
+                                          const fileName = cleanFileUrl.split('/').pop();
 
                                     if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
                                       return (
-                                        <div key={index} className="px-3">
+                                              <div key={index} style={{
+                                                borderRadius: '10px',
+                                                overflow: 'hidden',
+                                                border: `2px solid ${isCurrentUser ? 'rgba(82, 180, 71, 0.3)' : 'rgba(255, 138, 0, 0.3)'}`,
+                                                width: '120px',
+                                                height: '120px',
+                                                position: 'relative'
+                                              }}>
                                           <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer">
-                                            <img src={cleanFileUrl} alt={`Attachment ${index + 1}`} style={{ maxWidth: '100px', maxHeight: '100px' }} />
+                                                  <img
+                                                    src={cleanFileUrl}
+                                                    alt={`Attachment ${index + 1}`}
+                                                    style={{
+                                                      width: '100%',
+                                                      height: '100%',
+                                                      objectFit: 'cover',
+                                                      cursor: 'pointer'
+                                                    }}
+                                                  />
                                           </a>
                                         </div>
                                       );
-                                    } else if (fileExtension === 'pdf') {
-                                      return (
-                                        <div key={index} className="px-3">
-                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">PDF File</a>
-                                        </div>
-                                      );
                                     } else {
+                                            const isDoc = fileExtension === 'pdf' || fileExtension === 'doc' || fileExtension === 'docx';
                                       return (
-                                        <div key={index} className="px-3">
-                                          <a href={cleanFileUrl} target="_blank" rel="noopener noreferrer" className="">Download File</a>
-                                        </div>
+                                              <a
+                                                key={index}
+                                                href={cleanFileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{
+                                                  display: 'flex',
+                                                  alignItems: 'center',
+                                                  gap: '8px',
+                                                  padding: '8px 12px',
+                                                  backgroundColor: isCurrentUser ? 'rgba(82, 180, 71, 0.1)' : 'rgba(255, 138, 0, 0.1)',
+                                                  borderRadius: '10px',
+                                                  color: isCurrentUser ? '#52b447' : '#ff8a00',
+                                                  textDecoration: 'none',
+                                                  maxWidth: '250px'
+                                                }}
+                                              >
+                                                <i className={`bi bi-file-${isDoc ? 'pdf' : 'text'}`} style={{ fontSize: '20px' }}></i>
+                                                <span style={{
+                                                  whiteSpace: 'nowrap',
+                                                  overflow: 'hidden',
+                                                  textOverflow: 'ellipsis',
+                                                  fontSize: '13px'
+                                                }}>
+                                                  {fileName}
+                                                </span>
+                                              </a>
                                       );
                                     }
                                   }
                                   return null;
                                 })}
                               </div>
+
+                                    {isCurrentUser && (
+                                      <div style={{ width: '45px', flexShrink: 0 }}></div>
+                                    )}
                             </div>
-                          </li>
-                        ))}
-                      </ul>
+                                )}
                     </div>
-                    <div className="modal-footer">
-                      <form onSubmit={handleSubmitMessage} className="w-100">
-                        <div className="mb-3">
-                          <label htmlFor="currentMessage" className="form-label">Add Message</label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Message Input Area */}
+                    <div className="chat-input-area" style={{
+                      padding: '15px',
+                      backgroundColor: 'white',
+                      borderTop: '1px solid rgba(0,0,0,0.05)',
+                      boxShadow: '0 -2px 10px rgba(0,0,0,0.03)',
+                      zIndex: 1
+                    }}>
+                      <form onSubmit={handleSubmitMessage} className="d-flex flex-column">
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'flex-end',
+                          gap: '10px'
+                        }}>
+                          <div style={{
+                            position: 'relative',
+                            flex: 1
+                          }}>
                           <textarea
                             className="form-control"
                             id="currentMessage"
                             name="message"
-                            rows="3"
+                              rows="1"
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
+                              onChange={(e) => {
+                                setContent(e.target.value);
+                                // Auto resize textarea
+                                e.target.style.height = 'auto';
+                                e.target.style.height = Math.min(120, e.target.scrollHeight) + 'px';
+                              }}
                             required
                             ref={messageInputRef}
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label htmlFor="fileUpload" className="form-label">Upload Files</label>
+                              style={{
+                                borderRadius: '20px',
+                                border: '1px solid rgba(0,0,0,0.1)',
+                                padding: '12px 50px 12px 15px',
+                                color: '#333',
+                                boxShadow: 'none',
+                                resize: 'none',
+                                fontSize: '14px',
+                                lineHeight: '1.4',
+                                overflowY: 'auto',
+                                maxHeight: '120px'
+                              }}
+                              placeholder="Type a message here..."
+                            />
+                            <label
+                              htmlFor="fileUpload"
+                              style={{
+                                position: 'absolute',
+                                right: '15px',
+                                bottom: '10px',
+                                margin: 0,
+                                cursor: 'pointer',
+                                color: '#ff8a00'
+                              }}
+                            >
+                              <i className="bi bi-paperclip" style={{ fontSize: '20px' }}></i>
+                            </label>
                           <input
                             type="file"
-                            className="form-control"
+                              className="form-control d-none"
                             id="fileUpload"
                             onChange={handleFileChange}
                             multiple
                           />
                         </div>
-                        <button type="submit" className="btn btn-primary">Send</button>
+                          <button
+                            type="submit"
+                            style={{
+                              width: '45px',
+                              height: '45px',
+                              borderRadius: '50%',
+                              backgroundColor: '#52b447',
+                              color: 'white',
+                              border: 'none',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              boxShadow: '0 2px 8px rgba(82,180,71,0.3)',
+                              transition: 'all 0.2s ease'
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.transform = 'scale(1.05)';
+                              e.currentTarget.style.backgroundColor = '#429938';
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.transform = 'scale(1)';
+                              e.currentTarget.style.backgroundColor = '#52b447';
+                            }}
+                          >
+                            <i className="bi bi-send" style={{ fontSize: '18px' }}></i>
+                          </button>
+                        </div>
+
+                        {/* File preview area - shows when files are selected */}
+                        <div id="filePreviewArea" style={{
+                          display: 'none', /* Change this dynamically with JS when files are selected */
+                          marginTop: '10px',
+                          padding: '10px',
+                          borderRadius: '12px',
+                          backgroundColor: 'rgba(0,0,0,0.03)',
+                          border: '1px dashed rgba(0,0,0,0.1)'
+                        }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            marginBottom: '8px'
+                          }}>
+                            <span style={{ fontSize: '13px', color: '#666' }}>
+                              <i className="bi bi-paperclip me-1"></i>
+                              <span id="fileCount">0</span> files selected
+                            </span>
+                            <button
+                              type="button"
+                              id="clearFiles"
+                              style={{
+                                backgroundColor: 'transparent',
+                                border: 'none',
+                                color: '#ff5e00',
+                                fontSize: '13px',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              Clear all
+                            </button>
+                          </div>
+                          <div id="previewContainer" style={{
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                            gap: '8px'
+                          }}>
+                            {/* File previews will be added here dynamically */}
+                          </div>
+                        </div>
                       </form>
                     </div>
                   </div>
