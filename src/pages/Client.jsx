@@ -37,7 +37,19 @@ const Client = () => {
         paymentApp: '',
     });
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, type } = e.target;
+        
+        if (type === 'file') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: e.target.files[0]
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: e.target.value
+            }));
+        }
     };
     const handleImageChange = (e) => {
         setFormData({
@@ -69,6 +81,7 @@ const Client = () => {
             if (formData.clientPassport) formDataToSend.append('clientPassport', formData.clientPassport);
             if (formData.clientAgentID) formDataToSend.append('clientAgentID', formData.clientAgentID);
             if (formData.clientGovtID) formDataToSend.append('clientGovtID', formData.clientGovtID);
+            if (formData.qrCode) formDataToSend.append('qrCode', formData.qrCode);
 
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}api/clients`, formDataToSend, {
                 headers: {
@@ -182,6 +195,7 @@ const Client = () => {
                     `${import.meta.env.VITE_BASE_URL}api/clients/${toEdit}`
                 );
 
+
                 setClientData({
                     clientName: response.data.clientName,
                     clientEmail: response.data.clientEmail,
@@ -227,6 +241,8 @@ const Client = () => {
             Object.keys(clientData).forEach(key => {
                 // Check if clientImage is a file and append correctly
                 if (key === "clientImage" && clientData[key] instanceof File) {
+                    updateDataToSend.append(key, clientData[key]);
+                } else if (key === "qrCode" && clientData[key] instanceof File) {
                     updateDataToSend.append(key, clientData[key]);
                 } else {
                     updateDataToSend.append(key, clientData[key]);
@@ -602,7 +618,7 @@ const Client = () => {
                                                                         boxShadow: '0 4px 15px rgba(82, 180, 71, 0.2)'
                                                                     }}>
                                                                         <img
-                                                                            src={`${import.meta.env.VITE_BASE_URL}/uploads/${client.clientImage}`}
+                                                                            src={`${import.meta.env.VITE_BASE_URL}uploads/${client.clientImage}`}
                                                                             alt={client.clientName}
                                                                             style={{
                                                                                 width: '100%',
@@ -958,7 +974,7 @@ const Client = () => {
                                                                         }}>
                                                                             <div className="d-flex align-items-center gap-3">
                                                                                 <img
-                                                                                    src={`${import.meta.env.VITE_BASE_URL}/uploads/${client.clientImage}`}
+                                                                                    src={`${import.meta.env.VITE_BASE_URL}uploads/${client.clientImage}`}
                                                                                     alt={client.clientName}
                                                                                     className="rounded-circle"
                                                                                     style={{
@@ -1300,17 +1316,17 @@ const Client = () => {
                                             }}>
                                                 <i className="icofont-papers" style={{ color: '#52b447' }}></i>
                                                 Documents
-                                                        </label>
+                                            </label>
                                             <div className="row g-3" style={{
                                                 backgroundColor: 'rgba(82, 180, 71, 0.03)',
                                                 padding: '15px',
                                                 borderRadius: '10px',
                                                 border: '1px solid rgba(82, 180, 71, 0.2)'
                                             }}>
-                                                <div className="col-md-6">
+                                            <div className="col-md-6">
                                                     <div style={{ marginBottom: '15px' }}>
-                                                        <label className="form-label" style={{ 
-                                                            fontSize: '13px', 
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
                                                             color: '#666',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -1318,13 +1334,13 @@ const Client = () => {
                                                             marginBottom: '5px'
                                                         }}>
                                                             <i className="icofont-license" style={{ color: '#52b447' }}></i>
-                                                            Driving License
-                                                        </label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            name="clientDL"
-                                                            onChange={handleImageChange}
+                                                    Driving License
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    name="clientDL"
+                                                    onChange={handleImageChange}
                                                             style={{
                                                                 borderRadius: '6px',
                                                                 border: '1px solid rgba(82, 180, 71, 0.2)',
@@ -1334,11 +1350,11 @@ const Client = () => {
                                                             }}
                                                         />
                                                     </div>
-                                                </div>
-                                                <div className="col-md-6">
+                                            </div>
+                                            <div className="col-md-6">
                                                     <div style={{ marginBottom: '15px' }}>
-                                                        <label className="form-label" style={{ 
-                                                            fontSize: '13px', 
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
                                                             color: '#666',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -1346,13 +1362,13 @@ const Client = () => {
                                                             marginBottom: '5px'
                                                         }}>
                                                             <i className="icofont-passport" style={{ color: '#ff5e00' }}></i>
-                                                            Passport
-                                                        </label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            name="clientPassport"
-                                                            onChange={handleImageChange}
+                                                    Passport
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    name="clientPassport"
+                                                    onChange={handleImageChange}
                                                             style={{
                                                                 borderRadius: '6px',
                                                                 border: '1px solid rgba(255, 94, 0, 0.2)',
@@ -1362,11 +1378,11 @@ const Client = () => {
                                                             }}
                                                         />
                                                     </div>
-                                                </div>
-                                                <div className="col-md-6">
+                                            </div>
+                                            <div className="col-md-6">
                                                     <div style={{ marginBottom: '15px' }}>
-                                                        <label className="form-label" style={{ 
-                                                            fontSize: '13px', 
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
                                                             color: '#666',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -1374,13 +1390,13 @@ const Client = () => {
                                                             marginBottom: '5px'
                                                         }}>
                                                             <i className="icofont-id" style={{ color: '#52b447' }}></i>
-                                                            Agent ID
-                                                        </label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            name="clientAgentID"
-                                                            onChange={handleImageChange}
+                                                    Agent ID
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    name="clientAgentID"
+                                                    onChange={handleImageChange}
                                                             style={{
                                                                 borderRadius: '6px',
                                                                 border: '1px solid rgba(82, 180, 71, 0.2)',
@@ -1390,11 +1406,11 @@ const Client = () => {
                                                             }}
                                                         />
                                                     </div>
-                                                </div>
-                                                <div className="col-md-6">
+                                            </div>
+                                            <div className="col-md-6">
                                                     <div style={{ marginBottom: '15px' }}>
-                                                        <label className="form-label" style={{ 
-                                                            fontSize: '13px', 
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
                                                             color: '#666',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -1402,13 +1418,13 @@ const Client = () => {
                                                             marginBottom: '5px'
                                                         }}>
                                                             <i className="icofont-card" style={{ color: '#ff5e00' }}></i>
-                                                            Government ID
-                                                        </label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            name="clientGovtID"
-                                                            onChange={handleImageChange}
+                                                    Government ID
+                                                </label>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    name="clientGovtID"
+                                                    onChange={handleImageChange}
                                                             style={{
                                                                 borderRadius: '6px',
                                                                 border: '1px solid rgba(255, 94, 0, 0.2)',
@@ -1435,12 +1451,12 @@ const Client = () => {
                                                     gap: '5px'
                                                 }}>
                                                     <i className="icofont-email" style={{ color: '#52b447' }}></i>
-                                                    Email ID <span className="text-danger">*</span>
-                                                </label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Email ID"
+                                                            Email ID <span className="text-danger">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="email"
+                                                            className="form-control"
+                                                            placeholder="Email ID"
                                                     name="clientEmail"
                                                     value={formData.clientEmail}
                                                     onChange={handleChange}
@@ -1451,8 +1467,8 @@ const Client = () => {
                                                         color: '#333',
                                                         boxShadow: 'none'
                                                     }}
-                                                />
-                                            </div>
+                                                        />
+                                                    </div>
 
                                             <div className="col-md-6">
                                                 <label className="form-label" style={{
@@ -1465,42 +1481,42 @@ const Client = () => {
                                                     gap: '5px'
                                                 }}>
                                                     <i className="icofont-key" style={{ color: '#ff5e00' }}></i>
-                                                    Password <span className="text-danger">*</span>
-                                                </label>
+                                                            Password <span className="text-danger">*</span>
+                                                        </label>
                                                 <div className="input-group" style={{
                                                     borderRadius: '8px',
                                                     border: '1px solid rgba(255, 94, 0, 0.3)',
                                                     padding: '3px',
                                                     backgroundColor: 'rgba(255, 94, 0, 0.03)'
                                                 }}>
-                                                    <input
-                                                        type={showPassword ? "text" : "password"}
-                                                        className="form-control"
-                                                        placeholder="Password"
-                                                        name="clientPassword"
-                                                        value={formData.clientPassword}
-                                                        onChange={handleChange}
+                                                            <input
+                                                                type={showPassword ? "text" : "password"}
+                                                                className="form-control"
+                                                                placeholder="Password"
+                                                                name="clientPassword"
+                                                                value={formData.clientPassword}
+                                                                onChange={handleChange}
                                                         style={{
                                                             border: 'none',
                                                             padding: '7px 12px',
                                                             backgroundColor: 'transparent'
                                                         }}
-                                                    />
-                                                    <button
+                                                            />
+                                                            <button
                                                         className="btn"
-                                                        type="button"
-                                                        onClick={() => setShowPassword(!showPassword)}
+                                                                type="button"
+                                                                onClick={() => setShowPassword(!showPassword)}
                                                         style={{
                                                             backgroundColor: 'rgba(255, 94, 0, 0.1)',
                                                             border: 'none',
                                                             color: '#ff5e00'
                                                         }}
-                                                    >
-                                                        <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
-                                                    </button>
+                                                            >
+                                                                <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
 
                                         {/* Address */}
                                         <div className="mb-4">
@@ -1514,11 +1530,11 @@ const Client = () => {
                                                 gap: '5px'
                                             }}>
                                                 <i className="icofont-location-pin" style={{ color: '#52b447' }}></i>
-                                                Address
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
+                                                            Address
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
                                                 placeholder="Enter complete address"
                                                 name="clientAddress"
                                                 value={formData.clientAddress}
@@ -1530,8 +1546,8 @@ const Client = () => {
                                                     color: '#333',
                                                     boxShadow: 'none'
                                                 }}
-                                            />
-                                        </div>
+                                                        />
+                                                    </div>
 
                                         {/* Phone */}
                                         <div className="mb-4">
@@ -1546,10 +1562,10 @@ const Client = () => {
                                             }}>
                                                 <i className="icofont-phone" style={{ color: '#ff5e00' }}></i>
                                                 Phone Number
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
                                                 placeholder="Enter phone number"
                                                 name="clientPhone"
                                                 value={formData.clientPhone}
@@ -1562,8 +1578,8 @@ const Client = () => {
                                                     boxShadow: 'none',
                                                     backgroundColor: 'rgba(255, 94, 0, 0.03)'
                                                 }}
-                                            />
-                                        </div>
+                                                />
+                                            </div>
 
                                         {/* Bank Details */}
                                         <div className="mb-4">
@@ -1745,12 +1761,12 @@ const Client = () => {
                                                             <i className="bi bi-qr-code"></i>
                                                         </span>
                                                         <input
-                                                            type="text"
+                                                            type="file"
                                                             className="form-control"
                                                             placeholder="QR Code"
                                                             name="qrCode"
-                                                            value={formData.qrCode || ''}
                                                             onChange={handleChange}
+                                                            accept="image/*"  // Only accept image files
                                                             style={{
                                                                 border: '1px solid rgba(82, 180, 71, 0.2)',
                                                                 borderLeft: 'none',
@@ -1966,6 +1982,7 @@ const Client = () => {
                                                     backgroundColor: 'rgba(255, 94, 0, 0.03)'
                                                 }}
                                             />
+                                            current file: {clientData?.clientImage ? clientData.clientImage.split('/').pop() : 'No file selected'}
                                         </div>
 
                                         {/* Documents Section */}
@@ -1988,11 +2005,11 @@ const Client = () => {
                                                 borderRadius: '10px',
                                                 border: '1px solid rgba(82, 180, 71, 0.2)'
                                             }}>
-                                                {/* Document inputs - Similar to create form */}
-                                                <div className="col-md-6">
+                                                {/* Driving License */}
+                                            <div className="col-md-6">
                                                     <div style={{ marginBottom: '15px' }}>
-                                                        <label className="form-label" style={{ 
-                                                            fontSize: '13px', 
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
                                                             color: '#666',
                                                             display: 'flex',
                                                             alignItems: 'center',
@@ -2000,31 +2017,319 @@ const Client = () => {
                                                             marginBottom: '5px'
                                                         }}>
                                                             <i className="icofont-license" style={{ color: '#52b447' }}></i>
-                                                            Driving License
-                                                        </label>
-                                                        <input
-                                                            type="file"
-                                                            className="form-control"
-                                                            name="clientDL"
-                                                            onChange={updateChange}
-                                                            style={{
-                                                                borderRadius: '6px',
-                                                                border: '1px solid rgba(82, 180, 71, 0.2)',
-                                                                padding: '8px 12px',
-                                                                fontSize: '13px',
-                                                                backgroundColor: 'white'
-                                                            }}
-                                                        />
+                                                    Driving License
+                                                </label>
+                                                        <div style={{
+                                                            position: 'relative',
+                                                            backgroundColor: 'white',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                            padding: '8px'
+                                                        }}>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientDLEdit"
+                                                    name="clientDL"
+                                                    onChange={updateChange}
+                                                                style={{
+                                                                    border: 'none',
+                                                                    padding: '8px',
+                                                                    fontSize: '13px',
+                                                                    backgroundColor: 'transparent'
+                                                                }}
+                                                            />
+                                                            {clientData?.clientDL && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    backgroundColor: 'rgba(82, 180, 71, 0.05)',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#52b447',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px'
+                                                                }}>
+                                                                    <i className="icofont-file-pdf"></i>
+                                                                    Current file: {typeof clientData.clientDL === 'string' ?
+                                                                        clientData.clientDL.split('/').pop() :
+                                                                        'File selected'}
+                                            </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                {/* Repeat similar styling for other document inputs */}
-                                                {/* ... */}
+
+                                                {/* Passport */}
+                                            <div className="col-md-6">
+                                                    <div style={{ marginBottom: '15px' }}>
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
+                                                            color: '#666',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '5px',
+                                                            marginBottom: '5px'
+                                                        }}>
+                                                            <i className="icofont-passport" style={{ color: '#ff5e00' }}></i>
+                                                    Passport
+                                                </label>
+                                                        <div style={{
+                                                            position: 'relative',
+                                                            backgroundColor: 'white',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                            padding: '8px'
+                                                        }}>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientPassportEdit"
+                                                    name="clientPassport"
+                                                    onChange={updateChange}
+                                                                style={{
+                                                                    border: 'none',
+                                                                    padding: '8px',
+                                                                    fontSize: '13px',
+                                                                    backgroundColor: 'transparent'
+                                                                }}
+                                                            />
+                                                            {clientData?.clientPassport && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    backgroundColor: 'rgba(255, 94, 0, 0.05)',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#ff5e00',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px'
+                                                                }}>
+                                                                    <i className="icofont-file-pdf"></i>
+                                                                    Current file: {typeof clientData.clientPassport === 'string' ?
+                                                                        clientData.clientPassport.split('/').pop() :
+                                                                        'File selected'}
+                                            </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Agent ID */}
+                                            <div className="col-md-6">
+                                                    <div style={{ marginBottom: '15px' }}>
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
+                                                            color: '#666',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '5px',
+                                                            marginBottom: '5px'
+                                                        }}>
+                                                            <i className="icofont-id" style={{ color: '#52b447' }}></i>
+                                                    Agent ID
+                                                </label>
+                                                        <div style={{
+                                                            position: 'relative',
+                                                            backgroundColor: 'white',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                            padding: '8px'
+                                                        }}>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientAgentIDEdit"
+                                                    name="clientAgentID"
+                                                    onChange={updateChange}
+                                                                style={{
+                                                                    border: 'none',
+                                                                    padding: '8px',
+                                                                    fontSize: '13px',
+                                                                    backgroundColor: 'transparent'
+                                                                }}
+                                                            />
+                                                            {clientData?.clientAgentID && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    backgroundColor: 'rgba(82, 180, 71, 0.05)',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#52b447',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px'
+                                                                }}>
+                                                                    <i className="icofont-file-pdf"></i>
+                                                                    Current file: {typeof clientData.clientAgentID === 'string' ?
+                                                                        clientData.clientAgentID.split('/').pop() :
+                                                                        'File selected'}
+                                            </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Government ID */}
+                                            <div className="col-md-6">
+                                                    <div style={{ marginBottom: '15px' }}>
+                                                        <label className="form-label" style={{
+                                                            fontSize: '13px',
+                                                            color: '#666',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            gap: '5px',
+                                                            marginBottom: '5px'
+                                                        }}>
+                                                            <i className="icofont-card" style={{ color: '#ff5e00' }}></i>
+                                                    Government ID
+                                                </label>
+                                                        <div style={{
+                                                            position: 'relative',
+                                                            backgroundColor: 'white',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                            padding: '8px'
+                                                        }}>
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    id="clientGovtIDEdit"
+                                                    name="clientGovtID"
+                                                    onChange={updateChange}
+                                                                style={{
+                                                                    border: 'none',
+                                                                    padding: '8px',
+                                                                    fontSize: '13px',
+                                                                    backgroundColor: 'transparent'
+                                                                }}
+                                                            />
+                                                            {clientData?.clientGovtID && (
+                                                                <div style={{
+                                                                    marginTop: '8px',
+                                                                    padding: '8px',
+                                                                    backgroundColor: 'rgba(255, 94, 0, 0.05)',
+                                                                    borderRadius: '6px',
+                                                                    fontSize: '12px',
+                                                                    color: '#ff5e00',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '5px'
+                                                                }}>
+                                                                    <i className="icofont-file-pdf"></i>
+                                                                    Current file: {typeof clientData.clientGovtID === 'string' ?
+                                                                        clientData.clientGovtID.split('/').pop() :
+                                                                        'File selected'}
+                                                                </div>
+                                                            )}
+                                                        </div>
                                             </div>
                                         </div>
 
-                                        {/* Contact Information */}
-                                        <div className="row g-3 mb-4">
-                                            <div className="col-md-6">
+                                                {/* Help Text */}
+                                                <div className="col-12">
+                                                    <div style={{
+                                                        backgroundColor: 'rgba(82, 180, 71, 0.05)',
+                                                        padding: '10px',
+                                                        borderRadius: '8px',
+                                                        fontSize: '12px',
+                                                        color: '#666',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px'
+                                                    }}>
+                                                        <i className="icofont-info-circle" style={{ color: '#52b447', fontSize: '16px' }}></i>
+                                                        <span>Upload new files only if you want to update the existing documents. Leave empty to keep current files.</span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            {/* Contact Information */}
+                                            <div className="row g-3 mb-4">
+                                                <div className="col-md-6">
+                                                    <label className="form-label" style={{
+                                                        fontWeight: '600',
+                                                        color: '#444',
+                                                        fontSize: '14px',
+                                                        marginBottom: '8px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px'
+                                                    }}>
+                                                        <i className="icofont-email" style={{ color: '#52b447' }}></i>
+                                                        Email ID
+                                                    </label>
+                                                        <input
+                                                            type="email"
+                                                            className="form-control"
+                                                            placeholder="Email ID"
+                                                            name="clientEmail"
+                                                            value={clientData.clientEmail}
+                                                            onChange={updateChange}
+                                                        style={{
+                                                            borderRadius: '8px',
+                                                            border: '1px solid rgba(82, 180, 71, 0.3)',
+                                                            padding: '10px 15px',
+                                                            color: '#333',
+                                                            boxShadow: 'none'
+                                                        }}
+                                                        />
+                                                    </div>
+
+                                                <div className="col-md-6">
+                                                    <label className="form-label" style={{
+                                                        fontWeight: '600',
+                                                        color: '#444',
+                                                        fontSize: '14px',
+                                                        marginBottom: '8px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '5px'
+                                                    }}>
+                                                        <i className="icofont-key" style={{ color: '#ff5e00' }}></i>
+                                                        Password
+                                                    </label>
+                                                    <div className="input-group" style={{
+                                                        borderRadius: '8px',
+                                                        border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                        padding: '3px',
+                                                        backgroundColor: 'rgba(255, 94, 0, 0.03)'
+                                                    }}>
+                                                            <input
+                                                                type={showEditPassword ? "text" : "password"}
+                                                                className="form-control"
+                                                                placeholder="Password"
+                                                                name="clientPassword"
+                                                                value={clientData.clientPassword}
+                                                                onChange={updateChange}
+                                                            style={{
+                                                                border: 'none',
+                                                                padding: '7px 12px',
+                                                                backgroundColor: 'transparent'
+                                                            }}
+                                                            />
+                                                            <button
+                                                            className="btn"
+                                                                type="button"
+                                                                onClick={() => setShowEditPassword(!showEditPassword)}
+                                                            style={{
+                                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                                border: 'none',
+                                                                color: '#ff5e00'
+                                                            }}
+                                                            >
+                                                                <i className={`bi ${showEditPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            {/* Address */}
+                                            <div className="mb-4">
                                                 <label className="form-label" style={{
                                                     fontWeight: '600',
                                                     color: '#444',
@@ -2034,16 +2339,16 @@ const Client = () => {
                                                     alignItems: 'center',
                                                     gap: '5px'
                                                 }}>
-                                                    <i className="icofont-email" style={{ color: '#52b447' }}></i>
-                                                    Email ID
+                                                    <i className="icofont-location-pin" style={{ color: '#52b447' }}></i>
+                                                    Address
                                                 </label>
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Email ID"
-                                                    name="clientEmail"
-                                                    value={clientData.clientEmail}
-                                                    onChange={updateChange}
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                    placeholder="Enter complete address"
+                                                            name="clientAddress"
+                                                            value={clientData.clientAddress}
+                                                            onChange={updateChange}
                                                     style={{
                                                         borderRadius: '8px',
                                                         border: '1px solid rgba(82, 180, 71, 0.3)',
@@ -2051,10 +2356,11 @@ const Client = () => {
                                                         color: '#333',
                                                         boxShadow: 'none'
                                                     }}
-                                                />
-                                            </div>
+                                                        />
+                                                    </div>
 
-                                            <div className="col-md-6">
+                                            {/* Phone */}
+                                            <div className="mb-4">
                                                 <label className="form-label" style={{
                                                     fontWeight: '600',
                                                     color: '#444',
@@ -2064,137 +2370,57 @@ const Client = () => {
                                                     alignItems: 'center',
                                                     gap: '5px'
                                                 }}>
-                                                    <i className="icofont-key" style={{ color: '#ff5e00' }}></i>
-                                                    Password
+                                                    <i className="icofont-phone" style={{ color: '#ff5e00' }}></i>
+                                                    Phone Number
                                                 </label>
-                                                <div className="input-group" style={{
-                                                    borderRadius: '8px',
-                                                    border: '1px solid rgba(255, 94, 0, 0.3)',
-                                                    padding: '3px',
-                                                    backgroundColor: 'rgba(255, 94, 0, 0.03)'
-                                                }}>
-                                                    <input
-                                                        type={showEditPassword ? "text" : "password"}
-                                                        className="form-control"
-                                                        placeholder="Password"
-                                                        name="clientPassword"
-                                                        value={clientData.clientPassword}
-                                                        onChange={updateChange}
-                                                        style={{
-                                                            border: 'none',
-                                                            padding: '7px 12px',
-                                                            backgroundColor: 'transparent'
-                                                        }}
-                                                    />
-                                                    <button
-                                                        className="btn"
-                                                        type="button"
-                                                        onClick={() => setShowEditPassword(!showEditPassword)}
-                                                        style={{
-                                                            backgroundColor: 'rgba(255, 94, 0, 0.1)',
-                                                            border: 'none',
-                                                            color: '#ff5e00'
-                                                        }}
-                                                    >
-                                                        <i className={`bi ${showEditPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
-                                                    </button>
-                                                </div>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="Enter phone number"
+                                                    name="clientPhone"
+                                                    value={clientData.clientPhone}
+                                                    onChange={updateChange}
+                                                    style={{
+                                                        borderRadius: '8px',
+                                                        border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                        padding: '10px 15px',
+                                                        color: '#333',
+                                                        boxShadow: 'none',
+                                                        backgroundColor: 'rgba(255, 94, 0, 0.03)'
+                                                    }}
+                                                />
                                             </div>
-                                        </div>
 
-                                        {/* Address */}
-                                        <div className="mb-4">
-                                            <label className="form-label" style={{
-                                                fontWeight: '600',
-                                                color: '#444',
-                                                fontSize: '14px',
-                                                marginBottom: '8px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px'
-                                            }}>
-                                                <i className="icofont-location-pin" style={{ color: '#52b447' }}></i>
-                                                Address
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Enter complete address"
-                                                name="clientAddress"
-                                                value={clientData.clientAddress}
-                                                onChange={updateChange}
-                                                style={{
-                                                    borderRadius: '8px',
-                                                    border: '1px solid rgba(82, 180, 71, 0.3)',
-                                                    padding: '10px 15px',
-                                                    color: '#333',
-                                                    boxShadow: 'none'
-                                                }}
-                                            />
-                                        </div>
-
-                                        {/* Phone */}
-                                        <div className="mb-4">
-                                            <label className="form-label" style={{
-                                                fontWeight: '600',
-                                                color: '#444',
-                                                fontSize: '14px',
-                                                marginBottom: '8px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px'
-                                            }}>
-                                                <i className="icofont-phone" style={{ color: '#ff5e00' }}></i>
-                                                Phone Number
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Enter phone number"
-                                                name="clientPhone"
-                                                value={clientData.clientPhone}
-                                                onChange={updateChange}
-                                                style={{
-                                                    borderRadius: '8px',
-                                                    border: '1px solid rgba(255, 94, 0, 0.3)',
-                                                    padding: '10px 15px',
-                                                    color: '#333',
-                                                    boxShadow: 'none',
-                                                    backgroundColor: 'rgba(255, 94, 0, 0.03)'
-                                                }}
-                                            />
-                                        </div>
-
-                                        {/* Bank Details */}
-                                        <div className="mb-4">
-                                            <label className="form-label" style={{
-                                                fontWeight: '600',
-                                                color: '#444',
-                                                fontSize: '14px',
-                                                marginBottom: '12px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '5px'
-                                            }}>
-                                                <i className="icofont-bank-alt" style={{ color: '#52b447' }}></i>
-                                                Bank Details
-                                            </label>
-                                            <div className="row g-3" style={{
-                                                backgroundColor: 'rgba(82, 180, 71, 0.03)',
-                                                padding: '15px',
-                                                borderRadius: '10px',
-                                                border: '1px solid rgba(82, 180, 71, 0.2)'
-                                            }}>
-                                                {/* Bank detail inputs with alternating colors */}
+                                            {/* Bank Details Section */}
+                                            <div className="mb-4">
+                                                <label className="form-label" style={{
+                                                    fontWeight: '600',
+                                                    color: '#444',
+                                                    fontSize: '14px',
+                                                    marginBottom: '12px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    gap: '5px'
+                                                }}>
+                                                    <i className="icofont-bank-alt" style={{ color: '#52b447' }}></i>
+                                                    Bank Details
+                                                </label>
+                                                <div className="row g-3" style={{
+                                                    backgroundColor: 'rgba(82, 180, 71, 0.03)',
+                                                    padding: '15px',
+                                                    borderRadius: '10px',
+                                                    border: '1px solid rgba(82, 180, 71, 0.2)'
+                                                }}>
+                                                    {/* Account Number */}
                                                 <div className="col-md-6">
-                                                    <div className="input-group">
-                                                        <span className="input-group-text" style={{
-                                                            backgroundColor: 'rgba(82, 180, 71, 0.1)',
-                                                            border: 'none',
-                                                            color: '#52b447'
-                                                        }}>
-                                                            <i className="bi bi-bank"></i>
-                                                        </span>
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                border: 'none',
+                                                                color: '#52b447'
+                                                            }}>
+                                                                <i className="bi bi-bank"></i>
+                                                            </span>
                                                         <input
                                                             type="text"
                                                             className="form-control"
@@ -2202,6 +2428,162 @@ const Client = () => {
                                                             name="accountNumber"
                                                             value={clientData.accountNumber || ''}
                                                             onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* Account Type */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                                border: 'none',
+                                                                color: '#ff5e00'
+                                                            }}>
+                                                                <i className="bi bi-credit-card"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Account Type"
+                                                            name="accountType"
+                                                            value={clientData.accountType || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* Account Holder Name */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                border: 'none',
+                                                                color: '#52b447'
+                                                            }}>
+                                                                <i className="bi bi-person"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Account Holder Name"
+                                                            name="accountHolderName"
+                                                            value={clientData.accountHolderName || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* IFSC Code */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                                border: 'none',
+                                                                color: '#ff5e00'
+                                                            }}>
+                                                                <i className="bi bi-upc"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="IFSC Code"
+                                                            name="ifscCode"
+                                                            value={clientData.ifscCode || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* Bank Name */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                border: 'none',
+                                                                color: '#52b447'
+                                                            }}>
+                                                                <i className="bi bi-building"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Bank Name"
+                                                            name="bankName"
+                                                            value={clientData.bankName || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(82, 180, 71, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* UPI ID */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                                border: 'none',
+                                                                color: '#ff5e00'
+                                                            }}>
+                                                                <i className="bi bi-phone"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="UPI ID"
+                                                            name="upiId"
+                                                            value={clientData.upiId || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                    {/* QR Code */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(82, 180, 71, 0.1)',
+                                                                border: 'none',
+                                                                color: '#52b447'
+                                                            }}>
+                                                                <i className="bi bi-qr-code"></i>
+                                                            </span>
+                                                        <input
+                                                            type="file"
+                                                            className="form-control"
+                                                            placeholder="QR Code"
+                                                            name="qrCode"
+                                                            onChange={updateChange}
+                                                            accept="image/*"  // Only accept image files
                                                             style={{
                                                                 border: '1px solid rgba(82, 180, 71, 0.2)',
                                                                 borderLeft: 'none',
@@ -2210,68 +2592,93 @@ const Client = () => {
                                                         />
                                                     </div>
                                                 </div>
-                                                {/* Repeat similar styling for other bank inputs */}
-                                                {/* ... */}
+
+                                                    {/* Payment App */}
+                                                <div className="col-md-6">
+                                                        <div className="input-group">
+                                                            <span className="input-group-text" style={{
+                                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                                border: 'none',
+                                                                color: '#ff5e00'
+                                                            }}>
+                                                                <i className="bi bi-wallet2"></i>
+                                                            </span>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="Payment App"
+                                                            name="paymentApp"
+                                                            value={clientData.paymentApp || ''}
+                                                            onChange={updateChange}
+                                                                style={{
+                                                                    border: '1px solid rgba(255, 94, 0, 0.2)',
+                                                                    borderLeft: 'none',
+                                                                    borderRadius: '0 6px 6px 0'
+                                                                }}
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Footer */}
-                                    <div className="modal-footer" style={{
-                                        borderTop: '1px solid rgba(82, 180, 71, 0.1)',
-                                        padding: '16px 25px'
-                                    }}>
-                                        <button
-                                            type="button"
-                                            className="btn"
-                                            data-bs-dismiss="modal"
-                                            style={{
-                                                backgroundColor: 'rgba(255, 94, 0, 0.1)',
-                                                color: '#ff5e00',
-                                                border: '1px solid rgba(255, 94, 0, 0.3)',
-                                                borderRadius: '8px',
-                                                padding: '8px 20px',
-                                                fontWeight: '600',
-                                                fontSize: '14px',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseOver={(e) => {
-                                                e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.1)';
-                                            }}
-                                        >
-                                            <i className="icofont-close-circled me-2"></i>
-                                            Cancel
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="btn"
-                                            onClick={updateSubmit}
-                                            style={{
-                                                background: 'linear-gradient(135deg, #52b447, #429938)',
-                                                color: 'white',
-                                                border: 'none',
-                                                borderRadius: '8px',
-                                                padding: '8px 20px',
-                                                fontWeight: '600',
-                                                fontSize: '14px',
-                                                boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onMouseOver={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(-2px)';
-                                                e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.currentTarget.style.transform = 'translateY(0)';
-                                                e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
-                                            }}
-                                        >
-                                            <i className="icofont-check-circled me-2"></i>
-                                            Update Member
-                                        </button>
+                                        {/* Footer */}
+                                        <div className="modal-footer" style={{
+                                            borderTop: '1px solid rgba(82, 180, 71, 0.1)',
+                                            padding: '16px 25px'
+                                        }}>
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                data-bs-dismiss="modal"
+                                                style={{
+                                                    backgroundColor: 'rgba(255, 94, 0, 0.1)',
+                                                    color: '#ff5e00',
+                                                    border: '1px solid rgba(255, 94, 0, 0.3)',
+                                                    borderRadius: '8px',
+                                                    padding: '8px 20px',
+                                                    fontWeight: '600',
+                                                    fontSize: '14px',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.2)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.backgroundColor = 'rgba(255, 94, 0, 0.1)';
+                                                }}
+                                            >
+                                                <i className="icofont-close-circled me-2"></i>
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="btn"
+                                                onClick={updateSubmit}
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #52b447, #429938)',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '8px',
+                                                    padding: '8px 20px',
+                                                    fontWeight: '600',
+                                                    fontSize: '14px',
+                                                    boxShadow: '0 4px 10px rgba(82, 180, 71, 0.2)',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                                    e.currentTarget.style.boxShadow = '0 6px 12px rgba(82, 180, 71, 0.3)';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.transform = 'translateY(0)';
+                                                    e.currentTarget.style.boxShadow = '0 4px 10px rgba(82, 180, 71, 0.2)';
+                                                }}
+                                            >
+                                                <i className="icofont-check-circled me-2"></i>
+                                                Update Member
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2709,6 +3116,7 @@ const Client = () => {
                                 </div>
                             </div>
                         </div>
+
                     </>
                 </div>
                 <ToastContainer />
