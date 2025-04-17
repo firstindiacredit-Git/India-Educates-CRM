@@ -618,7 +618,7 @@ const Client = () => {
                                                                         boxShadow: '0 4px 15px rgba(82, 180, 71, 0.2)'
                                                                     }}>
                                                                         <img
-                                                                            src={`${import.meta.env.VITE_BASE_URL}uploads/${client.clientImage}`}
+                                                                            src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`}
                                                                             alt={client.clientName}
                                                                             style={{
                                                                                 width: '100%',
@@ -974,7 +974,7 @@ const Client = () => {
                                                                         }}>
                                                                             <div className="d-flex align-items-center gap-3">
                                                                                 <img
-                                                                                    src={`${import.meta.env.VITE_BASE_URL}uploads/${client.clientImage}`}
+                                                                                    src={`${import.meta.env.VITE_BASE_URL}${client.clientImage}`}
                                                                                     alt={client.clientName}
                                                                                     className="rounded-circle"
                                                                                     style={{
@@ -1982,7 +1982,6 @@ const Client = () => {
                                                     backgroundColor: 'rgba(255, 94, 0, 0.03)'
                                                 }}
                                             />
-                                            current file: {clientData?.clientImage ? clientData.clientImage.split('/').pop() : 'No file selected'}
                                         </div>
 
                                         {/* Documents Section */}
